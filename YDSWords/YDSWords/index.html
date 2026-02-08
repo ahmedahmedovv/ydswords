@@ -537,6 +537,7 @@
             transition: all 0.15s ease;
             touch-action: manipulation;
             position: relative;
+            margin-bottom: 1rem;
         }
 
         .btn-next:hover:not(:disabled) {
@@ -2919,13 +2920,13 @@ function displayQuestion() {
             throw new Error('Shuffle algorithm error');
         }
         
-        // Render options with sanitization
+        // Render options with sanitization (lowercase)
         const keys = ['A', 'B', 'C', 'D', 'E'];
         if (DOM.options) {
             DOM.options.innerHTML = question.options.map((opt, i) => `
                 <button class="option" data-index="${i}" type="button">
                     <span class="key">${keys[i]}</span>
-                    <span>${sanitizeHtml(opt)}</span>
+                    <span>${sanitizeHtml(opt).toLowerCase()}</span>
                 </button>
             `).join('');
             
@@ -2993,7 +2994,7 @@ function selectAnswer(index) {
             feedbackHTML += `
                 <div class="explanation-item ${isOptCorrect ? 'correct' : 'wrong'}">
                     <span class="opt-label">${keys[i]}</span>
-                    <span class="opt-text"><strong>${sanitizeHtml(opt)}:</strong> ${sanitizeHtml(explanation)}</span>
+                    <span class="opt-text"><strong>${sanitizeHtml(opt).toLowerCase()}:</strong> ${sanitizeHtml(explanation)}</span>
                 </div>
             `;
         });
@@ -3006,11 +3007,9 @@ function selectAnswer(index) {
     if (DOM.feedback) DOM.feedback.classList.remove('hidden');
     if (DOM.btnNext) DOM.btnNext.classList.remove('hidden');
     
-    // Scroll to show Next button on small screens
+    // Scroll to bottom to show feedback and Next button
     setTimeout(() => {
-        if (DOM.btnNext) {
-            DOM.btnNext.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }, 100);
 }
 

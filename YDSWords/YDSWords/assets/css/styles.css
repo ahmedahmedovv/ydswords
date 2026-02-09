@@ -498,13 +498,20 @@ body {
 }
 
 .blank {
-    display: inline-block;
-    min-width: 60px;
-    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+    height: 1.5em;
     background: var(--ios-fill);
-    border-radius: 4px;
+    border-radius: 6px;
     margin: 0 4px;
-    vertical-align: middle;
+    vertical-align: baseline;
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--ios-label-secondary);
+    letter-spacing: 2px;
+    padding: 0 8px;
 }
 
 /* ═══ Options - iOS Grouped Table Style ═══ */
@@ -830,6 +837,14 @@ body {
         padding: var(--space-sm);
     }
 
+    .blank {
+        min-width: 70px;
+        height: 1.5em;
+        font-size: 0.9em;
+        padding: 0 6px;
+        border-radius: 5px;
+    }
+
     .option {
         font-size: var(--text-callout);
         min-height: 48px;
@@ -893,6 +908,15 @@ body {
         line-height: 1.5;
         padding: var(--space-sm);
         margin-bottom: var(--space-sm);
+    }
+
+    .blank {
+        min-width: 60px;
+        height: 1.5em;
+        font-size: 0.85em;
+        padding: 0 5px;
+        border-radius: 4px;
+        letter-spacing: 1px;
     }
 
     .options {

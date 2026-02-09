@@ -183,33 +183,31 @@
                 <!-- Word -->
                 <div class="flashcard-word" id="flashcardWord">Loading...</div>
                 
-                <!-- Definition -->
-                <div class="flashcard-definition loading" id="flashcardDefinition">
-                    Loading definition...
-                </div>
-                
                 <!-- Example -->
                 <div class="flashcard-example loading" id="flashcardExample">
                     Loading example...
                 </div>
+                
+                <!-- Definition -->
+                <div class="flashcard-definition loading" id="flashcardDefinition">
+                    Loading definition...
+                </div>
             </div>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- Simple Action Buttons -->
         <div class="flashcard-actions">
-            <button class="flashcard-btn flashcard-btn--dont-know" id="btnDontKnow">
-                <span class="flashcard-btn-icon">✕</span>
-                <span>Don't Know</span>
+            <button class="flashcard-action-btn flashcard-action-btn--dont-know" id="btnDontKnow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
             </button>
-            <button class="flashcard-btn flashcard-btn--know" id="btnKnow">
-                <span class="flashcard-btn-icon">✓</span>
-                <span>Know It</span>
+            <button class="flashcard-action-btn flashcard-action-btn--know" id="btnKnow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
             </button>
-        </div>
-
-        <!-- Keyboard Shortcuts Hint -->
-        <div class="flashcard-keyboard-hint">
-            <span>←</span> Don't Know · Know It <span>→</span>
         </div>
 
         <!-- Results Screen -->

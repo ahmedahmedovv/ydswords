@@ -1580,7 +1580,7 @@ button, .option {
     }
 }
 
-/* Word Display */
+/* Word Display - First */
 .flashcard-word {
     font-size: var(--text-title-1);
     font-weight: 700;
@@ -1590,31 +1590,31 @@ button, .option {
     line-height: 1.2;
 }
 
-/* Definition - Clean & Simple */
-.flashcard-definition {
-    font-size: var(--text-body);
-    line-height: 1.5;
-    color: var(--ios-label);
-    text-align: center;
-    margin-bottom: var(--space-lg);
-    transition: opacity 0.2s ease;
-}
-
-.flashcard-definition.loading {
-    color: var(--ios-label-tertiary);
-}
-
-/* Example - Clean & Simple */
+/* Example - Second (italic, secondary color) */
 .flashcard-example {
-    font-size: var(--text-callout);
+    font-size: var(--text-body);
     line-height: 1.5;
     color: var(--ios-label-secondary);
     text-align: center;
     font-style: italic;
+    margin-bottom: var(--space-lg);
     transition: opacity 0.2s ease;
 }
 
 .flashcard-example.loading {
+    color: var(--ios-label-tertiary);
+}
+
+/* Definition - Third */
+.flashcard-definition {
+    font-size: var(--text-callout);
+    line-height: 1.5;
+    color: var(--ios-label);
+    text-align: center;
+    transition: opacity 0.2s ease;
+}
+
+.flashcard-definition.loading {
     color: var(--ios-label-tertiary);
 }
 
@@ -1625,90 +1625,51 @@ button, .option {
     font-style: normal;
 }
 
-/* Action Buttons */
+/* Simple Action Buttons */
 .flashcard-actions {
     display: flex;
     justify-content: center;
     gap: var(--space-xl);
     padding: var(--space-md) var(--space-lg);
-    padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
+    padding-bottom: max(var(--space-lg), env(safe-area-inset-bottom));
     flex-shrink: 0;
 }
 
-.flashcard-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: var(--space-md) var(--space-xl);
-    border: none;
-    border-radius: 16px;
-    background: var(--ios-system-background);
-    color: var(--ios-label);
-    font-family: var(--font-ios);
-    font-size: var(--text-subhead);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s var(--ios-spring);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    min-width: 100px;
-}
-
-.flashcard-btn:active {
-    transform: scale(0.95);
-}
-
-.flashcard-btn-icon {
-    width: 40px;
-    height: 40px;
+.flashcard-action-btn {
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
+    border: none;
+    background: var(--ios-system-background);
+    cursor: pointer;
+    transition: all 0.15s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.flashcard-btn--dont-know {
+.flashcard-action-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.flashcard-action-btn--dont-know {
     color: var(--ios-system-red);
 }
 
-.flashcard-btn--dont-know .flashcard-btn-icon {
-    background: rgba(255, 59, 48, 0.15);
-}
-
-.flashcard-btn--dont-know:active {
+.flashcard-action-btn--dont-know:active {
+    transform: scale(0.92);
     background: rgba(255, 59, 48, 0.1);
 }
 
-.flashcard-btn--know {
+.flashcard-action-btn--know {
     color: var(--ios-system-green);
 }
 
-.flashcard-btn--know .flashcard-btn-icon {
-    background: rgba(52, 199, 89, 0.15);
-}
-
-.flashcard-btn--know:active {
+.flashcard-action-btn--know:active {
+    transform: scale(0.92);
     background: rgba(52, 199, 89, 0.1);
-}
-
-/* Keyboard Hint */
-.flashcard-keyboard-hint {
-    text-align: center;
-    padding-bottom: var(--space-sm);
-    font-size: var(--text-caption);
-    color: var(--ios-label-quaternary);
-    flex-shrink: 0;
-}
-
-.flashcard-keyboard-hint span {
-    display: inline-block;
-    padding: 2px 6px;
-    background: var(--ios-fill);
-    border-radius: 4px;
-    margin: 0 4px;
-    font-family: var(--font-mono);
 }
 
 /* Results Screen */
@@ -1806,9 +1767,9 @@ button, .option {
             0 1px 4px rgba(0, 0, 0, 0.2);
     }
     
-    .flashcard-btn {
+    .flashcard-action-btn {
         background: var(--ios-secondary-grouped-background);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 }
 
@@ -1842,9 +1803,14 @@ button, .option {
         height: 40px;
     }
     
-    .flashcard-btn {
-        padding: var(--space-sm) var(--space-lg);
-        min-width: 80px;
+    .flashcard-action-btn {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .flashcard-action-btn svg {
+        width: 20px;
+        height: 20px;
     }
 }
 

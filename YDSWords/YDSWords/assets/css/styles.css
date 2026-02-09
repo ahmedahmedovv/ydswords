@@ -1516,26 +1516,22 @@ button, .option {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-lg);
-    padding-bottom: var(--space-md);
+    padding: var(--space-md);
     perspective: 1000px;
 }
 
-/* Flashcard Card */
+/* Flashcard Card - Minimal & Clean */
 .flashcard-card {
     width: 100%;
-    max-width: 360px;
+    max-width: 340px;
     background: var(--ios-system-background);
-    border-radius: 24px;
+    border-radius: 20px;
     padding: var(--space-xl);
-    box-shadow: 
-        0 4px 24px rgba(0, 0, 0, 0.08),
-        0 1px 4px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: transform 0.1s ease-out, opacity 0.1s ease-out;
     user-select: none;
     touch-action: pan-y;
     position: relative;
-    overflow: hidden;
 }
 
 /* Swipe Animation Classes */
@@ -1586,86 +1582,47 @@ button, .option {
 
 /* Word Display */
 .flashcard-word {
-    font-size: var(--text-large-title);
+    font-size: var(--text-title-1);
     font-weight: 700;
     color: var(--ios-label);
     text-align: center;
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-lg);
     line-height: 1.2;
 }
 
-/* Sections */
-.flashcard-section {
-    margin-bottom: var(--space-lg);
-}
-
-.flashcard-section:last-of-type {
-    margin-bottom: var(--space-xl);
-}
-
-.flashcard-section-label {
-    font-size: var(--text-caption);
-    font-weight: 600;
-    color: var(--ios-label-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: var(--space-xs);
-}
-
-.flashcard-definition,
-.flashcard-example {
+/* Definition - Clean & Simple */
+.flashcard-definition {
     font-size: var(--text-body);
-    line-height: 1.6;
+    line-height: 1.5;
     color: var(--ios-label);
+    text-align: center;
+    margin-bottom: var(--space-lg);
     transition: opacity 0.2s ease;
 }
 
-.flashcard-definition.loading,
+.flashcard-definition.loading {
+    color: var(--ios-label-tertiary);
+}
+
+/* Example - Clean & Simple */
+.flashcard-example {
+    font-size: var(--text-callout);
+    line-height: 1.5;
+    color: var(--ios-label-secondary);
+    text-align: center;
+    font-style: italic;
+    transition: opacity 0.2s ease;
+}
+
 .flashcard-example.loading {
     color: var(--ios-label-tertiary);
-    font-style: italic;
 }
 
-.flashcard-example {
-    font-style: italic;
-    color: var(--ios-label-secondary);
-}
-
+/* Highlighted word in example */
 .word-highlight {
     color: var(--ios-system-blue);
     font-weight: 600;
     font-style: normal;
-}
-
-/* Swipe Hints */
-.flashcard-swipe-hints {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: var(--space-md);
-    border-top: 1px solid var(--ios-separator);
-}
-
-.swipe-hint {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: var(--text-footnote);
-    color: var(--ios-label-tertiary);
-    font-weight: 500;
-}
-
-.swipe-hint-icon {
-    font-size: var(--text-body);
-    opacity: 0.7;
-}
-
-.swipe-hint-left {
-    color: var(--ios-system-red);
-}
-
-.swipe-hint-right {
-    color: var(--ios-system-green);
 }
 
 /* Action Buttons */
@@ -1859,12 +1816,21 @@ button, .option {
 @media (max-width: 375px) {
     .flashcard-card {
         padding: var(--space-lg);
-        border-radius: 20px;
+        border-radius: 16px;
     }
     
     .flashcard-word {
-        font-size: var(--text-title-1);
-        margin-bottom: var(--space-lg);
+        font-size: var(--text-title-2);
+        margin-bottom: var(--space-md);
+    }
+    
+    .flashcard-definition {
+        font-size: var(--text-callout);
+        margin-bottom: var(--space-md);
+    }
+    
+    .flashcard-example {
+        font-size: var(--text-footnote);
     }
     
     .mode-card {

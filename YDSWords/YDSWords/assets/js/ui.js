@@ -20,6 +20,7 @@ const DOM = {
     get feedback() { return $('feedback'); },
     get feedbackText() { return $('feedbackText'); },
     get btnNext() { return $('btnNext'); },
+    get quizActions() { return document.querySelector('.quiz-actions'); },
     get scoreEl() { return $('score'); },
     get errorState() { return $('errorState'); },
     get errorMessage() { return $('errorMessage'); },

@@ -1,17 +1,30 @@
 [build]
-  # No build command needed for pure serverless functions
-  # But you can add one if you need to process the iOS app
+  # Build command (empty for static site)
   command = ""
-  publish = "."
+  # Publish the public folder containing the web app
+  publish = "public"
 
 [functions]
   directory = "netlify/functions"
-  # Node.js runtime for the functions
   node_bundler = "esbuild"
 
+# Redirect API calls to the function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# SPA redirect - serve index.html for all routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  
 [[headers]]
-  # Security headers for the function
-  for = "/.netlify/functions/*"
+  # Security headers
+  for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"

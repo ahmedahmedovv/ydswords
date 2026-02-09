@@ -18,8 +18,8 @@ const CONFIG = {
     circuitBreakerTimeout: 60000, // Time before trying again (1 min)
     
     // Input validation
-    maxSentenceLength: 2000,     // Max characters in sentence
-    maxOptionLength: 500,        // Max characters per option
+    maxSentenceLength: 150,      // Max characters in sentence (was 2000)
+    maxOptionLength: 50,         // Max characters per option (was 500)
     
     getPrompt: function(word) {
         // DEFENSE: Validate word before using in prompt
@@ -52,8 +52,8 @@ CRITICAL: Vary the sentence context based on the word's meaning. Do NOT default 
 - For abstract/conceptual words: use philosophical, theoretical, or analytical contexts
 
 Requirements:
-- Write a sentence (25-40 words) with rich context where "${sanitizedWord}" is the ONLY natural fit in the blank _____
-- Include specific details (setting, subject matter, relationships between ideas) to make the correct choice unambiguous
+- Write a concise sentence (15-25 words) with rich context where "${sanitizedWord}" is the ONLY natural fit in the blank _____
+- Be concise but specific - include only essential context clues that make the correct choice unambiguous
 - The sentence should feel authentic to academic writing (research papers, essays, lectures, or formal discussions)
 - Provide exactly 5 options including "${sanitizedWord}" - all options must be the same grammatical type
 - "${sanitizedWord}" must be the correct answer (index 0)
@@ -62,13 +62,13 @@ Requirements:
 
 EXAMPLES of diverse contexts (for illustration only - create appropriate context for "${sanitizedWord}"):
 
-Example 1 (Nature context for "blossom"): The once-barren hillsides began to _____ with wildflowers after the spring rains returned, transforming the arid landscape into a vibrant tapestry of purple and yellow blooms.
+Example 1 (Nature context for "blossom"): After the spring rains, the hillsides began to _____ with colorful wildflowers.
 
-Example 2 (Business context for "merge"): The two rival pharmaceutical companies decided to _____ their operations after months of negotiation, creating the largest healthcare conglomerate in European history.
+Example 2 (Business context for "merge"): The two rival companies decided to _____ and become a single organization.
 
-Example 3 (Social context for "alienate"): The politician's harsh rhetoric managed to _____ even his most loyal supporters, who felt betrayed by his sudden shift toward extreme ideological positions.
+Example 3 (Social context for "alienate"): His rude behavior began to _____ even his closest friends.
 
-Example 4 (Technical context for "disrupt"): The innovative startup aimed to _____ the traditional banking sector by offering instant peer-to-peer transactions without intermediaries or excessive processing fees.
+Example 4 (Technical context for "disrupt"): The new technology threatens to _____ the traditional industry.
 
 Respond with JSON only:
 {

@@ -359,24 +359,9 @@ body {
 .flashcard-progress-text {
     font-size: var(--text-subhead);
     color: var(--ios-label-secondary);
-    font-weight: 500;
+    font-weight: 600;
     min-width: 60px;
     text-align: right;
-}
-
-.quiz-progress-bar,
-.flashcard-progress-bar {
-    height: 3px;
-    background: var(--ios-system-gray5);
-    flex-shrink: 0;
-}
-
-.quiz-progress,
-.flashcard-progress {
-    height: 100%;
-    background: linear-gradient(90deg, var(--ios-system-blue), var(--ios-system-purple));
-    transition: width 0.3s var(--ios-ease-out);
-    width: 0%;
 }
 
 /* ═══ Back Button - iOS Style ═══ */

@@ -21,12 +21,11 @@ const DOM = {
     get feedbackText() { return $('feedbackText'); },
     get btnNext() { return $('btnNext'); },
     get quizActions() { return document.querySelector('.quiz-actions'); },
-    get scoreEl() { return $('score'); },
+    get scoreEl() { return $('quizScore'); },
     get errorState() { return $('errorState'); },
     get errorMessage() { return $('errorMessage'); },
     get btnRetry() { return $('btnRetry'); },
-    get quizProgressText() { return $('quizProgressText'); },
-    get quizProgress() { return $('quizProgress'); }
+
 };
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -184,22 +183,13 @@ function showError(message, showRetry = true) {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// QUIZ PROGRESS
+// QUIZ SCORE DISPLAY
 // ═════════════════════════════════════════════════════════════════════════════
 
-function updateQuizProgress() {
-    // Update progress text
-    if (DOM.quizProgressText) {
-        DOM.quizProgressText.textContent = `${AppState.correct} / ${AppState.total}`;
-    }
-    
-    // Update progress bar
-    if (DOM.quizProgress) {
-        // Calculate percentage based on question count (show progress through session)
-        // Using total as a proxy for progress, max out at 20 questions for visual
-        const maxQuestions = 20;
-        const percentage = Math.min((AppState.total / maxQuestions) * 100, 100);
-        DOM.quizProgress.style.width = `${percentage}%`;
+function updateQuizScore() {
+    // Update score display
+    if (DOM.scoreEl) {
+        DOM.scoreEl.textContent = `${AppState.correct} / ${AppState.total}`;
     }
 }
 
@@ -328,8 +318,8 @@ function displayQuestion() {
     if (DOM.questionArea) DOM.questionArea.classList.remove('answered');
         if (DOM.btnNext) DOM.btnNext.classList.add('hidden');
         
-        // Update progress display
-        updateQuizProgress();
+        // Update score display
+        updateQuizScore();
         
     } catch (error) {
         console.error('Error displaying question:', error);
@@ -361,8 +351,8 @@ function selectAnswer(index) {
     if (isCorrect) AppState.correct++;
     if (DOM.scoreEl) DOM.scoreEl.textContent = `${AppState.correct} / ${AppState.total}`;
     
-    // Update progress bar
-    updateQuizProgress();
+    // Update score display
+    updateQuizScore();
     
     // Update UI with visual feedback
     const optionButtons = DOM.options ? DOM.options.querySelectorAll('.option') : [];

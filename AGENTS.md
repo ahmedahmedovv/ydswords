@@ -2,12 +2,12 @@
 
 ## Project Overview
 
-YDS Words is an iOS application designed for Turkish students preparing for the YDS (Yabancı Dil Sınavı - Foreign Language Exam). It's a vocabulary learning app that generates dynamic multiple-choice quiz questions and provides flashcard study modes using OpenAI's GPT-4o-mini model.
+YDS Words is an iOS application designed for Turkish students preparing for the YDS (Yabancı Dil Sınavı - Foreign Language Exam). It's a vocabulary learning app that generates dynamic multiple-choice quiz questions and provides flashcard study modes using AI through OpenRouter API.
 
 The app follows a **hybrid architecture**:
 - **Native iOS Layer**: Thin Swift wrapper using UIKit + WebKit (WKWebView)
 - **Application Layer**: HTML/CSS/JavaScript single-page application containing all UI, logic, and vocabulary data
-- **AI Backend**: Netlify Function acting as a secure proxy to OpenAI API
+- **AI Backend**: Netlify Function acting as a secure proxy to OpenRouter API
 
 ---
 
@@ -55,7 +55,7 @@ YDSWords/
 │   ├── Info.plist                   # App metadata, ATS settings, orientation
 │   ├── index.html                   # Main HTML file (SPA entry point)
 │   ├── assets/
-│   │   ├── css/styles.css           # iOS Design System styles (~1977 lines)
+│   │   ├── css/styles.css           # iOS Design System styles (~2005 lines)
 │   │   └── js/                      # JavaScript modules
 │   │       ├── words.js             # ~1000 English vocabulary words/phrases (1273 lines)
 │   │       ├── config.js            # App configuration & prompt templates
@@ -63,7 +63,7 @@ YDSWords/
 │   │       ├── api.js               # API functions (Netlify proxy calls)
 │   │       ├── utils.js             # Utility functions (XSS, validation, circuit breaker)
 │   │       ├── ui.js                # UI manipulation functions
-│   │       ├── flashcards.js        # Tinder-style flashcard study mode (740 lines)
+│   │       ├── flashcards.js        # Tinder-style flashcard study mode (670 lines)
 │   │       └── app.js               # Main application logic & event handlers
 │   └── Assets.xcassets/             # App icons (all iOS sizes)
 │       └── AppIcon.appiconset/
@@ -72,7 +72,7 @@ YDSWords/
 │           └── Contents.json
 ├── netlify/
 │   └── functions/
-│       └── generate-question.js     # Secure Netlify Function (OpenAI proxy)
+│       └── generate-question.js     # Secure Netlify Function (OpenRouter proxy)
 ├── netlify.toml                     # Netlify configuration (functions, redirects, headers)
 ├── .env.example                     # Example environment variables template
 ├── .gitignore                       # Git ignore rules
@@ -115,7 +115,7 @@ YDSWords/
 - Fisher-Yates shuffle algorithm used for randomization
 
 #### config.js
-- `CONFIG` object with OpenAI parameters (model, temperature, maxTokens)
+- `CONFIG` object with OpenRouter parameters (model, temperature, maxTokens)
 - Timeout and retry configuration
 - Circuit breaker settings
 - `getPrompt(word)`: Generates detailed prompts for fill-in-the-blank questions with context-aware examples
@@ -160,7 +160,7 @@ YDSWords/
 - Offline detection with indicator
 - Fisher-Yates shuffle for answer options
 
-#### flashcards.js (740 lines)
+#### flashcards.js (670 lines)
 - Tinder-style swipeable flashcard interface
 - Touch and mouse gesture support for swiping
 - Keyboard navigation (Arrow keys, K/Y for know, N for don't know)
@@ -180,13 +180,13 @@ YDSWords/
 ### 5. Netlify Function (generate-question.js)
 Serverless function that acts as a secure proxy:
 - Receives POST requests from iOS app with `{ prompt }` body
-- Reads `OPENAI_API_KEY` from environment variables
-- Forwards to OpenAI API with JSON response format
+- Reads `OPENROUTER_API_KEY` from environment variables
+- Forwards to OpenRouter API with JSON response format
 - Returns structured response to app
 - CORS headers configured for cross-origin requests
-- Model: `gpt-4o-mini` with temperature 0.8 and max_tokens 1024
+- Model: `mistralai/ministral-8b` with temperature 0.8 and max_tokens 1024
 
-### 6. CSS (styles.css, ~1977 lines)
+### 6. CSS (styles.css, ~2005 lines)
 iOS Design System implementation:
 - CSS custom properties for iOS system colors
 - Dark mode support via `prefers-color-scheme: dark`
@@ -255,7 +255,7 @@ CODE_SIGN_STYLE = Automatic
 
 ---
 
-## Build and Run Commands
+## Build and Test Commands
 
 ### Via Xcode IDE
 1. Open `YDSWords/YDSWords.xcodeproj` in Xcode 14.3 or later
@@ -281,7 +281,7 @@ xcodebuild -project YDSWords.xcodeproj -scheme YDSWords -archivePath YDSWords.xc
 npm install -g netlify-cli
 
 # Create .env file
-echo "OPENAI_API_KEY=sk-proj-..." > YDSWords/.env
+echo "OPENROUTER_API_KEY=your-key-here" > YDSWords/.env
 
 # Start dev server
 netlify dev
@@ -380,13 +380,13 @@ configuration.userContentController.add(self, name: "nativeHandler")
 
 ### API Key Handling
 ✅ **Secure Architecture**:
-- OpenAI API key stored in Netlify environment variables (encrypted at rest)
-- iOS app calls Netlify Function → Function calls OpenAI API
+- OpenRouter API key stored in Netlify environment variables (encrypted at rest)
+- iOS app calls Netlify Function → Function calls OpenRouter API
 - Key is never exposed to client-side code
 - Key only exists in server memory during function execution
 
 ⚠️ **If key was previously exposed**:
-1. Rotate immediately at https://platform.openai.com/api-keys
+1. Rotate immediately at https://openrouter.ai/keys
 2. Update Netlify environment variable
 3. Never commit keys to version control
 
@@ -409,7 +409,7 @@ configuration.userContentController.add(self, name: "nativeHandler")
 ### Netlify Function Deployment
 1. Push code to Git repository
 2. Connect repo to Netlify or deploy manually
-3. Add `OPENAI_API_KEY` environment variable in Netlify dashboard
+3. Add `OPENROUTER_API_KEY` environment variable in Netlify dashboard
 4. Update API endpoint in `assets/js/api.js` with deployed URL
 5. Rebuild and resubmit iOS app
 
@@ -425,7 +425,7 @@ configuration.userContentController.add(self, name: "nativeHandler")
 ### Questions Not Loading
 - Verify internet connection
 - Check Xcode console for API errors
-- Verify `OPENAI_API_KEY` is set in Netlify
+- Verify `OPENROUTER_API_KEY` is set in Netlify
 - Check Netlify Function logs
 
 ### Flashcards Not Loading
@@ -487,7 +487,7 @@ The project has **no external Swift package dependencies**.
 
 The web layer uses:
 - **iOS System Fonts**: SF Pro (system font, no CDN required)
-- **OpenAI API**: Requires valid API key configured in Netlify
+- **OpenRouter API**: Requires valid API key configured in Netlify
 
 ---
 

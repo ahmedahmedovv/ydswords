@@ -108,13 +108,8 @@
                 Back
             </button>
             <div class="quiz-header-title">Quiz</div>
-            <div class="quiz-header-progress" id="quizProgressText">0 / 0</div>
+            <div class="quiz-header-progress" id="quizScore">0 / 0</div>
         </header>
-
-        <!-- Progress Bar -->
-        <div class="quiz-progress-bar">
-            <div class="quiz-progress" id="quizProgress"></div>
-        </div>
 
         <div class="loading hidden" id="loading">
             <div class="spinner"></div>
@@ -157,13 +152,8 @@
                 Back
             </button>
             <div class="flashcard-title">Flashcards</div>
-            <div class="flashcard-progress-text" id="flashcardProgressText">1 / 1000</div>
+            <div class="flashcard-progress-text" id="flashcardScore">0 / 0</div>
         </header>
-
-        <!-- Progress Bar -->
-        <div class="flashcard-progress-bar">
-            <div class="flashcard-progress" id="flashcardProgress"></div>
-        </div>
 
         <!-- Flashcard Container -->
         <div class="flashcard-container" id="flashcardContainer">
@@ -198,23 +188,7 @@
             </button>
         </div>
 
-        <!-- Results Screen -->
-        <div class="flashcard-results hidden" id="flashcardResults">
-            <div class="flashcard-results-content">
-                <h2>Session Complete!</h2>
-                <div class="flashcard-stats" id="flashcardStats">
-                    <!-- Stats populated by JS -->
-                </div>
-                <div class="flashcard-results-actions">
-                    <button class="btn-minimal" id="btnFlashcardRestart">
-                        Study Again
-                    </button>
-                    <button class="btn-minimal btn-minimal--secondary" id="btnFlashcardFinish">
-                        Back to Home
-                    </button>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════════

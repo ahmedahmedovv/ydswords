@@ -104,20 +104,20 @@ document.addEventListener('keydown', (e) => {
     const key = e.key.toUpperCase();
     
     // Answer selection (A-E or 1-5)
-    if (!AppState.answered && AppState.currentQuestion) {
+    if (!AppState.hasAnswered && AppState.currentQuestion) {
         const optionIndex = ['A', 'B', 'C', 'D', 'E'].indexOf(key);
         const numberIndex = ['1', '2', '3', '4', '5'].indexOf(e.key);
         const index = optionIndex !== -1 ? optionIndex : numberIndex;
         
         if (index !== -1 && index < AppState.currentQuestion.options.length) {
             e.preventDefault();
-            handleAnswer(index);
+            selectAnswer(index);
             return;
         }
     }
     
     // Next question (Enter or Space when feedback is showing)
-    if (AppState.answered && (key === 'ENTER' || key === ' ')) {
+    if (AppState.hasAnswered && (key === 'ENTER' || key === ' ')) {
         e.preventDefault();
         if (!DOM.btnNext?.classList.contains('hidden')) {
             DOM.btnNext.click();

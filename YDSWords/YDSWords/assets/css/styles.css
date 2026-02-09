@@ -1,8 +1,125 @@
 /* ═════════════════════════════════════════════════════════════════════════════
-   YDS Words - Stylesheet
+   YDS Words - iOS Design System Stylesheet
    ═════════════════════════════════════════════════════════════════════════════ */
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ═════════════════════════════════════════════════════════════════════════════
+   CSS VARIABLES - iOS Design System
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* ═══ Typography ═══ */
+    --font-ios: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', 'Segoe UI', sans-serif;
+    --font-mono: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, monospace;
+    
+    /* iOS Dynamic Type Sizes */
+    --text-large-title: 34px;
+    --text-title-1: 28px;
+    --text-title-2: 22px;
+    --text-title-3: 20px;
+    --text-headline: 17px;
+    --text-body: 17px;
+    --text-callout: 16px;
+    --text-subhead: 15px;
+    --text-footnote: 13px;
+    --text-caption: 12px;
+    
+    /* ═══ iOS System Colors - Light Mode ═══ */
+    --ios-system-blue: #007AFF;
+    --ios-system-green: #34C759;
+    --ios-system-red: #FF3B30;
+    --ios-system-orange: #FF9500;
+    --ios-system-yellow: #FFCC00;
+    --ios-system-pink: #FF2D55;
+    --ios-system-purple: #AF52DE;
+    --ios-system-teal: #5AC8FA;
+    --ios-system-indigo: #5856D6;
+    --ios-system-gray: #8E8E93;
+    --ios-system-gray2: #AEAEB2;
+    --ios-system-gray3: #C7C7CC;
+    --ios-system-gray4: #D1D1D6;
+    --ios-system-gray5: #E5E5EA;
+    --ios-system-gray6: #F2F2F7;
+    
+    /* ═══ Semantic Colors - Light Mode ═══ */
+    --ios-label: #000000;
+    --ios-label-secondary: rgba(60, 60, 67, 0.60);
+    --ios-label-tertiary: rgba(60, 60, 67, 0.30);
+    --ios-label-quaternary: rgba(60, 60, 67, 0.18);
+    --ios-system-background: #FFFFFF;
+    --ios-secondary-background: #F2F2F7;
+    --ios-tertiary-background: #FFFFFF;
+    --ios-grouped-background: #F2F2F7;
+    --ios-secondary-grouped-background: #FFFFFF;
+    --ios-tertiary-grouped-background: #F2F2F7;
+    --ios-separator: #C6C6C8;
+    --ios-opaque-separator: #C6C6C8;
+    --ios-fill: rgba(120, 120, 128, 0.20);
+    --ios-secondary-fill: rgba(120, 120, 128, 0.16);
+    --ios-tertiary-fill: rgba(118, 118, 128, 0.12);
+    
+    /* ═══ Animation Curves ═══ */
+    --ios-spring: cubic-bezier(0.32, 0.72, 0, 1);
+    --ios-ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+    --ios-ease-in: cubic-bezier(0.5, 0, 0.75, 0.5);
+    --ios-default: cubic-bezier(0.4, 0.0, 0.2, 1);
+    
+    /* ═══ Spacing (8-point grid) ═══ */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+}
+
+/* ═══ Dark Mode Colors ═══ */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ios-label: #FFFFFF;
+        --ios-label-secondary: rgba(235, 235, 245, 0.60);
+        --ios-label-tertiary: rgba(235, 235, 245, 0.30);
+        --ios-label-quaternary: rgba(235, 235, 245, 0.16);
+        --ios-system-background: #000000;
+        --ios-secondary-background: #1C1C1E;
+        --ios-tertiary-background: #2C2C2E;
+        --ios-grouped-background: #000000;
+        --ios-secondary-grouped-background: #1C1C1E;
+        --ios-tertiary-grouped-background: #2C2C2E;
+        --ios-separator: rgba(84, 84, 88, 0.60);
+        --ios-opaque-separator: #38383A;
+        --ios-fill: rgba(120, 120, 128, 0.36);
+        --ios-secondary-fill: rgba(120, 120, 128, 0.32);
+        --ios-tertiary-fill: rgba(118, 118, 128, 0.24);
+    }
+}
+
+/* ═══ High Contrast Mode Support ═══ */
+@media (prefers-contrast: high) {
+    :root {
+        --ios-label-secondary: rgba(60, 60, 67, 0.8);
+        --ios-separator: #8E8E93;
+    }
+}
+
+/* ═══ Reduced Motion Support ═══ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
 
 html {
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
@@ -11,11 +128,11 @@ html {
 body {
     overflow-x: hidden;
     overflow-y: auto;
-    font-family: 'Crimson Pro', Georgia, serif;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #1e293b;
-    background: #fdfbf7;
+    font-family: var(--font-ios);
+    font-size: var(--text-body);
+    line-height: 1.5;
+    color: var(--ios-label);
+    background: var(--ios-grouped-background);
     min-height: 100vh;
     min-height: -webkit-fill-available;
     -webkit-text-size-adjust: 100%;
@@ -25,7 +142,7 @@ body {
 }
 
 /* ═════════════════════════════════════════════════════════════════════════════
-   ERROR BOUNDARY & NOTIFICATION SYSTEM
+   ERROR BOUNDARY
    ═════════════════════════════════════════════════════════════════════════════ */
 
 .global-error-boundary {
@@ -34,12 +151,12 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: #fdfbf7;
+    background: var(--ios-system-background);
     display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
+    padding: var(--space-lg);
     z-index: 10000;
     text-align: center;
 }
@@ -49,298 +166,401 @@ body {
 }
 
 .global-error-boundary h2 {
-    font-size: 1.5rem;
-    color: #dc2626;
-    margin-bottom: 1rem;
+    font-size: var(--text-title-2);
+    color: var(--ios-system-red);
+    margin-bottom: var(--space-sm);
+    font-weight: 600;
 }
 
 .global-error-boundary p {
-    color: #64748b;
-    margin-bottom: 1.5rem;
+    color: var(--ios-label-secondary);
+    margin-bottom: var(--space-lg);
     max-width: 400px;
+    font-size: var(--text-body);
 }
 
 .global-error-boundary button {
-    padding: 0.75rem 1.5rem;
-    background: #1e293b;
-    color: #fdfbf7;
+    padding: 12px 24px;
+    background: var(--ios-system-blue);
+    color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-family: inherit;
-    font-size: 1rem;
+    font-size: var(--text-headline);
+    font-weight: 600;
     cursor: pointer;
+    min-height: 50px;
+    transition: transform 0.2s var(--ios-spring), opacity 0.2s ease;
 }
+
+.global-error-boundary button:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   NOTIFICATION SYSTEM - iOS Style
+   ═════════════════════════════════════════════════════════════════════════════ */
 
 .notification-container {
     position: fixed;
-    top: env(safe-area-inset-top, 0);
+    top: calc(env(safe-area-inset-top) + var(--space-sm));
     left: 50%;
     transform: translateX(-50%);
     z-index: 9999;
-    width: 90%;
+    width: calc(100% - var(--space-md) * 2);
     max-width: 400px;
     pointer-events: none;
 }
 
 .notification {
-    margin-top: 0.5rem;
-    padding: 1rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    animation: slideDown 0.3s ease;
-    pointer-events: auto;
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: var(--text-subhead);
     display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: var(--space-sm);
+    pointer-events: auto;
+    animation: notificationEnter 0.4s var(--ios-spring);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes notificationEnter {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
-.notification.error {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #dc2626;
+.notification.exit {
+    animation: notificationExit 0.3s var(--ios-ease-in) forwards;
 }
 
-.notification.warning {
-    background: #fffbeb;
-    border: 1px solid #fde68a;
-    color: #d97706;
-}
-
-.notification.info {
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    color: #2563eb;
-}
-
-.notification.success {
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    color: #16a34a;
+@keyframes notificationExit {
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
 }
 
 .notification-icon {
     flex-shrink: 0;
     width: 20px;
     height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification.success .notification-icon {
+    color: var(--ios-system-green);
+}
+
+.notification.error .notification-icon {
+    color: var(--ios-system-red);
+}
+
+.notification.warning .notification-icon {
+    color: var(--ios-system-orange);
+}
+
+.notification.info .notification-icon {
+    color: var(--ios-system-blue);
 }
 
 .notification-close {
     margin-left: auto;
     background: none;
     border: none;
-    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 20px;
     cursor: pointer;
-    opacity: 0.5;
     padding: 0;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: color 0.2s ease;
 }
 
-.notification-close:hover {
-    opacity: 1;
+.notification-close:hover,
+.notification-close:active {
+    color: white;
 }
 
 /* ═════════════════════════════════════════════════════════════════════════════
-   SIMPLE WELCOME PAGE
+   WELCOME PAGE - iOS Style
    ═════════════════════════════════════════════════════════════════════════════ */
 
 .welcome-container {
-    max-width: 600px;
+    max-width: 430px;
     margin: 0 auto;
-    padding: 2rem 1.5rem;
+    padding: var(--space-lg);
     min-height: 100vh;
     min-height: -webkit-fill-available;
     display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background: var(--ios-system-background);
     text-align: center;
 }
 
 .welcome-container.active {
     display: flex;
+    animation: welcomeFadeIn 0.6s var(--ios-spring);
 }
 
-/* No icon on welcome page */
+@keyframes welcomeFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
 
 .welcome-title {
-    font-size: 2rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #1e293b;
+    font-size: var(--text-large-title);
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+    color: var(--ios-label);
+    letter-spacing: -0.4px;
 }
 
 .welcome-tagline {
-    font-size: 1.1rem;
-    color: #64748b;
-    margin-bottom: 2.5rem;
+    font-size: var(--text-title-3);
+    color: var(--ios-label-secondary);
+    margin-bottom: var(--space-lg);
+    font-weight: 400;
 }
 
+/* ═══ Button Styles - iOS ═══ */
 .btn-start {
     width: 100%;
-    max-width: 280px;
-    min-height: 52px;
-    padding: 1rem 2rem;
-    background: #1e293b;
-    color: #fdfbf7;
+    max-width: 300px;
+    min-height: 50px;
+    padding: 12px 24px;
+    background: var(--ios-system-blue);
+    color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     font-family: inherit;
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: var(--text-headline);
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
-    margin-bottom: 1rem;
+    transition: all 0.2s var(--ios-spring);
     position: relative;
+    overflow: hidden;
 }
 
 .btn-start:hover:not(:disabled) {
-    background: #334155;
-    transform: translateY(-2px);
+    background: #0066CC;
+    transform: scale(1.02);
 }
 
 .btn-start:active:not(:disabled) {
-    transform: translateY(0);
-    background: #475569;
+    transform: scale(0.96);
+    opacity: 0.9;
 }
 
 .btn-start:disabled {
-    opacity: 0.6;
+    opacity: 0.4;
     cursor: not-allowed;
+}
+
+.btn-start.loading {
+    color: transparent;
 }
 
 .btn-start.loading::after {
     content: '';
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border: 2px solid transparent;
-    border-top-color: #fdfbf7;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
-    margin-left: 8px;
+    left: 50%;
+    top: 50%;
+    margin-left: -9px;
+    margin-top: -9px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 /* ═════════════════════════════════════════════════════════════════════════════
-   APP STYLES
+   APP STYLES - iOS
    ═════════════════════════════════════════════════════════════════════════════ */
 
 .app {
-    max-width: 600px;
+    max-width: 430px;
     margin: 0 auto;
-    padding: 0.75rem;
-    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    padding: var(--space-sm) var(--space-md);
+    padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
     display: none;
+    background: var(--ios-grouped-background);
+    min-height: 100vh;
 }
 
 .app.active {
     display: block;
+    animation: viewEnter 0.4s var(--ios-spring);
 }
 
-/* Header */
+@keyframes viewEnter {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ═══ Header - iOS Style ═══ */
 .header {
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-md);
+    padding-top: var(--space-sm);
 }
 
 .header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 0.75rem;
+    padding-bottom: var(--space-sm);
+    border-bottom: 0.5px solid var(--ios-separator);
 }
 
 .header h1 {
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: var(--text-large-title);
+    font-weight: 700;
+    color: var(--ios-label);
+    letter-spacing: -0.4px;
 }
 
 .score {
-    font-family: monospace;
-    font-size: 0.8rem;
-    color: #64748b;
-    background: #f1f5f9;
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: var(--text-subhead);
+    font-weight: 600;
+    color: var(--ios-label-secondary);
+    background: var(--ios-secondary-fill);
+    padding: 6px 12px;
+    border-radius: 100px;
 }
 
-/* Loading */
+/* ═══ Back Button - iOS Style ═══ */
+.btn-back {
+    background: none;
+    border: none;
+    color: var(--ios-system-blue);
+    font-family: inherit;
+    font-size: var(--text-body);
+    cursor: pointer;
+    padding: var(--space-sm) 0;
+    margin-bottom: var(--space-xs);
+    margin-left: -8px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    transition: opacity 0.2s ease;
+}
+
+.btn-back:active {
+    opacity: 0.6;
+}
+
+.btn-back svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+}
+
+/* ═══ Loading State - iOS Style ═══ */
 .loading {
     text-align: center;
-    padding: 2rem 0;
+    padding: var(--space-xl) 0;
 }
 
 .loading.hidden { display: none; }
 
 .spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid #e2e8f0;
-    border-top-color: #1e293b;
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--ios-tertiary-fill);
+    border-top-color: var(--ios-system-blue);
     border-radius: 50%;
-    margin: 0 auto 0.75rem;
-    animation: spin 0.8s linear infinite;
+    margin: 0 auto var(--space-md);
+    animation: spin 1s linear infinite;
 }
-
-@keyframes spin { to { transform: rotate(360deg); } }
 
 .loading p {
-    color: #64748b;
-    font-size: 0.85rem;
+    color: var(--ios-label-secondary);
+    font-size: var(--text-subhead);
 }
 
-/* Error State */
+/* ═══ Error State - iOS Style ═══ */
 .error-state {
     text-align: center;
-    padding: 2rem 1rem;
-    background: white;
-    border: 1px solid #fecaca;
-    border-radius: 10px;
-    margin: 1rem 0;
+    padding: var(--space-xl) var(--space-md);
+    background: var(--ios-secondary-grouped-background);
+    border-radius: 12px;
+    margin: var(--space-md) 0;
 }
 
 .error-state.hidden { display: none; }
 
 .error-state h3 {
-    color: #dc2626;
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
+    color: var(--ios-system-red);
+    margin-bottom: var(--space-sm);
+    font-size: var(--text-title-3);
+    font-weight: 600;
 }
 
 .error-state p {
-    color: #64748b;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+    color: var(--ios-label-secondary);
+    font-size: var(--text-subhead);
+    margin-bottom: var(--space-lg);
 }
 
 .error-state button {
-    padding: 0.6rem 1.2rem;
-    background: #1e293b;
-    color: #fdfbf7;
+    padding: 12px 24px;
+    background: var(--ios-system-blue);
+    color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-family: inherit;
-    font-size: 0.9rem;
+    font-size: var(--text-headline);
+    font-weight: 600;
     cursor: pointer;
+    min-height: 50px;
+    transition: transform 0.2s var(--ios-spring), opacity 0.2s ease;
 }
 
-.error-state button:hover {
-    background: #334155;
+.error-state button:active {
+    transform: scale(0.96);
+    opacity: 0.9;
 }
 
-/* Question Area */
+/* ═══ Question Area - iOS Style ═══ */
 .question-area {
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.3s var(--ios-default);
 }
 
 .question-area.hidden { display: none; }
@@ -350,433 +570,536 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Sentence Card */
 .sentence {
-    font-size: 1.05rem;
-    line-height: 1.7;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    font-size: var(--text-body);
+    line-height: 1.5;
+    margin-bottom: var(--space-md);
+    padding: var(--space-md);
+    background: var(--ios-secondary-grouped-background);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
     overflow-wrap: break-word;
     word-wrap: break-word;
     hyphens: auto;
+    color: var(--ios-label);
+}
+
+@media (prefers-color-scheme: dark) {
+    .sentence {
+        box-shadow: none;
+        border: 0.5px solid var(--ios-separator);
+    }
 }
 
 .blank {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    padding: 2px 12px;
+    display: inline-block;
+    min-width: 60px;
+    height: 24px;
+    background: var(--ios-fill);
     border-radius: 4px;
-    border-bottom: 2px solid #f59e0b;
-    font-weight: 500;
+    margin: 0 4px;
+    vertical-align: middle;
 }
 
-/* Options */
+/* ═══ Options - iOS Grouped Table Style ═══ */
 .options {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    gap: 0;
+    background: var(--ios-secondary-grouped-background);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: var(--space-md);
 }
 
 .option {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
-    min-height: 48px;
-    padding: 0.7rem 0.85rem;
-    background: white;
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
-    cursor: pointer;
+    padding: 14px 16px;
+    min-height: 50px;
+    background: transparent;
+    border: none;
+    border-bottom: 0.5px solid var(--ios-separator);
     font-family: inherit;
-    font-size: 0.95rem;
-    color: #1e293b;
+    font-size: var(--text-body);
+    color: var(--ios-label);
     text-align: left;
-    transition: all 0.15s ease;
-    touch-action: manipulation;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    position: relative;
+    width: 100%;
 }
 
-.option:hover:not(:disabled) {
-    border-color: #94a3b8;
+.option:last-child {
+    border-bottom: none;
+}
+
+/* Staggered entry animation for options */
+.option {
+    animation: optionEnter 0.4s var(--ios-spring) backwards;
+}
+
+@keyframes optionEnter {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .option:active:not(:disabled) {
-    background: #f8fafc;
-    transform: scale(0.98);
+    background: var(--ios-fill);
 }
 
 .option:disabled { cursor: default; }
 
 .option .key {
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    background: #f1f5f9;
+    background: var(--ios-tertiary-fill);
     border-radius: 6px;
-    font-family: monospace;
-    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 13px;
     font-weight: 600;
-    color: #64748b;
+    color: var(--ios-label-secondary);
+    margin-right: 12px;
     flex-shrink: 0;
+    transition: all 0.2s ease;
 }
 
+/* Selected State */
+.option.selected {
+    background: rgba(0, 122, 255, 0.1);
+}
+
+.option.selected .key {
+    background: var(--ios-system-blue);
+    color: white;
+}
+
+/* Correct Answer State */
 .option.correct {
-    border-color: #10b981;
-    background: #d1fae5;
+    background: rgba(52, 199, 89, 0.1);
 }
 
 .option.correct .key {
-    background: #10b981;
+    background: var(--ios-system-green);
     color: white;
 }
 
+/* Incorrect Answer State */
 .option.incorrect {
-    border-color: #ef4444;
-    background: #fee2e2;
+    background: rgba(255, 59, 48, 0.1);
 }
 
 .option.incorrect .key {
-    background: #ef4444;
+    background: var(--ios-system-red);
     color: white;
 }
 
+/* Revealed State (correct answer when wrong selected) */
 .option.revealed {
-    border-color: #10b981;
-    background: #d1fae5;
+    background: rgba(52, 199, 89, 0.1);
 }
 
-/* Feedback */
+.option.revealed .key {
+    background: var(--ios-system-green);
+    color: white;
+}
+
+/* Checkmark indicators */
+.option.correct::after,
+.option.incorrect::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    width: 22px;
+    height: 22px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.option.correct::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2334C759'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+}
+
+.option.incorrect::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FF3B30'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3C/svg%3E");
+}
+
+/* ═══ Feedback - iOS Style ═══ */
 .feedback {
-    padding: 0.85rem;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    margin-bottom: 0.85rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    padding: var(--space-md);
+    background: var(--ios-secondary-grouped-background);
+    border-radius: 12px;
+    margin-bottom: var(--space-md);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    animation: slideUp 0.3s var(--ios-spring);
+}
+
+@media (prefers-color-scheme: dark) {
+    .feedback {
+        box-shadow: none;
+        border: 0.5px solid var(--ios-separator);
+    }
 }
 
 .feedback.hidden { display: none; }
 
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .feedback p {
-    font-size: 0.85rem;
-    color: #64748b;
+    font-size: var(--text-subhead);
+    color: var(--ios-label-secondary);
     line-height: 1.55;
 }
 
 .explanation-list {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid #e2e8f0;
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 0.5px solid var(--ios-separator);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .explanation-item {
     display: flex;
     align-items: flex-start;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.8rem;
-    line-height: 1.5;
-}
-
-.explanation-item:last-child {
-    margin-bottom: 0;
+    gap: 10px;
+    font-size: var(--text-subhead);
+    line-height: 1.4;
 }
 
 .explanation-item .opt-label {
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 0.7rem;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 12px;
     font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 1px;
 }
 
 .explanation-item.correct .opt-label {
-    background: #10b981;
+    background: var(--ios-system-green);
     color: white;
 }
 
 .explanation-item.wrong .opt-label {
-    background: #ef4444;
-    color: white;
+    background: var(--ios-system-gray4);
+    color: var(--ios-label-secondary);
 }
 
 .explanation-item .opt-text {
-    color: #475569;
+    color: var(--ios-label-secondary);
+    flex: 1;
 }
 
-/* Button */
+.explanation-item .opt-text strong {
+    color: var(--ios-label);
+    font-weight: 600;
+}
+
+/* ═══ Next Button - iOS Style ═══ */
 .btn-next {
     width: 100%;
-    min-height: 48px;
-    padding: 0.8rem;
-    background: #1e293b;
-    color: #fdfbf7;
+    min-height: 50px;
+    padding: 12px 20px;
+    background: var(--ios-system-blue);
+    color: white;
     border: none;
     border-radius: 10px;
     font-family: inherit;
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: var(--text-headline);
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s var(--ios-spring);
     touch-action: manipulation;
     position: relative;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .btn-next:hover:not(:disabled) {
-    background: #334155;
+    background: #0066CC;
+    transform: scale(1.02);
 }
 
 .btn-next:active:not(:disabled) {
-    background: #475569;
-    transform: scale(0.98);
+    transform: scale(0.96);
+    opacity: 0.9;
 }
 
 .btn-next:disabled {
-    opacity: 0.6;
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
 .btn-next.hidden { display: none; }
 
+.btn-next.loading {
+    color: transparent;
+}
+
 .btn-next.loading::after {
     content: '';
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border: 2px solid transparent;
-    border-top-color: #fdfbf7;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
-    margin-left: 8px;
+    left: 50%;
+    top: 50%;
+    margin-left: -9px;
+    margin-top: -9px;
 }
 
-/* Back button */
-.btn-back {
-    background: none;
-    border: none;
-    color: #64748b;
-    font-family: inherit;
-    font-size: 0.8rem;
-    cursor: pointer;
-    padding: 0.25rem 0;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.btn-back:hover {
-    color: #1e293b;
-}
-
-.btn-back svg {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
-}
-
-/* Offline Indicator */
+/* ═══ Offline Indicator - iOS Style ═══ */
 .offline-indicator {
     display: none;
-    background: #fef3c7;
-    color: #92400e;
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
+    background: var(--ios-system-orange);
+    color: white;
+    padding: 10px var(--space-md);
+    font-size: var(--text-subhead);
+    font-weight: 500;
     text-align: center;
-    border-bottom: 1px solid #fde68a;
 }
 
 .offline-indicator.active {
     display: block;
+    animation: slideDown 0.3s var(--ios-spring);
 }
 
-/* Mobile - General */
+/* ═════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN - iPhone Optimizations
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+/* iPhone 14 Pro / 13 / Standard (390px width) */
 @media (max-width: 390px) {
     .welcome-container {
-        padding: 1.5rem 1rem;
+        padding: var(--space-md);
     }
 
     .welcome-title {
-        font-size: 1.6rem;
+        font-size: var(--text-title-1);
     }
 
     .welcome-tagline {
-        font-size: 1rem;
-        margin-bottom: 2rem;
+        font-size: var(--text-body);
+        margin-bottom: var(--space-lg);
     }
 
     .app {
-        padding: 0.5rem;
+        padding: var(--space-sm);
     }
 
     .sentence {
-        font-size: 0.95rem;
-        padding: 0.75rem;
+        font-size: var(--text-callout);
+        padding: var(--space-sm);
     }
 
     .option {
-        font-size: 0.9rem;
-        min-height: 44px;
+        font-size: var(--text-callout);
+        min-height: 48px;
+        padding: 12px 14px;
     }
 
     .notification-container {
-        width: 95%;
+        width: calc(100% - var(--space-sm) * 2);
     }
 }
 
-/* iPhone 13 Mini Specific Optimizations (375px width) */
+/* iPhone 13 Mini / SE (375px width) */
 @media (max-width: 375px) {
     .welcome-container {
-        padding: 1rem 0.875rem;
+        padding: var(--space-sm) var(--space-md);
         justify-content: flex-start;
-        padding-top: calc(1rem + env(safe-area-inset-top));
+        padding-top: calc(var(--space-xl) + env(safe-area-inset-top));
     }
 
     .welcome-title {
-        font-size: 1.5rem;
-        margin-bottom: 0.375rem;
+        font-size: var(--text-title-1);
+        margin-bottom: var(--space-xs);
     }
 
     .welcome-tagline {
-        font-size: 0.95rem;
-        margin-bottom: 1.75rem;
+        font-size: var(--text-callout);
+        margin-bottom: var(--space-lg);
     }
 
     .btn-start {
         min-height: 48px;
-        padding: 0.875rem 1.5rem;
-        font-size: 0.95rem;
+        padding: 12px 20px;
+        font-size: var(--text-callout);
         max-width: 260px;
     }
 
     .app {
-        padding: 0.5rem 0.75rem;
-        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+        padding: var(--space-sm);
+        padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
     }
 
     .header {
-        margin-bottom: 0.75rem;
+        margin-bottom: var(--space-sm);
     }
 
     .header-top {
-        padding-bottom: 0.375rem;
-        margin-bottom: 0.5rem;
+        padding-bottom: var(--space-xs);
     }
 
     .header h1 {
-        font-size: 0.95rem;
+        font-size: var(--text-title-2);
     }
 
     .score {
-        font-size: 0.75rem;
-        padding: 0.2rem 0.45rem;
+        font-size: var(--text-footnote);
+        padding: 4px 10px;
     }
 
     .sentence {
-        font-size: 0.9rem;
-        line-height: 1.65;
-        padding: 0.75rem;
-        margin-bottom: 0.875rem;
+        font-size: var(--text-subhead);
+        line-height: 1.5;
+        padding: var(--space-sm);
+        margin-bottom: var(--space-sm);
     }
 
     .options {
-        gap: 0.4rem;
-        margin-bottom: 0.875rem;
+        margin-bottom: var(--space-sm);
     }
 
     .option {
-        font-size: 0.88rem;
-        min-height: 44px;
-        padding: 0.6rem 0.75rem;
-        gap: 0.5rem;
+        font-size: var(--text-subhead);
+        min-height: 48px;
+        padding: 12px 14px;
+        gap: 10px;
     }
 
     .option .key {
-        width: 22px;
-        height: 22px;
-        font-size: 0.65rem;
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
     }
 
     .feedback {
-        padding: 0.75rem;
-        margin-bottom: 0.75rem;
+        padding: var(--space-sm);
+        margin-bottom: var(--space-sm);
     }
 
     .feedback p {
-        font-size: 0.8rem;
+        font-size: var(--text-footnote);
     }
 
     .explanation-item {
-        font-size: 0.75rem;
-        margin-bottom: 0.4rem;
+        font-size: var(--text-footnote);
+        gap: 8px;
     }
 
     .explanation-item .opt-label {
-        width: 18px;
-        height: 18px;
-        font-size: 0.65rem;
+        width: 20px;
+        height: 20px;
+        font-size: 11px;
     }
 
     .btn-next {
-        min-height: 44px;
-        padding: 0.7rem;
-        font-size: 0.9rem;
+        min-height: 48px;
+        padding: 12px;
+        font-size: var(--text-callout);
     }
 
     .btn-back {
-        font-size: 0.75rem;
-        margin-bottom: 0.375rem;
+        font-size: var(--text-subhead);
+        margin-bottom: var(--space-xs);
     }
 
     .loading {
-        padding: 1.5rem 0;
+        padding: var(--space-lg) 0;
     }
 
     .spinner {
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
         border-width: 2px;
     }
 
     .loading p {
-        font-size: 0.8rem;
+        font-size: var(--text-footnote);
     }
 
     .notification-container {
-        width: 92%;
+        width: calc(100% - var(--space-sm) * 2);
         top: calc(env(safe-area-inset-top) + 4px);
     }
 
     .notification {
-        padding: 0.75rem;
-        font-size: 0.85rem;
+        padding: 10px 14px;
+        font-size: var(--text-footnote);
     }
 }
 
-/* iPhone 13 Mini landscape safety - though app is portrait only */
+/* Landscape safety - though app is portrait only */
 @media (max-width: 812px) and (max-height: 375px) {
     .welcome-container {
-        padding: 0.75rem;
+        padding: var(--space-sm);
     }
 
     .welcome-title {
-        font-size: 1.25rem;
+        font-size: var(--text-title-2);
     }
 
     .welcome-tagline {
-        font-size: 0.85rem;
-        margin-bottom: 1rem;
+        font-size: var(--text-subhead);
+        margin-bottom: var(--space-sm);
     }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY IMPROVEMENTS
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+/* Focus States for Keyboard Navigation */
+.btn-start:focus-visible,
+.btn-next:focus-visible,
+.option:focus-visible,
+.btn-back:focus-visible,
+.error-state button:focus-visible {
+    outline: 2px solid var(--ios-system-blue);
+    outline-offset: 2px;
+}
+
+/* Minimum touch target size */
+button, .option {
+    min-height: 44px;
+}
+
+/* GPU Acceleration for smooth animations */
+.option, .btn-start, .btn-next, .feedback {
+    will-change: transform;
+    transform: translateZ(0);
 }

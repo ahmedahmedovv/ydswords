@@ -38,14 +38,15 @@ class ViewController: UIViewController {
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.navigationDelegate = self
         webView.uiDelegate = self
-        webView.backgroundColor = UIColor(red: 0.992, green: 0.984, blue: 0.969, alpha: 1.0) // #fdfbf7
+        // Use system background color for automatic dark mode support
+        webView.backgroundColor = .systemBackground
         webView.isOpaque = false
         
-        // Handle safe area for iPhone 13 mini notch
+        // Handle safe area for iPhone notch
         webView.scrollView.contentInsetAdjustmentBehavior = .always
         
-        // Disable web view's default background to prevent flash
-        webView.scrollView.backgroundColor = UIColor(red: 0.992, green: 0.984, blue: 0.969, alpha: 1.0)
+        // Use system background for scroll view to prevent flash
+        webView.scrollView.backgroundColor = .systemBackground
         
         view.addSubview(webView)
     }
@@ -53,7 +54,7 @@ class ViewController: UIViewController {
     private func setupActivityIndicator() {
         activityIndicator = UIActivityIndicatorView(style: .large)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicator.color = UIColor(red: 0.118, green: 0.161, blue: 0.231, alpha: 1.0)
+        activityIndicator.color = .label
         activityIndicator.hidesWhenStopped = true
         view.addSubview(activityIndicator)
     }

@@ -34,28 +34,30 @@ function showNotification(type, message, duration = 5000) {
     const container = document.getElementById('notificationContainer');
     if (!container) return;
     
+    // iOS SF Symbols-style simple icons
     const icons = {
-        error: '❌',
-        warning: '⚠️',
-        info: 'ℹ️',
-        success: '✅'
+        error: '✕',
+        warning: '!',
+        info: 'ℹ',
+        success: '✓'
     };
     
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.innerHTML = `
-        <span class="notification-icon">${icons[type] || 'ℹ️'}</span>
+        <span class="notification-icon">${icons[type] || 'ℹ'}</span>
         <span>${sanitizeHtml(message)}</span>
         <button class="notification-close" onclick="this.parentElement.remove()">×</button>
     `;
     
     container.appendChild(notification);
     
-    // Auto-remove after duration
+    // Auto-remove after duration with exit animation
     if (duration > 0) {
         setTimeout(() => {
             if (notification.parentElement) {
-                notification.remove();
+                notification.classList.add('exit');
+                setTimeout(() => notification.remove(), 300);
             }
         }, duration);
     }
@@ -270,11 +272,11 @@ function displayQuestion() {
             throw new Error('Shuffle algorithm error');
         }
         
-        // Render options with sanitization (lowercase)
+        // Render options with sanitization (lowercase) - iOS style with staggered animation
         const keys = ['A', 'B', 'C', 'D', 'E'];
         if (DOM.options) {
             DOM.options.innerHTML = question.options.map((opt, i) => `
-                <button class="option" data-index="${i}" type="button">
+                <button class="option" data-index="${i}" type="button" style="animation-delay: ${i * 0.05}s">
                     <span class="key">${keys[i]}</span>
                     <span>${sanitizeHtml(opt).toLowerCase()}</span>
                 </button>

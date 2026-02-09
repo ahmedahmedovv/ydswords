@@ -23,12 +23,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func configureAppearance() {
+        // Use iOS system colors that automatically adapt to dark mode
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(red: 0.992, green: 0.984, blue: 0.969, alpha: 1.0) // #fdfbf7
-        appearance.titleTextAttributes = [.foregroundColor: UIColor(red: 0.118, green: 0.161, blue: 0.231, alpha: 1.0)]
+        appearance.backgroundColor = .systemBackground
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        
+        // Configure the window to use system background
+        window?.backgroundColor = .systemBackground
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

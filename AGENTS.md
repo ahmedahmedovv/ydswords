@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-YDS Words is an iOS application designed for Turkish students preparing for the YDS (Yabancı Dil Sınavı - Foreign Language Exam). It's a vocabulary learning app that generates dynamic multiple-choice quiz questions using OpenAI's GPT-4o-mini model.
+YDS Words is an iOS application designed for Turkish students preparing for the YDS (Yabancı Dil Sınavı - Foreign Language Exam). It's a vocabulary learning app that generates dynamic multiple-choice quiz questions and provides flashcard study modes using OpenAI's GPT-4o-mini model.
 
 The app follows a hybrid architecture:
 - **Native iOS Layer**: Thin Swift wrapper using UIKit + WebKit (WKWebView)
@@ -22,8 +22,9 @@ The app follows a hybrid architecture:
 ### Web Application Layer
 - **Frontend**: HTML5, CSS3, vanilla JavaScript (no frameworks)
 - **Design System**: iOS Native Design System with SF Pro typography
-- **Responsive Design**: Optimized for iPhone 13 Mini (375px width) with safe area support
+- **Responsive Design**: Fluid typography using CSS `clamp()` for all iPhone sizes
 - **Dark Mode**: Full support via CSS `prefers-color-scheme` media queries
+- **Accessibility**: High contrast mode, reduced motion support, safe area insets
 
 ### Backend / AI Integration
 - **Platform**: Netlify Functions (serverless)
@@ -44,14 +45,15 @@ YDSWords/
 │   ├── Info.plist                   # App metadata, ATS settings, orientation
 │   ├── index.html                   # Main HTML file (SPA entry point)
 │   ├── assets/
-│   │   ├── css/styles.css           # iOS Design System styles (~2000 lines)
+│   │   ├── css/styles.css           # iOS Design System styles (~1760 lines)
 │   │   └── js/                      # JavaScript modules
-│   │       ├── words.js             # ~1000 English vocabulary words/phrases
+│   │       ├── words.js             # ~1000 English vocabulary words/phrases (1273 lines)
 │   │       ├── config.js            # App configuration & prompt templates
 │   │       ├── state.js             # Application state management
 │   │       ├── api.js               # API functions (Netlify proxy calls)
 │   │       ├── utils.js             # Utility functions (XSS, validation, circuit breaker)
 │   │       ├── ui.js                # UI manipulation functions
+│   │       ├── flashcards.js        # Tinder-style flashcard study mode
 │   │       └── app.js               # Main application logic & event handlers
 │   └── Assets.xcassets/             # App icons (all iOS sizes)
 │       └── AppIcon.appiconset/
@@ -64,7 +66,8 @@ YDSWords/
 ├── netlify.toml                     # Netlify configuration (functions, redirects, headers)
 ├── .env.example                     # Example environment variables template
 ├── .gitignore                       # Git ignore rules
-└── DEPLOYMENT.md                    # Deployment guide for Netlify
+├── DEPLOYMENT.md                    # Deployment guide for Netlify
+└── AGENTS.md                        # This file
 ```
 
 ## Key Components
@@ -75,7 +78,7 @@ YDSWords/
 - Handles app lifecycle events
 
 ### 2. SceneDelegate.swift
-- Creates window programmatically (no storyboard: `UILaunchStoryboardName = ""
+- Creates window programmatically (no storyboard: `UILaunchStoryboardName = ""`)
 - Sets up navigation controller with hidden navigation bar
 - Configures iOS system appearance with automatic dark mode support:
   - Uses `.systemBackground` and `.label` colors
@@ -92,10 +95,10 @@ YDSWords/
 
 ### 4. JavaScript Application Architecture
 
-#### words.js
+#### words.js (1273 lines)
 - `MYWORDS` array: ~1000 English vocabulary words and phrases for YDS exam
 - Includes single words (e.g., "Abnormal", "Accelerate") and phrases (e.g., "Abide by", "Account for")
-- Total of 1273 lines
+- Fisher-Yates shuffle algorithm used for randomization
 
 #### config.js
 - `CONFIG` object with OpenAI parameters (model, temperature, maxTokens)
@@ -103,6 +106,7 @@ YDSWords/
 - Circuit breaker settings
 - `getPrompt(word)`: Generates detailed prompts for fill-in-the-blank questions with context-aware examples
 - Supports multi-word expressions with special handling
+- Context diversity: nature/environment, business/economic, social/emotional, technical, abstract/conceptual
 
 #### state.js
 - `AppState` singleton managing:
@@ -111,12 +115,17 @@ YDSWords/
   - Request management (AbortController, loading states)
   - Circuit breaker state
   - Rate limiting timestamps
+- `FlashcardState` singleton (in flashcards.js) managing:
+  - Current card index, shuffled words
+  - Known/unknown word tracking
+  - Prefetch state for smooth UX
 
 #### api.js
 - `API_CONFIG.endpoint`: Points to Netlify function URL
 - `fetchWithTimeout()`: AbortController-based timeout handling
 - `generateQuestion()`: Main API call with retry logic and circuit breaker
 - `prefetchQuestion()`: Background question prefetching for instant display
+- `generateFlashcardContent()`: Fetches word definition and example for flashcards
 - Production endpoint: `https://ydswordsios.netlify.app/.netlify/functions/generate-question`
 
 #### utils.js
@@ -125,6 +134,7 @@ YDSWords/
 - `debounce()`: Input rate limiting
 - `checkRateLimit()`: Button click throttling
 - `isCircuitOpen()`, `recordSuccess()`, `recordFailure()`: Circuit breaker implementation
+- `$()`: DOM element helper
 
 #### ui.js
 - `DOM` getter object for lazy element access
@@ -132,14 +142,24 @@ YDSWords/
 - `showApp()`, `showWelcome()`: View transitions
 - `loadQuestion()`, `displayQuestion()`: Question flow management
 - `selectAnswer()`: Answer handling with visual feedback
+- `updateQuizProgress()`: Progress bar and score display
 - Offline detection with indicator
 - Fisher-Yates shuffle for answer options
+
+#### flashcards.js (740 lines)
+- Tinder-style swipeable flashcard interface
+- Touch and mouse gesture support for swiping
+- Keyboard navigation (Arrow keys, K/Y for know, N for don't know)
+- Word highlighting in example sentences
+- Session results with stats (known, study again, mastery %)
+- Prefetching for smooth card transitions
+- "Study Again" mode prioritizes unknown words
 
 #### app.js
 - Global error handlers (`error`, `unhandledrejection` events)
 - DOMContentLoaded initialization with validation
 - Event listeners for all buttons (debounced)
-- Keyboard shortcuts (A-E, 1-5, Enter, Escape)
+- Keyboard shortcuts (A-E, 1-5, Enter, Escape for quiz mode)
 - Page visibility change handling
 - `APP_VERSION = '1.0.0'`
 
@@ -152,16 +172,17 @@ Serverless function that acts as a secure proxy:
 - CORS headers configured for cross-origin requests
 - Model: `gpt-4o-mini` with temperature 0.8 and max_tokens 1024
 
-### 6. CSS (styles.css)
+### 6. CSS (styles.css, 1760 lines)
 iOS Design System implementation:
 - CSS custom properties for iOS system colors
 - Dark mode support via `prefers-color-scheme: dark`
-- High contrast mode support
-- Reduced motion support
+- High contrast mode support (`prefers-contrast: high`)
+- Reduced motion support (`prefers-reduced-motion`)
 - Safe area inset support (`env(safe-area-inset-*)`)
-- Responsive breakpoints for iPhone 13 Mini (375px) and standard iPhone (390px)
+- Fluid typography using `clamp()` for all iPhone sizes
 - iOS-style components: buttons, cards, lists, toggles, inputs, segmented controls
 - Spring animations and transitions matching iOS feel
+- Flashcard swipe animations and visual states
 
 ## Build Configuration
 
@@ -260,12 +281,14 @@ netlify dev
 
 ### Modifying Web Content
 - **index.html**: SPA structure, script loading order
-- **assets/css/styles.css**: Styling, responsive breakpoints (iPhone 13 Mini optimized)
+- **assets/css/styles.css**: Styling, responsive breakpoints
   - Uses CSS custom properties for iOS system colors
   - Supports dark mode via `prefers-color-scheme`
+  - Fluid typography using `clamp()`
 - **assets/js/words.js**: Update `MYWORDS` array to modify vocabulary
 - **assets/js/config.js**: Modify prompt templates, timeout values
 - **assets/js/api.js**: Update `API_CONFIG.endpoint` when deploying new Netlify URL
+- **assets/js/flashcards.js**: Modify flashcard behavior, gestures, animations
 
 ### Adding Native-JavaScript Bridge
 To expose native functions to JavaScript:
@@ -281,12 +304,18 @@ configuration.userContentController.add(self, name: "nativeHandler")
 ### Manual Testing Checklist
 - [ ] App launches without crash
 - [ ] Welcome screen displays correctly in both light and dark mode
-- [ ] "Start Practice" button transitions to quiz
+- [ ] Mode selection cards display (Quiz Mode and Flashcards)
+- [ ] "Quiz Mode" transitions to quiz interface
+- [ ] "Flashcards" transitions to flashcard interface
 - [ ] Questions load from AI service (requires internet)
 - [ ] Answer selection updates score correctly
 - [ ] Explanations display after answering
 - [ ] "Next" button loads new question
-- [ ] Keyboard shortcuts work (1-5, A-E, Enter, Escape)
+- [ ] Flashcard swipe gestures work (left = don't know, right = know)
+- [ ] Flashcard buttons work (X and ✓)
+- [ ] Flashcard session results display correctly
+- [ ] "Study Again" button in results works
+- [ ] Keyboard shortcuts work (Quiz: A-E, 1-5, Enter, Escape; Flashcards: ←, →, K, N, Escape)
 - [ ] Back button returns to welcome screen
 - [ ] Score resets when returning to welcome
 - [ ] Error states display correctly (offline, API failure)
@@ -307,6 +336,12 @@ configuration.userContentController.add(self, name: "nativeHandler")
 2. Try loading 5+ questions (all will fail)
 3. Circuit should open, showing "Too many failures" message
 4. Wait 60 seconds, circuit should reset
+
+### Testing Flashcard Prefetch
+1. Open app with network connection
+2. Check console logs for "[Prefetch] Flashcard mode ready"
+3. Tap Flashcards mode - first card should load instantly
+4. Swipe through cards - transitions should be smooth due to prefetching
 
 ## Security Considerations
 
@@ -365,6 +400,11 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - Verify `OPENAI_API_KEY` is set in Netlify
 - Check Netlify Function logs
 
+### Flashcards Not Loading
+- Verify network connection
+- Check console for prefetch errors
+- Verify API endpoint is correct
+
 ### Layout Issues on Notch Devices
 - Verify `env(safe-area-inset-*)` CSS properties applied
 - Check WebView uses `safeAreaLayoutGuide` constraints
@@ -403,7 +443,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
 ### CSS
 - Mobile-first approach
-- iPhone 13 Mini specific breakpoint at 375px
+- Fluid typography using `clamp()` for responsive scaling
 - Safe area inset support: `env(safe-area-inset-*)`
 - CSS variables for consistent colors (iOS Design System)
 - Dark mode via `prefers-color-scheme` media queries
@@ -419,7 +459,7 @@ The web layer uses:
 
 ## Version History
 
-- **v1.0.0**: Initial release with AI-powered quiz generation, circuit breaker, offline detection, iOS Design System, dark mode support
+- **v1.0.0**: Initial release with AI-powered quiz generation, circuit breaker, offline detection, iOS Design System, dark mode support, and flashcard study mode
 
 ## License and Attribution
 

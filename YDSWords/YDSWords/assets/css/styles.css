@@ -824,10 +824,6 @@ body {
         padding: 14px 20px;
     }
     
-    .app {
-        padding: 8px 12px;
-    }
-    
     .header h1 {
         font-size: 22px;
     }
@@ -984,10 +980,6 @@ body {
     
     .welcome-minimal-title {
         font-size: 44px;
-    }
-    
-    .app {
-        padding: 20px 28px;
     }
     
     .sentence {

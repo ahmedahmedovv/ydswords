@@ -84,7 +84,54 @@ if (DOM.btnRetry) {
     }, CONFIG.debounceDelay));
 }
 
-// iOS touch device - no keyboard shortcuts needed
+// ═════════════════════════════════════════════════════════════════════════════
+// KEYBOARD SUPPORT (Desktop Browsers)
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Keyboard shortcuts for desktop browsers
+ * A-E or 1-5: Select answer option
+ * Enter/Space: Next question (when showing feedback)
+ * Escape: Go back to welcome screen
+ */
+document.addEventListener('keydown', (e) => {
+    // Only handle keyboard when app page is active
+    if (!DOM.appPage?.classList.contains('active')) return;
+    
+    // Don't handle if currently loading
+    if (AppState.isLoading) return;
+    
+    const key = e.key.toUpperCase();
+    
+    // Answer selection (A-E or 1-5)
+    if (!AppState.answered && AppState.currentQuestion) {
+        const optionIndex = ['A', 'B', 'C', 'D', 'E'].indexOf(key);
+        const numberIndex = ['1', '2', '3', '4', '5'].indexOf(e.key);
+        const index = optionIndex !== -1 ? optionIndex : numberIndex;
+        
+        if (index !== -1 && index < AppState.currentQuestion.options.length) {
+            e.preventDefault();
+            handleAnswer(index);
+            return;
+        }
+    }
+    
+    // Next question (Enter or Space when feedback is showing)
+    if (AppState.answered && (key === 'ENTER' || key === ' ')) {
+        e.preventDefault();
+        if (!DOM.btnNext?.classList.contains('hidden')) {
+            DOM.btnNext.click();
+        }
+        return;
+    }
+    
+    // Go back (Escape)
+    if (key === 'ESCAPE') {
+        e.preventDefault();
+        showWelcome();
+        return;
+    }
+});
 
 // DEFENSE: Handle page visibility changes (pause/resume logic)
 document.addEventListener('visibilitychange', () => {

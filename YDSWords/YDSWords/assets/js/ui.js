@@ -325,6 +325,7 @@ function displayQuestion() {
         }
         
         if (DOM.feedback) DOM.feedback.classList.add('hidden');
+    if (DOM.questionArea) DOM.questionArea.classList.remove('answered');
         if (DOM.btnNext) DOM.btnNext.classList.add('hidden');
         
         // Update progress display
@@ -395,10 +396,13 @@ function selectAnswer(index) {
     if (DOM.feedbackText) DOM.feedbackText.innerHTML = feedbackHTML;
     if (DOM.feedback) DOM.feedback.classList.remove('hidden');
     if (DOM.btnNext) DOM.btnNext.classList.remove('hidden');
+    if (DOM.questionArea) DOM.questionArea.classList.add('answered');
     
-    // Scroll to bottom to show feedback and Next button
+    // Scroll to show feedback section properly
     setTimeout(() => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        if (DOM.feedback) {
+            DOM.feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
     }, 100);
 }
 

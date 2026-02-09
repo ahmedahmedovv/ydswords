@@ -3,7 +3,7 @@
    ═════════════════════════════════════════════════════════════════════════════ */
 
 const CONFIG = {
-    model: 'gpt-4o-mini',
+    model: 'mistralai/ministral-8b',
     temperature: 0.8,
     maxTokens: 1024,
     

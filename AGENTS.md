@@ -36,8 +36,8 @@ The app follows a **hybrid architecture**:
 | Component | Value |
 |-----------|-------|
 | **Platform** | Netlify Functions (serverless) |
-| **AI Model** | OpenAI GPT-4o-mini |
-| **API Proxy** | Node.js function (`generate-question.js`) |
+| **AI Model** | OpenRouter (Mistral Ministral 8B) |
+| **API Proxy** | Node.js function → OpenRouter API |
 | **Security** | API key stored in Netlify environment variables (never exposed to client) |
 
 ---

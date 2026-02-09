@@ -1,6 +1,6 @@
 /* ═════════════════════════════════════════════════════════════════════════════
-   YDS Words - Netlify Function (OpenAI Proxy)
-   Securely proxies requests to OpenAI API without exposing API key
+   YDS Words - Netlify Function (OpenRouter Proxy)
+   Securely proxies requests to OpenRouter API without exposing API key
    ═════════════════════════════════════════════════════════════════════════════ */
 
 exports.handler = async (event, context) => {
@@ -44,10 +44,10 @@ exports.handler = async (event, context) => {
         }
 
         // Get API key from environment variables (set in Netlify dashboard)
-        const apiKey = process.env.OPENAI_API_KEY;
+        const apiKey = process.env.OPENROUTER_API_KEY;
 
         if (!apiKey) {
-            console.error('OPENAI_API_KEY not configured');
+            console.error('OPENROUTER_API_KEY not configured');
             return {
                 statusCode: 500,
                 headers,
@@ -55,15 +55,17 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Call OpenAI API
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        // Call OpenRouter API
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
+                'Authorization': `Bearer ${apiKey}`,
+                'HTTP-Referer': 'https://ydswordsios.netlify.app',
+                'X-Title': 'YDS Words'
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini',
+                model: 'mistralai/ministral-8b',
                 messages: [{ role: 'user', content: prompt }],
                 temperature: 0.8,
                 max_tokens: 1024,
@@ -73,7 +75,7 @@ exports.handler = async (event, context) => {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('OpenAI API error:', response.status, errorText);
+            console.error('OpenRouter API error:', response.status, errorText);
             
             return {
                 statusCode: response.status,

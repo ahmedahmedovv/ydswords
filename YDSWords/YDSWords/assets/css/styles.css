@@ -11,17 +11,19 @@
     --font-ios: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', 'Segoe UI', sans-serif;
     --font-mono: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, monospace;
     
-    /* iOS Dynamic Type Sizes */
-    --text-large-title: 34px;
-    --text-title-1: 28px;
-    --text-title-2: 22px;
-    --text-title-3: 20px;
-    --text-headline: 17px;
-    --text-body: 17px;
-    --text-callout: 16px;
-    --text-subhead: 15px;
-    --text-footnote: 13px;
-    --text-caption: 12px;
+    /* ═══ Fluid Typography for All iPhones ═══ */
+    /* Using clamp() for smooth scaling between screen sizes */
+    /* min: SE/mini, preferred: 4% of viewport width, max: Pro Max */
+    --text-large-title: clamp(28px, 8vw, 38px);
+    --text-title-1: clamp(24px, 6vw, 32px);
+    --text-title-2: clamp(20px, 5vw, 26px);
+    --text-title-3: clamp(18px, 4.5vw, 22px);
+    --text-headline: clamp(15px, 4vw, 18px);
+    --text-body: clamp(15px, 4vw, 18px);
+    --text-callout: clamp(14px, 3.8vw, 17px);
+    --text-subhead: clamp(13px, 3.5vw, 16px);
+    --text-footnote: clamp(12px, 3.2vw, 14px);
+    --text-caption: clamp(11px, 3vw, 13px);
     
     /* ═══ iOS System Colors - Light Mode ═══ */
     --ios-system-blue: #007AFF;
@@ -67,12 +69,17 @@
     --ios-ease-in: cubic-bezier(0.5, 0, 0.75, 0.5);
     --ios-default: cubic-bezier(0.4, 0.0, 0.2, 1);
     
-    /* ═══ Spacing (8-point grid) ═══ */
-    --space-xs: 4px;
-    --space-sm: 8px;
-    --space-md: 16px;
-    --space-lg: 24px;
-    --space-xl: 32px;
+    /* ═══ Fluid Spacing ═══ */
+    /* Scales with viewport for better proportions on all devices */
+    --space-xs: clamp(2px, 1vw, 6px);
+    --space-sm: clamp(6px, 2vw, 12px);
+    --space-md: clamp(12px, 4vw, 20px);
+    --space-lg: clamp(16px, 5vw, 28px);
+    --space-xl: clamp(24px, 6vw, 40px);
+    
+    /* ═══ Container Width ═══ */
+    --container-max: 100%;
+    --content-max: min(100%, 520px);
 }
 
 /* ═══ Dark Mode Colors ═══ */
@@ -212,8 +219,8 @@ body {
     left: 50%;
     transform: translateX(-50%);
     z-index: 9999;
-    width: calc(100% - var(--space-md) * 2);
-    max-width: 400px;
+    width: calc(100% - clamp(16px, 8vw, 48px));
+    max-width: min(400px, 90vw);
     pointer-events: none;
 }
 
@@ -222,12 +229,12 @@ body {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     color: var(--ios-label);
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: var(--text-subhead);
+    padding: clamp(10px, 3vw, 14px) clamp(14px, 4vw, 18px);
+    border-radius: clamp(10px, 3vw, 14px);
+    font-size: clamp(13px, 3.8vw, 15px);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: clamp(8px, 2.5vw, 12px);
     margin-bottom: var(--space-sm);
     pointer-events: auto;
     animation: notificationEnter 0.4s var(--ios-spring);
@@ -314,13 +321,15 @@ body {
    ═════════════════════════════════════════════════════════════════════════════ */
 
 .app {
-    max-width: 430px;
+    width: 100%;
+    max-width: var(--content-max);
     margin: 0 auto;
-    padding: var(--space-sm) var(--space-md);
+    padding: var(--space-sm) clamp(12px, 4vw, 24px);
     padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
     display: none;
     background: var(--ios-grouped-background);
     min-height: 100vh;
+    min-height: -webkit-fill-available;
 }
 
 .app.active {
@@ -354,7 +363,7 @@ body {
 }
 
 .header h1 {
-    font-size: var(--text-large-title);
+    font-size: clamp(24px, 7vw, 36px);
     font-weight: 700;
     color: var(--ios-label);
     letter-spacing: -0.4px;
@@ -362,11 +371,11 @@ body {
 
 .score {
     font-family: var(--font-mono);
-    font-size: var(--text-subhead);
+    font-size: clamp(12px, 3.5vw, 15px);
     font-weight: 600;
     color: var(--ios-label-secondary);
     background: var(--ios-secondary-fill);
-    padding: 6px 12px;
+    padding: clamp(4px, 1.5vw, 8px) clamp(8px, 3vw, 14px);
     border-radius: 100px;
 }
 
@@ -477,12 +486,12 @@ body {
 
 /* Sentence Card */
 .sentence {
-    font-size: var(--text-body);
-    line-height: 1.5;
-    margin-bottom: var(--space-md);
-    padding: var(--space-md);
+    font-size: clamp(14px, 4vw, 18px);
+    line-height: 1.6;
+    margin-bottom: clamp(12px, 4vw, 20px);
+    padding: clamp(12px, 4vw, 20px);
     background: var(--ios-secondary-grouped-background);
-    border-radius: 12px;
+    border-radius: clamp(10px, 3vw, 14px);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
     overflow-wrap: break-word;
     word-wrap: break-word;
@@ -501,17 +510,17 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 80px;
+    min-width: clamp(56px, 18vw, 84px);
     height: 1.5em;
     background: var(--ios-fill);
-    border-radius: 6px;
-    margin: 0 4px;
+    border-radius: clamp(4px, 1.5vw, 8px);
+    margin: 0 clamp(2px, 1vw, 6px);
     vertical-align: baseline;
     font-family: var(--font-mono);
-    font-size: 0.95em;
+    font-size: clamp(0.8em, 3vw, 0.95em);
     color: var(--ios-label-secondary);
-    letter-spacing: 2px;
-    padding: 0 8px;
+    letter-spacing: clamp(1px, 0.5vw, 3px);
+    padding: 0 clamp(4px, 2vw, 10px);
 }
 
 /* ═══ Options - iOS Grouped Table Style ═══ */
@@ -520,21 +529,21 @@ body {
     flex-direction: column;
     gap: 0;
     background: var(--ios-secondary-grouped-background);
-    border-radius: 10px;
+    border-radius: clamp(10px, 2.5vw, 14px);
     overflow: hidden;
-    margin-bottom: var(--space-md);
+    margin-bottom: clamp(12px, 4vw, 20px);
 }
 
 .option {
     display: flex;
     align-items: center;
-    padding: 14px 16px;
-    min-height: 50px;
+    padding: clamp(12px, 3.5vw, 16px) clamp(14px, 4vw, 18px);
+    min-height: clamp(48px, 12vh, 58px);
     background: transparent;
     border: none;
     border-bottom: 0.5px solid var(--ios-separator);
     font-family: inherit;
-    font-size: var(--text-body);
+    font-size: clamp(14px, 3.8vw, 17px);
     color: var(--ios-label);
     text-align: left;
     cursor: pointer;
@@ -570,18 +579,18 @@ body {
 .option:disabled { cursor: default; }
 
 .option .key {
-    width: 28px;
-    height: 28px;
+    width: clamp(24px, 7vw, 32px);
+    height: clamp(24px, 7vw, 32px);
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--ios-tertiary-fill);
-    border-radius: 6px;
+    border-radius: clamp(5px, 1.5vw, 8px);
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: clamp(11px, 3.2vw, 14px);
     font-weight: 600;
     color: var(--ios-label-secondary);
-    margin-right: 12px;
+    margin-right: clamp(10px, 3vw, 14px);
     flex-shrink: 0;
     transition: all 0.2s ease;
 }
@@ -648,10 +657,10 @@ body {
 
 /* ═══ Feedback - iOS Style ═══ */
 .feedback {
-    padding: var(--space-md);
+    padding: clamp(12px, 4vw, 20px);
     background: var(--ios-secondary-grouped-background);
-    border-radius: 12px;
-    margin-bottom: var(--space-md);
+    border-radius: clamp(10px, 3vw, 14px);
+    margin-bottom: clamp(12px, 4vw, 20px);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
     animation: slideUp 0.3s var(--ios-spring);
 }
@@ -683,32 +692,32 @@ body {
 }
 
 .explanation-list {
-    margin-top: var(--space-md);
-    padding-top: var(--space-md);
+    margin-top: clamp(12px, 4vw, 18px);
+    padding-top: clamp(12px, 4vw, 18px);
     border-top: 0.5px solid var(--ios-separator);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: clamp(8px, 2.5vw, 12px);
 }
 
 .explanation-item {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    font-size: var(--text-subhead);
-    line-height: 1.4;
+    gap: clamp(8px, 2.5vw, 12px);
+    font-size: clamp(13px, 3.8vw, 16px);
+    line-height: 1.5;
 }
 
 .explanation-item .opt-label {
     flex-shrink: 0;
-    width: 22px;
-    height: 22px;
+    width: clamp(20px, 6vw, 26px);
+    height: clamp(20px, 6vw, 26px);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 5px;
+    border-radius: clamp(4px, 1.5vw, 6px);
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: clamp(11px, 3.2vw, 13px);
     font-weight: 600;
     flex-shrink: 0;
     margin-top: 1px;
@@ -737,24 +746,24 @@ body {
 /* ═══ Next Button - iOS Style ═══ */
 .btn-next {
     width: 100%;
-    min-height: 50px;
-    padding: 12px 20px;
+    min-height: clamp(48px, 12vh, 60px);
+    padding: clamp(10px, 3vh, 16px) clamp(16px, 5vw, 24px);
     background: var(--ios-system-blue);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: clamp(10px, 2.5vw, 14px);
     font-family: inherit;
-    font-size: var(--text-headline);
+    font-size: clamp(15px, 4vw, 18px);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s var(--ios-spring);
     touch-action: manipulation;
     position: relative;
-    margin-bottom: var(--space-md);
+    margin-bottom: clamp(12px, 4vw, 20px);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: clamp(6px, 2vw, 10px);
 }
 
 .btn-next:hover:not(:disabled) {
@@ -810,201 +819,261 @@ body {
 }
 
 /* ═════════════════════════════════════════════════════════════════════════════
-   RESPONSIVE DESIGN - iPhone Optimizations
+   RESPONSIVE DESIGN - Universal iPhone Support
+   Supports: SE, mini, standard, Plus, Pro, Pro Max models
    ═════════════════════════════════════════════════════════════════════════════ */
 
-/* iPhone 14 Pro / 13 / Standard (390px width) */
-@media (max-width: 390px) {
-    .welcome-container {
-        padding: var(--space-md);
-    }
-
-    .welcome-title {
-        font-size: var(--text-title-1);
-    }
-
-    .welcome-tagline {
-        font-size: var(--text-body);
-        margin-bottom: var(--space-lg);
-    }
-
-    .app {
-        padding: var(--space-sm);
-    }
-
-    .sentence {
-        font-size: var(--text-callout);
-        padding: var(--space-sm);
-    }
-
-    .blank {
-        min-width: 70px;
-        height: 1.5em;
-        font-size: 0.9em;
-        padding: 0 6px;
-        border-radius: 5px;
-    }
-
-    .option {
-        font-size: var(--text-callout);
-        min-height: 48px;
-        padding: 12px 14px;
-    }
-
-    .notification-container {
-        width: calc(100% - var(--space-sm) * 2);
-    }
-}
-
-/* iPhone 13 Mini / SE (375px width) */
+/* ═══ Small iPhones: SE (375×667), mini (375×812) ═══ */
 @media (max-width: 375px) {
-    .welcome-container {
-        padding: var(--space-sm) var(--space-md);
+    :root {
+        --text-large-title: 28px;
+        --text-title-1: 24px;
+        --text-title-2: 20px;
+        --text-body: 15px;
+        --text-callout: 14px;
+        --text-subhead: 13px;
+    }
+    
+    .welcome-minimal {
+        padding: 32px 16px;
         justify-content: flex-start;
-        padding-top: calc(var(--space-xl) + env(safe-area-inset-top));
+        padding-top: calc(24px + env(safe-area-inset-top));
     }
-
-    .welcome-title {
-        font-size: var(--text-title-1);
-        margin-bottom: var(--space-xs);
+    
+    .welcome-minimal-content {
+        gap: 20px;
     }
-
-    .welcome-tagline {
-        font-size: var(--text-callout);
-        margin-bottom: var(--space-lg);
+    
+    .welcome-minimal-title {
+        font-size: 28px;
     }
-
-    .btn-start {
-        min-height: 48px;
-        padding: 12px 20px;
-        font-size: var(--text-callout);
-        max-width: 260px;
+    
+    .welcome-minimal-desc {
+        font-size: 14px;
     }
-
+    
+    .btn-minimal {
+        min-height: 50px;
+        padding: 14px 20px;
+    }
+    
     .app {
-        padding: var(--space-sm);
-        padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
+        padding: 8px 12px;
     }
-
-    .header {
-        margin-bottom: var(--space-sm);
-    }
-
-    .header-top {
-        padding-bottom: var(--space-xs);
-    }
-
+    
     .header h1 {
-        font-size: var(--text-title-2);
+        font-size: 22px;
     }
-
-    .score {
-        font-size: var(--text-footnote);
-        padding: 4px 10px;
-    }
-
+    
     .sentence {
-        font-size: var(--text-subhead);
-        line-height: 1.5;
-        padding: var(--space-sm);
-        margin-bottom: var(--space-sm);
+        font-size: 14px;
+        padding: 12px;
+        margin-bottom: 12px;
     }
-
+    
     .blank {
-        min-width: 60px;
-        height: 1.5em;
-        font-size: 0.85em;
-        padding: 0 5px;
-        border-radius: 4px;
-        letter-spacing: 1px;
+        min-width: 56px;
+        padding: 0 4px;
+        font-size: 0.8em;
     }
-
-    .options {
-        margin-bottom: var(--space-sm);
-    }
-
+    
     .option {
-        font-size: var(--text-subhead);
-        min-height: 48px;
-        padding: 12px 14px;
-        gap: 10px;
-    }
-
-    .option .key {
-        width: 26px;
-        height: 26px;
-        font-size: 12px;
-    }
-
-    .feedback {
-        padding: var(--space-sm);
-        margin-bottom: var(--space-sm);
-    }
-
-    .feedback p {
-        font-size: var(--text-footnote);
-    }
-
-    .explanation-item {
-        font-size: var(--text-footnote);
-        gap: 8px;
-    }
-
-    .explanation-item .opt-label {
-        width: 20px;
-        height: 20px;
-        font-size: 11px;
-    }
-
-    .btn-next {
         min-height: 48px;
         padding: 12px;
-        font-size: var(--text-callout);
+        font-size: 14px;
     }
-
-    .btn-back {
-        font-size: var(--text-subhead);
-        margin-bottom: var(--space-xs);
+    
+    .option .key {
+        width: 24px;
+        height: 24px;
+        font-size: 11px;
     }
-
-    .loading {
-        padding: var(--space-lg) 0;
+    
+    .feedback {
+        padding: 12px;
     }
-
-    .spinner {
-        width: 32px;
-        height: 32px;
-        border-width: 2px;
-    }
-
-    .loading p {
-        font-size: var(--text-footnote);
-    }
-
-    .notification-container {
-        width: calc(100% - var(--space-sm) * 2);
-        top: calc(env(safe-area-inset-top) + 4px);
-    }
-
-    .notification {
-        padding: 10px 14px;
-        font-size: var(--text-footnote);
+    
+    .btn-next {
+        min-height: 50px;
     }
 }
 
-/* Landscape safety - though app is portrait only */
-@media (max-width: 812px) and (max-height: 375px) {
-    .welcome-container {
-        padding: var(--space-sm);
+/* ═══ Standard iPhones: 12/13/14/15 (390×844), Pro (393×852) ═══ */
+@media (min-width: 376px) and (max-width: 400px) {
+    :root {
+        --text-large-title: 32px;
+        --text-title-1: 26px;
+        --text-title-2: 22px;
+        --text-body: 16px;
+        --text-callout: 15px;
     }
-
-    .welcome-title {
-        font-size: var(--text-title-2);
+    
+    .welcome-minimal {
+        padding: 48px 20px;
     }
+    
+    .welcome-minimal-title {
+        font-size: 34px;
+    }
+    
+    .app {
+        padding: 10px 16px;
+    }
+    
+    .sentence {
+        font-size: 15px;
+        padding: 14px;
+    }
+    
+    .blank {
+        min-width: 64px;
+    }
+    
+    .option {
+        min-height: 52px;
+        padding: 14px;
+    }
+    
+    .btn-next {
+        min-height: 54px;
+    }
+}
 
-    .welcome-tagline {
-        font-size: var(--text-subhead);
-        margin-bottom: var(--space-sm);
+/* ═══ Large iPhones: Plus (428×926), Pro Max (430×932) ═══ */
+@media (min-width: 401px) and (max-width: 440px) {
+    :root {
+        --text-large-title: 36px;
+        --text-title-1: 30px;
+        --text-title-2: 24px;
+        --text-body: 17px;
+        --text-callout: 16px;
+    }
+    
+    .welcome-minimal {
+        padding: 64px 28px;
+    }
+    
+    .welcome-minimal-content {
+        gap: 32px;
+    }
+    
+    .welcome-minimal-title {
+        font-size: 40px;
+    }
+    
+    .app {
+        padding: 16px 24px;
+    }
+    
+    .header h1 {
+        font-size: 34px;
+    }
+    
+    .score {
+        font-size: 15px;
+        padding: 8px 14px;
+    }
+    
+    .sentence {
+        font-size: 17px;
+        padding: 18px;
+        margin-bottom: 20px;
+    }
+    
+    .blank {
+        min-width: 76px;
+        padding: 0 10px;
+    }
+    
+    .option {
+        min-height: 58px;
+        padding: 16px;
+        font-size: 17px;
+    }
+    
+    .option .key {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+    
+    .feedback {
+        padding: 18px;
+        margin-bottom: 20px;
+    }
+    
+    .btn-next {
+        min-height: 58px;
+        font-size: 17px;
+    }
+}
+
+/* ═══ Extra Large / Future iPhones (441px+) ═══ */
+@media (min-width: 441px) {
+    :root {
+        --text-large-title: 40px;
+        --text-title-1: 32px;
+        --text-title-2: 26px;
+        --text-body: 18px;
+        --text-callout: 17px;
+    }
+    
+    .welcome-minimal {
+        padding: 80px 32px;
+    }
+    
+    .welcome-minimal-title {
+        font-size: 44px;
+    }
+    
+    .app {
+        padding: 20px 28px;
+    }
+    
+    .sentence {
+        font-size: 18px;
+        padding: 20px;
+    }
+    
+    .blank {
+        min-width: 84px;
+    }
+    
+    .option {
+        min-height: 60px;
+        font-size: 18px;
+    }
+    
+    .btn-next {
+        min-height: 60px;
+    }
+}
+
+/* ═══ Height-based adjustments for compact screens ═══ */
+@media (max-height: 700px) {
+    .welcome-minimal {
+        justify-content: flex-start;
+        padding-top: 24px;
+    }
+    
+    .welcome-minimal-content {
+        gap: 16px;
+    }
+}
+
+/* ═══ Landscape safety (portrait only app) ═══ */
+@media (max-width: 900px) and (max-height: 400px) {
+    .welcome-minimal {
+        padding: 16px;
+        justify-content: flex-start;
+    }
+    
+    .welcome-minimal-title {
+        font-size: 24px;
+    }
+    
+    .welcome-minimal-content {
+        gap: 12px;
     }
 }
 
@@ -1042,9 +1111,10 @@ button, .option {
    ═════════════════════════════════════════════════════════════════════════════ */
 
 .welcome-minimal {
-    max-width: 430px;
+    width: 100%;
+    max-width: var(--content-max);
     margin: 0 auto;
-    padding: 60px 24px;
+    padding: clamp(32px, 10vh, 80px) clamp(16px, 5vw, 32px);
     min-height: 100vh;
     min-height: -webkit-fill-available;
     display: none;
@@ -1060,14 +1130,14 @@ button, .option {
 .welcome-minimal-content {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: clamp(20px, 5vh, 36px);
 }
 
 /* Header */
 .welcome-minimal-header {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: clamp(8px, 2vh, 14px);
 }
 
 .welcome-minimal-tag {
@@ -1080,7 +1150,7 @@ button, .option {
 }
 
 .welcome-minimal-title {
-    font-size: 40px;
+    font-size: clamp(28px, 8vw, 44px);
     font-weight: 700;
     color: var(--ios-label);
     line-height: 1.1;
@@ -1100,13 +1170,13 @@ button, .option {
 .welcome-minimal-features {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: clamp(10px, 2.5vh, 16px);
 }
 
 .feature-item {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: clamp(8px, 2vw, 14px);
     font-size: var(--text-subhead);
     color: var(--ios-label);
 }
@@ -1129,16 +1199,17 @@ button, .option {
 
 .btn-minimal {
     width: 100%;
-    padding: 18px 24px;
+    padding: clamp(14px, 4vh, 20px) clamp(20px, 5vw, 28px);
     background: var(--ios-system-blue);
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: clamp(10px, 3vw, 14px);
     font-family: inherit;
     font-size: var(--text-headline);
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.2s ease, background-color 0.2s ease;
+    min-height: clamp(48px, 12vh, 58px);
 }
 
 .btn-minimal:hover {
@@ -1161,18 +1232,15 @@ button, .option {
     margin: 0;
 }
 
-/* Responsive */
+/* ═══ Component-level responsive adjustments ═══ */
 @media (max-width: 375px) {
-    .welcome-minimal {
-        padding: 40px 20px;
+    .welcome-minimal-action {
+        margin-top: 4px;
     }
     
-    .welcome-minimal-title {
-        font-size: 34px;
-    }
-    
-    .welcome-minimal-content {
-        gap: 24px;
+    .feature-dot {
+        width: 6px;
+        height: 6px;
     }
 }
 

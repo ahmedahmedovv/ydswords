@@ -10,8 +10,8 @@ const API_CONFIG = {
     // Local development (netlify dev)
     // endpoint: 'http://localhost:8888/.netlify/functions/generate-question',
     
-    // Production - replace with your actual Netlify site URL after deployment
-    endpoint: 'https://ydswords.netlify.app/.netlify/functions/generate-question'
+    // Production - your deployed Netlify function
+    endpoint: 'https://ydswordsios.netlify.app/.netlify/functions/generate-question'
 };
 
 /**

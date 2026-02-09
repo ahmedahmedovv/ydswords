@@ -1219,6 +1219,14 @@ button, .option {
     gap: clamp(8px, 2vh, 14px);
 }
 
+.welcome-app-name {
+    font-size: clamp(14px, 4vw, 18px);
+    font-weight: 700;
+    color: var(--ios-system-blue);
+    letter-spacing: 2px;
+    margin: 0 0 4px 0;
+}
+
 .welcome-minimal-tag {
     font-size: var(--text-subhead);
     font-weight: 600;
@@ -1266,6 +1274,17 @@ button, .option {
     background: var(--ios-system-green);
     border-radius: 50%;
     flex-shrink: 0;
+}
+
+/* Quote */
+.welcome-quote {
+    font-size: clamp(13px, 3.8vw, 16px);
+    font-style: italic;
+    color: var(--ios-label-tertiary);
+    text-align: center;
+    margin: clamp(8px, 2vh, 16px) 0;
+    line-height: 1.5;
+    padding: 0 clamp(8px, 3vw, 20px);
 }
 
 /* Action */

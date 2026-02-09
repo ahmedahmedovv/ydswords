@@ -398,10 +398,12 @@ function selectAnswer(index) {
     if (DOM.btnNext) DOM.btnNext.classList.remove('hidden');
     if (DOM.questionArea) DOM.questionArea.classList.add('answered');
     
-    // Scroll to show feedback section properly
+    // Scroll to show the Next button at the bottom
     setTimeout(() => {
-        if (DOM.feedback) {
-            DOM.feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if (DOM.btnNext) {
+            DOM.btnNext.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        } else if (DOM.feedback) {
+            DOM.feedback.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
     }, 100);
 }

@@ -25,6 +25,7 @@
     
     /* ═══ iOS System Colors - Light Mode ═══ */
     --ios-system-blue: #007AFF;
+    --ios-system-blue-hover: #0066CC;
     --ios-system-green: #34C759;
     --ios-system-red: #FF3B30;
     --ios-system-orange: #FF9500;
@@ -39,6 +40,9 @@
     --ios-system-gray4: #D1D1D6;
     --ios-system-gray5: #E5E5EA;
     --ios-system-gray6: #F2F2F7;
+    
+    /* ═══ Disabled State Opacity ═══ */
+    --ios-disabled-opacity: 0.4;
     
     /* ═══ Semantic Colors - Light Mode ═══ */
     --ios-label: #000000;
@@ -214,10 +218,10 @@ body {
 }
 
 .notification {
-    background: rgba(30, 30, 30, 0.95);
+    background: rgba(240, 240, 240, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    color: white;
+    color: var(--ios-label);
     padding: 12px 16px;
     border-radius: 12px;
     font-size: var(--text-subhead);
@@ -228,6 +232,13 @@ body {
     pointer-events: auto;
     animation: notificationEnter 0.4s var(--ios-spring);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+    .notification {
+        background: rgba(40, 40, 40, 0.95);
+        color: white;
+    }
 }
 
 @keyframes notificationEnter {
@@ -281,7 +292,7 @@ body {
     margin-left: auto;
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--ios-label-tertiary);
     font-size: 20px;
     cursor: pointer;
     padding: 0;
@@ -295,113 +306,7 @@ body {
 
 .notification-close:hover,
 .notification-close:active {
-    color: white;
-}
-
-/* ═════════════════════════════════════════════════════════════════════════════
-   WELCOME PAGE - iOS Style
-   ═════════════════════════════════════════════════════════════════════════════ */
-
-.welcome-container {
-    max-width: 430px;
-    margin: 0 auto;
-    padding: var(--space-lg);
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: var(--ios-system-background);
-    text-align: center;
-}
-
-.welcome-container.active {
-    display: flex;
-    animation: welcomeFadeIn 0.6s var(--ios-spring);
-}
-
-@keyframes welcomeFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.welcome-title {
-    font-size: var(--text-large-title);
-    font-weight: 700;
-    margin-bottom: var(--space-sm);
     color: var(--ios-label);
-    letter-spacing: -0.4px;
-}
-
-.welcome-tagline {
-    font-size: var(--text-title-3);
-    color: var(--ios-label-secondary);
-    margin-bottom: var(--space-lg);
-    font-weight: 400;
-}
-
-/* ═══ Button Styles - iOS ═══ */
-.btn-start {
-    width: 100%;
-    max-width: 300px;
-    min-height: 50px;
-    padding: 12px 24px;
-    background: var(--ios-system-blue);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: var(--text-headline);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s var(--ios-spring);
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-start:hover:not(:disabled) {
-    background: #0066CC;
-    transform: scale(1.02);
-}
-
-.btn-start:active:not(:disabled) {
-    transform: scale(0.96);
-    opacity: 0.9;
-}
-
-.btn-start:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.btn-start.loading {
-    color: transparent;
-}
-
-.btn-start.loading::after {
-    content: '';
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    left: 50%;
-    top: 50%;
-    margin-left: -9px;
-    margin-top: -9px;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
 }
 
 /* ═════════════════════════════════════════════════════════════════════════════
@@ -846,7 +751,7 @@ body {
 }
 
 .btn-next:hover:not(:disabled) {
-    background: #0066CC;
+    background: var(--ios-system-blue-hover);
     transform: scale(1.02);
 }
 
@@ -856,7 +761,7 @@ body {
 }
 
 .btn-next:disabled {
-    opacity: 0.4;
+    opacity: var(--ios-disabled-opacity);
     cursor: not-allowed;
 }
 
@@ -1143,7 +1048,7 @@ button, .option {
 }
 
 .ios-btn-primary:hover:not(:disabled) {
-    background: #0066CC;
+    background: var(--ios-system-blue-hover);
     transform: scale(1.02);
 }
 
@@ -1203,7 +1108,7 @@ button, .option {
 
 /* Disabled State */
 .ios-btn:disabled {
-    opacity: 0.4;
+    opacity: var(--ios-disabled-opacity);
     cursor: not-allowed;
 }
 
@@ -1780,7 +1685,7 @@ button, .option {
 }
 
 .btn-start:hover:not(:disabled) {
-    background: #0066CC;
+    background: var(--ios-system-blue-hover);
     transform: scale(1.03) translateY(-1px);
     box-shadow: 0 6px 24px rgba(0, 122, 255, 0.4);
 }
@@ -1791,7 +1696,7 @@ button, .option {
 }
 
 .btn-start:disabled {
-    opacity: 0.5;
+    opacity: var(--ios-disabled-opacity);
     cursor: not-allowed;
 }
 
@@ -2042,7 +1947,7 @@ button, .option {
 }
 
 .btn-minimal:hover {
-    background: #0066CC;
+    background: var(--ios-system-blue-hover);
 }
 
 .btn-minimal:active {

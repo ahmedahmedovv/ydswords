@@ -1934,3 +1934,146 @@ button, .option {
         opacity: 0.8;
     }
 }
+
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   MINIMAL WELCOME SCREEN - NO ICON
+   Clean, text-focused design
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+.welcome-minimal {
+    max-width: 430px;
+    margin: 0 auto;
+    padding: 60px 24px;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--ios-system-background);
+}
+
+.welcome-minimal.active {
+    display: flex;
+}
+
+.welcome-minimal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* Header */
+.welcome-minimal-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.welcome-minimal-tag {
+    font-size: var(--text-subhead);
+    font-weight: 600;
+    color: var(--ios-system-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.welcome-minimal-title {
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--ios-label);
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+/* Description */
+.welcome-minimal-desc {
+    font-size: var(--text-body);
+    color: var(--ios-label-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Features */
+.welcome-minimal-features {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: var(--text-subhead);
+    color: var(--ios-label);
+}
+
+.feature-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--ios-system-green);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Action */
+.welcome-minimal-action {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.btn-minimal {
+    width: 100%;
+    padding: 18px 24px;
+    background: var(--ios-system-blue);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: var(--text-headline);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-minimal:hover {
+    background: #0066CC;
+}
+
+.btn-minimal:active {
+    transform: scale(0.98);
+}
+
+.welcome-minimal-hint {
+    text-align: center;
+    font-size: var(--text-footnote);
+    color: var(--ios-label-tertiary);
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 375px) {
+    .welcome-minimal {
+        padding: 40px 20px;
+    }
+    
+    .welcome-minimal-title {
+        font-size: 34px;
+    }
+    
+    .welcome-minimal-content {
+        gap: 24px;
+    }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .welcome-minimal {
+        background: var(--ios-system-background);
+    }
+}

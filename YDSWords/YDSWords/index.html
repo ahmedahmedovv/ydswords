@@ -35,60 +35,45 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════════
-         IOS-STYLE WELCOME SCREEN
+         MINIMAL WELCOME SCREEN
+         Clean, text-focused design without icon
          ═══════════════════════════════════════════════════════════════════════ -->
-    <div class="welcome-container active" id="welcomePage">
-        <div class="welcome-content">
-            <!-- App Icon -->
-            <div class="welcome-icon">
-                <div class="app-icon-container">
-                    <svg class="app-icon-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#007AFF"/>
-                                <stop offset="100%" style="stop-color:#5856D6"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="120" height="120" rx="26" fill="url(#iconGradient)"/>
-                        <text x="60" y="74" text-anchor="middle" fill="white" font-size="46" font-weight="700" font-family="-apple-system, SF Pro Display, sans-serif" letter-spacing="-0.5">YDS</text>
-                    </svg>
+    <div class="welcome-minimal active" id="welcomePage">
+        <div class="welcome-minimal-content">
+            <!-- Header -->
+            <header class="welcome-minimal-header">
+                <p class="welcome-minimal-tag">Vocabulary Practice</p>
+                <h1 class="welcome-minimal-title">Master English<br>Academic Words</h1>
+            </header>
+            
+            <!-- Description -->
+            <p class="welcome-minimal-desc">
+                Practice with AI-generated questions tailored for the YDS exam. 
+                Build your vocabulary through intelligent, context-rich exercises.
+            </p>
+            
+            <!-- Features -->
+            <div class="welcome-minimal-features">
+                <div class="feature-item">
+                    <span class="feature-dot"></span>
+                    <span>1,000+ academic words</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-dot"></span>
+                    <span>AI-powered questions</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-dot"></span>
+                    <span>Track your progress</span>
                 </div>
             </div>
             
-            <!-- Text Content -->
-            <div class="welcome-text">
-                <h1 class="welcome-title">YDS Words</h1>
-                <p class="welcome-subtitle">Master Academic Vocabulary</p>
-                <p class="welcome-description">AI-powered practice questions for the YDS exam. Build your vocabulary with intelligent, context-rich exercises.</p>
-            </div>
-            
-            <!-- Action Area -->
-            <div class="welcome-actions">
-                <button class="btn-start ios-btn-primary" id="btnStart">
-                    <span>Start Learning</span>
-                    <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
-                    </svg>
+            <!-- Action -->
+            <div class="welcome-minimal-action">
+                <button class="btn-minimal" id="btnStart">
+                    Start Practice
                 </button>
-                <p class="welcome-hint">Tap to begin your practice session</p>
-            </div>
-            
-            <!-- Stats Preview (optional enhancement) -->
-            <div class="welcome-stats">
-                <div class="stat-item">
-                    <span class="stat-value">1000+</span>
-                    <span class="stat-label">Words</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item">
-                    <span class="stat-value">AI</span>
-                    <span class="stat-label">Powered</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item">
-                    <span class="stat-value">∞</span>
-                    <span class="stat-label">Questions</span>
-                </div>
+                <p class="welcome-minimal-hint">No signup required</p>
             </div>
         </div>
     </div>

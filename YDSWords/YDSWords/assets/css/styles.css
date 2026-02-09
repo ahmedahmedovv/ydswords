@@ -1216,15 +1216,17 @@ button, .option {
 .welcome-minimal-header {
     display: flex;
     flex-direction: column;
-    gap: clamp(8px, 2vh, 14px);
+    align-items: center;
+    gap: 0;
+    margin-bottom: clamp(8px, 2vh, 16px);
 }
 
 .welcome-app-name {
-    font-size: clamp(14px, 4vw, 18px);
-    font-weight: 700;
-    color: var(--ios-system-blue);
-    letter-spacing: 2px;
-    margin: 0 0 4px 0;
+    font-size: clamp(36px, 10vw, 48px);
+    font-weight: 800;
+    color: var(--ios-label);
+    letter-spacing: -1px;
+    margin: 0;
 }
 
 .welcome-minimal-tag {

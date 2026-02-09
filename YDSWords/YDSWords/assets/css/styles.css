@@ -1590,3 +1590,347 @@ button, .option {
 .ios-w-full { width: 100%; }
 .ios-max-w-sm { max-width: 300px; }
 .ios-max-w-md { max-width: 400px; }
+
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   PHASE 3: IOS WELCOME SCREEN REDESIGN
+   Modern iOS-style welcome page with animations
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══ Welcome Container - Full Screen Centered ═══ */
+.welcome-container {
+    max-width: 430px;
+    margin: 0 auto;
+    padding: var(--space-lg);
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--ios-system-background);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-container.active {
+    display: flex;
+}
+
+/* ═══ Welcome Content Wrapper ═══ */
+.welcome-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 360px;
+    animation: welcomeContentEnter 0.7s var(--ios-spring) backwards;
+}
+
+@keyframes welcomeContentEnter {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) scale(0.96);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ═══ App Icon - Large with Shadow ═══ */
+.welcome-icon {
+    margin-bottom: var(--space-lg);
+    animation: iconEnter 0.8s var(--ios-spring) 0.1s backwards;
+}
+
+@keyframes iconEnter {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+    60% {
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.app-icon-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 26px;
+    box-shadow: 
+        0 10px 40px rgba(0, 122, 255, 0.3),
+        0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s var(--ios-spring);
+}
+
+.app-icon-container:hover {
+    transform: scale(1.05);
+}
+
+.app-icon-container:active {
+    transform: scale(0.95);
+}
+
+@media (prefers-color-scheme: dark) {
+    .app-icon-container {
+        box-shadow: 
+            0 10px 40px rgba(0, 122, 255, 0.2),
+            0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+}
+
+.app-icon-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* ═══ Text Content ═══ */
+.welcome-text {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    animation: textEnter 0.7s var(--ios-spring) 0.2s backwards;
+}
+
+@keyframes textEnter {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.welcome-title {
+    font-size: var(--text-large-title);
+    font-weight: 700;
+    color: var(--ios-label);
+    margin-bottom: var(--space-sm);
+    letter-spacing: -0.4px;
+    line-height: 1.1;
+}
+
+.welcome-subtitle {
+    font-size: var(--text-title-3);
+    font-weight: 500;
+    color: var(--ios-label-secondary);
+    margin-bottom: var(--space-md);
+    line-height: 1.3;
+}
+
+.welcome-description {
+    font-size: var(--text-subhead);
+    color: var(--ios-label-tertiary);
+    line-height: 1.5;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+/* ═══ Action Area ═══ */
+.welcome-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    animation: actionsEnter 0.7s var(--ios-spring) 0.35s backwards;
+}
+
+@keyframes actionsEnter {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Primary Start Button */
+.btn-start {
+    width: 100%;
+    max-width: 300px;
+    min-height: 54px;
+    padding: 16px 28px;
+    background: var(--ios-system-blue);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: var(--font-ios);
+    font-size: var(--text-headline);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.25s var(--ios-spring);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+}
+
+.btn-start:hover:not(:disabled) {
+    background: #0066CC;
+    transform: scale(1.03) translateY(-1px);
+    box-shadow: 0 6px 24px rgba(0, 122, 255, 0.4);
+}
+
+.btn-start:active:not(:disabled) {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+}
+
+.btn-start:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-start.loading {
+    color: transparent;
+}
+
+.btn-start.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    left: 50%;
+    top: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+}
+
+.btn-icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s var(--ios-spring);
+}
+
+.btn-start:hover .btn-icon {
+    transform: translateX(3px);
+}
+
+/* Hint Text */
+.welcome-hint {
+    font-size: var(--text-footnote);
+    color: var(--ios-label-tertiary);
+    text-align: center;
+    margin: 0;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* ═══ Stats Preview ═══ */
+.welcome-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 0.5px solid var(--ios-separator);
+    width: 100%;
+    max-width: 280px;
+    animation: statsEnter 0.7s var(--ios-spring) 0.5s backwards;
+}
+
+@keyframes statsEnter {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.stat-value {
+    font-size: var(--text-headline);
+    font-weight: 700;
+    color: var(--ios-label);
+    font-family: var(--font-mono);
+}
+
+.stat-label {
+    font-size: var(--text-caption);
+    color: var(--ios-label-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--ios-separator);
+}
+
+/* ═══ Background Decoration (Subtle) ═══ */
+.welcome-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle at 50% 30%,
+        rgba(0, 122, 255, 0.03) 0%,
+        transparent 50%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+    .welcome-container::before {
+        background: radial-gradient(
+            circle at 50% 30%,
+            rgba(0, 122, 255, 0.05) 0%,
+            transparent 50%
+        );
+    }
+}
+
+/* ═══ Reduced Motion Support ═══ */
+@media (prefers-reduced-motion: reduce) {
+    .welcome-content,
+    .welcome-icon,
+    .welcome-text,
+    .welcome-actions,
+    .welcome-stats {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+    
+    .welcome-hint {
+        animation: none;
+        opacity: 0.8;
+    }
+}

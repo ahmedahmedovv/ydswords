@@ -152,7 +152,12 @@ function showWelcome() {
     if (DOM.scoreEl) DOM.scoreEl.textContent = '0 / 0';
     
     // Prefetch for next time
-    prefetchQuestion();
+    console.log('[Prefetch] Returning to welcome - starting prefetch...');
+    prefetchQuestion().then(() => {
+        console.log('[Prefetch] Welcome screen prefetch completed.');
+    }).catch(err => {
+        console.log('[Prefetch] Welcome screen prefetch failed:', err.message);
+    });
 }
 
 function showLoading(show) {

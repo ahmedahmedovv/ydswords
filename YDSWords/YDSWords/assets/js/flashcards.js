@@ -202,10 +202,15 @@ async function startFlashcardMode() {
     }
     
     // Load first card
+    // Note: Flashcards don't prefetch on welcome screen because:
+    // 1. We don't know which mode user will choose (quiz vs flashcards)
+    // 2. Flashcards need different content (definition+example) vs quiz (questions)
+    console.log('[Flashcard] Starting flashcard mode - loading first card...');
     await loadFlashcard();
     
     // Prefetch second card immediately after first loads
     // This ensures while user reads card 1, card 2 is being prepared
+    console.log('[Flashcard] First card loaded, prefetching second...');
     prefetchNextFlashcard();
 }
 
@@ -216,24 +221,36 @@ function prefetchNextFlashcard() {
     const nextIndex = FlashcardState.currentIndex + 1;
     
     // Don't prefetch if out of bounds
-    if (nextIndex >= FlashcardState.shuffledWords.length) return;
+    if (nextIndex >= FlashcardState.shuffledWords.length) {
+        console.log('[Flashcard Prefetch] No more cards to prefetch');
+        return;
+    }
     
     // Don't prefetch if already have content for next index
-    if (FlashcardState.prefetchedContent && FlashcardState.nextWordIndex === nextIndex) return;
+    if (FlashcardState.prefetchedContent && FlashcardState.nextWordIndex === nextIndex) {
+        console.log('[Flashcard Prefetch] Already have content for next card');
+        return;
+    }
     
     // Don't prefetch if already fetching
-    if (FlashcardState.prefetchPromise) return;
+    if (FlashcardState.prefetchPromise) {
+        console.log('[Flashcard Prefetch] Already fetching, skipping...');
+        return;
+    }
     
     const nextWord = FlashcardState.shuffledWords[nextIndex];
     FlashcardState.nextWordIndex = nextIndex;
     
+    console.log(`[Flashcard Prefetch] Prefetching card ${nextIndex + 1}: "${nextWord}"`);
+    
     FlashcardState.prefetchPromise = generateFlashcardContent(nextWord)
         .then(content => {
+            console.log('[Flashcard Prefetch] Successfully prefetched next card');
             FlashcardState.prefetchedContent = content;
             FlashcardState.prefetchPromise = null;
         })
         .catch(error => {
-            console.error('Flashcard prefetch failed:', error);
+            console.error('[Flashcard Prefetch] Failed:', error.message);
             FlashcardState.prefetchPromise = null;
             FlashcardState.prefetchedContent = null;
             // Silent fail - will retry on load

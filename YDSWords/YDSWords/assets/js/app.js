@@ -50,8 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize offline detection
     initOfflineDetection();
     
-    // Start prefetching first question
-    prefetchQuestion();
+    // Start prefetching first question for quiz mode
+    console.log('[Prefetch] Starting initial prefetch on app launch...');
+    prefetchQuestion().then(() => {
+        console.log('[Prefetch] Initial prefetch completed. Ready for quiz mode.');
+    }).catch(err => {
+        console.log('[Prefetch] Initial prefetch failed (will retry):', err.message);
+    });
 });
 
 // ═════════════════════════════════════════════════════════════════════════════

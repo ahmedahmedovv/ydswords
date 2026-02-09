@@ -1580,37 +1580,48 @@ button, .option {
     }
 }
 
-/* Word Display - First */
+/* ═══ Flashcard Content - Visual Hierarchy ═══ */
+
+/* Word - Main Focus */
 .flashcard-word {
-    font-size: var(--text-title-1);
-    font-weight: 700;
+    font-size: var(--text-large-title);
+    font-weight: 800;
     color: var(--ios-label);
     text-align: center;
-    margin-bottom: var(--space-lg);
-    line-height: 1.2;
+    margin-bottom: var(--space-xl);
+    line-height: 1.1;
+    letter-spacing: -0.5px;
 }
 
-/* Example - Second (italic, secondary color) */
+/* Example - Context Box */
 .flashcard-example {
     font-size: var(--text-body);
-    line-height: 1.5;
+    line-height: 1.6;
     color: var(--ios-label-secondary);
     text-align: center;
     font-style: italic;
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-xl);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--ios-secondary-background);
+    border-radius: 12px;
+    border-left: 3px solid var(--ios-system-blue);
     transition: opacity 0.2s ease;
 }
 
 .flashcard-example.loading {
     color: var(--ios-label-tertiary);
+    background: var(--ios-fill);
+    border-left-color: var(--ios-system-gray);
 }
 
-/* Definition - Third */
+/* Definition - Meaning with subtle style */
 .flashcard-definition {
-    font-size: var(--text-callout);
+    font-size: var(--text-headline);
     line-height: 1.5;
     color: var(--ios-label);
     text-align: center;
+    font-weight: 500;
+    padding: 0 var(--space-sm);
     transition: opacity 0.2s ease;
 }
 
@@ -1621,7 +1632,7 @@ button, .option {
 /* Highlighted word in example */
 .word-highlight {
     color: var(--ios-system-blue);
-    font-weight: 600;
+    font-weight: 700;
     font-style: normal;
 }
 
@@ -1771,6 +1782,14 @@ button, .option {
         background: var(--ios-secondary-grouped-background);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
+    
+    .flashcard-example {
+        background: var(--ios-secondary-grouped-background);
+    }
+    
+    .flashcard-example.loading {
+        background: rgba(120, 120, 128, 0.24);
+    }
 }
 
 /* ═══ Responsive Adjustments for Flashcards ═══ */
@@ -1781,17 +1800,20 @@ button, .option {
     }
     
     .flashcard-word {
-        font-size: var(--text-title-2);
-        margin-bottom: var(--space-md);
-    }
-    
-    .flashcard-definition {
-        font-size: var(--text-callout);
-        margin-bottom: var(--space-md);
+        font-size: var(--text-title-1);
+        margin-bottom: var(--space-lg);
     }
     
     .flashcard-example {
-        font-size: var(--text-footnote);
+        font-size: var(--text-callout);
+        padding: var(--space-sm) var(--space-md);
+        border-radius: 10px;
+        margin-bottom: var(--space-lg);
+    }
+    
+    .flashcard-definition {
+        font-size: var(--text-body);
+        padding: 0 var(--space-xs);
     }
     
     .mode-card {

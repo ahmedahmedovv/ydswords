@@ -34,7 +34,7 @@ function showNotification(type, message, duration = 5000) {
     const container = document.getElementById('notificationContainer');
     if (!container) return;
     
-    // iOS-style toast icons
+    // iOS SF Symbols-style simple icons
     const icons = {
         error: '✕',
         warning: '!',
@@ -42,56 +42,27 @@ function showNotification(type, message, duration = 5000) {
         success: '✓'
     };
     
-    // Update container class for multiple toasts
-    const existingToasts = container.querySelectorAll('.ios-toast');
-    if (existingToasts.length > 0) {
-        container.classList.add('has-multiple');
-    }
-    
     const notification = document.createElement('div');
-    notification.className = `ios-toast ${type}`;
+    notification.className = `notification ${type}`;
     notification.innerHTML = `
-        <span class="ios-toast-icon">${icons[type] || 'ℹ'}</span>
-        <span class="ios-toast-content">${sanitizeHtml(message)}</span>
-        <button class="ios-toast-close" onclick="dismissToast(this.parentElement)">×</button>
+        <span class="notification-icon">${icons[type] || 'ℹ'}</span>
+        <span>${sanitizeHtml(message)}</span>
+        <button class="notification-close" onclick="this.parentElement.remove()">×</button>
     `;
     
-    // Add to beginning of container (newest first)
-    container.insertBefore(notification, container.firstChild);
+    container.appendChild(notification);
     
-    // Limit to 3 visible toasts
-    if (existingToasts.length >= 3) {
-        const oldestToast = container.lastElementChild;
-        if (oldestToast) {
-            dismissToast(oldestToast);
-        }
-    }
-    
-    // Auto-remove after duration
+    // Auto-remove after duration with exit animation
     if (duration > 0) {
         setTimeout(() => {
-            dismissToast(notification);
+            if (notification.parentElement) {
+                notification.classList.add('exit');
+                setTimeout(() => notification.remove(), 300);
+            }
         }, duration);
     }
     
     return notification;
-}
-
-// Dismiss toast with animation
-function dismissToast(toast) {
-    if (!toast || toast.classList.contains('exiting')) return;
-    
-    toast.classList.add('exiting');
-    setTimeout(() => {
-        if (toast.parentElement) {
-            toast.remove();
-            // Update container class
-            const container = document.getElementById('notificationContainer');
-            if (container && container.querySelectorAll('.ios-toast').length <= 1) {
-                container.classList.remove('has-multiple');
-            }
-        }
-    }, 300);
 }
 
 function showGlobalError(message = null) {
@@ -117,37 +88,19 @@ function hideGlobalError() {
 // ═════════════════════════════════════════════════════════════════════════════
 
 function initOfflineDetection() {
-    let offlineToast = null;
-    
     const updateOnlineStatus = () => {
         const indicator = document.getElementById('offlineIndicator');
+        if (!indicator) return;
         
         if (navigator.onLine) {
-            // Hide offline indicator
-            if (indicator) indicator.classList.remove('active');
-            
-            // Dismiss offline toast if exists
-            if (offlineToast) {
-                dismissToast(offlineToast);
-                offlineToast = null;
-            }
-            
-            // Show reconnected toast
-            showNotification('success', 'Back online!', 2000);
-            
+            indicator.classList.remove('active');
             // Try to prefetch if we were offline
             if (!AppState.prefetched && !AppState.isLoading) {
                 prefetchQuestion();
             }
         } else {
-            // Show offline indicator
-            if (indicator) {
-                indicator.classList.add('active');
-                indicator.classList.add('ios-style');
-            }
-            
-            // Show offline toast
-            offlineToast = showNotification('warning', 'You\'re offline. Check your connection.', 0);
+            indicator.classList.add('active');
+            showNotification('warning', 'You\'re offline. Check your connection to continue.', 3000);
         }
     };
     

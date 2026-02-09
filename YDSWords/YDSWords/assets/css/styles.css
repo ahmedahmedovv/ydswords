@@ -1934,3 +1934,267 @@ button, .option {
         opacity: 0.8;
     }
 }
+
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   PHASE 6: IOS TOAST NOTIFICATIONS
+   Modern banner-style notifications inspired by iOS alerts
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══ Notification Container - Fixed Position ═══ */
+.notification-container {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: calc(100% - 32px);
+    max-width: 400px;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ═══ iOS Toast Notification ═══ */
+.ios-toast {
+    background: rgba(30, 30, 30, 0.92);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    color: white;
+    padding: 14px 18px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 
+        0 4px 24px rgba(0, 0, 0, 0.15),
+        0 1px 2px rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+    animation: toastSlideIn 0.4s var(--ios-spring);
+    max-width: 100%;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.ios-toast.exiting {
+    animation: toastSlideOut 0.3s var(--ios-ease-in) forwards;
+}
+
+@keyframes toastSlideOut {
+    to {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.98);
+    }
+}
+
+/* Toast Icon */
+.ios-toast-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.ios-toast.success .ios-toast-icon {
+    background: var(--ios-system-green);
+}
+
+.ios-toast.error .ios-toast-icon {
+    background: var(--ios-system-red);
+}
+
+.ios-toast.warning .ios-toast-icon {
+    background: var(--ios-system-orange);
+}
+
+.ios-toast.info .ios-toast-icon {
+    background: var(--ios-system-blue);
+}
+
+/* Toast Content */
+.ios-toast-content {
+    flex: 1;
+    font-size: var(--text-subhead);
+    line-height: 1.4;
+    color: white;
+}
+
+/* Toast Close Button */
+.ios-toast-close {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.ios-toast-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+}
+
+.ios-toast-close:active {
+    transform: scale(0.92);
+}
+
+/* Light Mode Toast Variant */
+@media (prefers-color-scheme: light) {
+    .ios-toast.light {
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--ios-label);
+        box-shadow: 
+            0 4px 24px rgba(0, 0, 0, 0.12),
+            0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+    
+    .ios-toast.light .ios-toast-content {
+        color: var(--ios-label);
+    }
+    
+    .ios-toast.light .ios-toast-close {
+        background: var(--ios-fill);
+        color: var(--ios-label-secondary);
+    }
+    
+    .ios-toast.light .ios-toast-close:hover {
+        background: var(--ios-secondary-fill);
+        color: var(--ios-label);
+    }
+}
+
+/* ═══ Offline Indicator - Redesigned as Toast ═══ */
+.offline-indicator.ios-style {
+    display: none;
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    background: var(--ios-system-orange);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 100px;
+    font-size: var(--text-subhead);
+    font-weight: 500;
+    box-shadow: 0 4px 16px rgba(255, 149, 0, 0.3);
+    animation: offlineSlideIn 0.4s var(--ios-spring);
+}
+
+.offline-indicator.ios-style.active {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.offline-indicator.ios-style::before {
+    content: '⚠';
+    font-size: 16px;
+}
+
+@keyframes offlineSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* ═══ Actionable Toast (with button) ═══ */
+.ios-toast-actionable {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+}
+
+.ios-toast-actionable .ios-toast-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ios-toast-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ios-toast-btn {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-family: inherit;
+    font-size: var(--text-footnote);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.ios-toast-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.ios-toast-btn.primary {
+    background: var(--ios-system-blue);
+}
+
+.ios-toast-btn.primary:hover {
+    background: #0066CC;
+}
+
+/* ═══ Toast Queue Management ═══ */
+.notification-container.has-multiple .ios-toast:nth-child(1) {
+    transform: scale(0.95) translateY(-5px);
+    opacity: 0.8;
+}
+
+.notification-container.has-multiple .ios-toast:nth-child(2) {
+    transform: scale(0.9) translateY(-10px);
+    opacity: 0.6;
+}
+
+.notification-container.has-multiple .ios-toast:nth-child(3) {
+    transform: scale(0.85) translateY(-15px);
+    opacity: 0.4;
+}
+
+/* ═══ Reduced Motion ═══ */
+@media (prefers-reduced-motion: reduce) {
+    .ios-toast {
+        animation: none;
+    }
+    
+    .ios-toast.exiting {
+        animation: none;
+        opacity: 0;
+    }
+}

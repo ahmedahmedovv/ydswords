@@ -121,19 +121,22 @@
          APP PAGE (Quiz Mode)
          ═══════════════════════════════════════════════════════════════════════ -->
     <div class="app" id="appPage">
-        <button class="btn-back" id="btnBack">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Back" role="img">
-                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-            </svg>
-            Back
-        </button>
-
-        <header class="header">
-            <div class="header-top">
-                <h1>YDS Words</h1>
-                <div class="score" id="score">0 / 0</div>
-            </div>
+        <!-- Header -->
+        <header class="quiz-header">
+            <button class="btn-back" id="btnBack">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Back">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+                Back
+            </button>
+            <div class="quiz-header-title">Quiz</div>
+            <div class="quiz-header-progress" id="quizProgressText">0 / 0</div>
         </header>
+
+        <!-- Progress Bar -->
+        <div class="quiz-progress-bar">
+            <div class="quiz-progress" id="quizProgress"></div>
+        </div>
 
         <div class="loading hidden" id="loading">
             <div class="spinner"></div>

@@ -9,6 +9,9 @@ const AppState = {
     prefetched: null,
     isFirstQuestion: true,
     
+    // Quiz progress tracking
+    questionCount: 0,
+    
     // Request management
     abortController: null,
     isLoading: false,
@@ -31,6 +34,7 @@ const AppState = {
         this.prefetched = null;
         this.isFirstQuestion = true;
         this.hasAnswered = false;
+        this.questionCount = 0;
     },
     
     cancelPendingRequests() {

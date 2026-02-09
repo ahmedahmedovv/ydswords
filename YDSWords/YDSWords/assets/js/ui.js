@@ -23,7 +23,9 @@ const DOM = {
     get scoreEl() { return $('score'); },
     get errorState() { return $('errorState'); },
     get errorMessage() { return $('errorMessage'); },
-    get btnRetry() { return $('btnRetry'); }
+    get btnRetry() { return $('btnRetry'); },
+    get quizProgressText() { return $('quizProgressText'); },
+    get quizProgress() { return $('quizProgress'); }
 };
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -181,6 +183,26 @@ function showError(message, showRetry = true) {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
+// QUIZ PROGRESS
+// ═════════════════════════════════════════════════════════════════════════════
+
+function updateQuizProgress() {
+    // Update progress text
+    if (DOM.quizProgressText) {
+        DOM.quizProgressText.textContent = `${AppState.correct} / ${AppState.total}`;
+    }
+    
+    // Update progress bar
+    if (DOM.quizProgress) {
+        // Calculate percentage based on question count (show progress through session)
+        // Using total as a proxy for progress, max out at 20 questions for visual
+        const maxQuestions = 20;
+        const percentage = Math.min((AppState.total / maxQuestions) * 100, 100);
+        DOM.quizProgress.style.width = `${percentage}%`;
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
 // QUESTION LOADING & DISPLAY
 // ═════════════════════════════════════════════════════════════════════════════
 
@@ -304,6 +326,9 @@ function displayQuestion() {
         if (DOM.feedback) DOM.feedback.classList.add('hidden');
         if (DOM.btnNext) DOM.btnNext.classList.add('hidden');
         
+        // Update progress display
+        updateQuizProgress();
+        
     } catch (error) {
         console.error('Error displaying question:', error);
         showError('Failed to display question. Please try again.');
@@ -333,6 +358,9 @@ function selectAnswer(index) {
     AppState.total++;
     if (isCorrect) AppState.correct++;
     if (DOM.scoreEl) DOM.scoreEl.textContent = `${AppState.correct} / ${AppState.total}`;
+    
+    // Update progress bar
+    updateQuizProgress();
     
     // Update UI with visual feedback
     const optionButtons = DOM.options ? DOM.options.querySelectorAll('.option') : [];

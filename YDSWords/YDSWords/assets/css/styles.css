@@ -350,35 +350,45 @@ body {
     }
 }
 
-/* ═══ Header - iOS Style ═══ */
-.header {
-    margin-bottom: var(--space-md);
-    padding-top: var(--space-sm);
-}
+/* ═══ Unified Header Style (Quiz & Flashcards) ═══ */
 
-.header-top {
+/* Quiz Header */
+.quiz-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding-bottom: var(--space-sm);
-    border-bottom: 0.5px solid var(--ios-separator);
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    padding-top: max(var(--space-md), env(safe-area-inset-top));
+    background: var(--ios-system-background);
+    border-bottom: 1px solid var(--ios-separator);
+    flex-shrink: 0;
 }
 
-.header h1 {
-    font-size: clamp(24px, 7vw, 36px);
-    font-weight: 700;
-    color: var(--ios-label);
-    letter-spacing: -0.4px;
-}
-
-.score {
-    font-family: var(--font-mono);
-    font-size: clamp(12px, 3.5vw, 15px);
+.quiz-header-title {
+    font-size: var(--text-headline);
     font-weight: 600;
+    color: var(--ios-label);
+}
+
+.quiz-header-progress {
+    font-size: var(--text-subhead);
     color: var(--ios-label-secondary);
-    background: var(--ios-secondary-fill);
-    padding: clamp(4px, 1.5vw, 8px) clamp(8px, 3vw, 14px);
-    border-radius: 100px;
+    font-weight: 500;
+    min-width: 60px;
+    text-align: right;
+}
+
+.quiz-progress-bar {
+    height: 3px;
+    background: var(--ios-system-gray5);
+    flex-shrink: 0;
+}
+
+.quiz-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ios-system-blue), var(--ios-system-purple));
+    transition: width 0.3s var(--ios-ease-out);
+    width: 0%;
 }
 
 /* ═══ Back Button - iOS Style ═══ */
@@ -387,15 +397,19 @@ body {
     border: none;
     color: var(--ios-system-blue);
     font-family: inherit;
-    font-size: var(--text-body);
+    font-size: var(--text-subhead);
     cursor: pointer;
-    padding: var(--space-sm) 0;
-    margin-bottom: var(--space-xs);
-    margin-left: -8px;
+    padding: 0;
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
     transition: opacity 0.2s ease;
+}
+
+.btn-back svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
 }
 
 .btn-back:active {
@@ -1471,7 +1485,7 @@ button, .option {
     display: flex;
 }
 
-/* Header */
+/* Flashcard Header - Same style as Quiz */
 .flashcard-header {
     display: flex;
     align-items: center;
@@ -1497,7 +1511,7 @@ button, .option {
     text-align: right;
 }
 
-/* Progress Bar */
+/* Flashcard Progress Bar */
 .flashcard-progress-bar {
     height: 3px;
     background: var(--ios-system-gray5);

@@ -793,35 +793,80 @@ body {
 /* ═══ Small iPhones: SE (375×667), mini (375×812) ═══ */
 @media (max-width: 375px) {
     :root {
-        --text-large-title: 28px;
-        --text-title-1: 24px;
-        --text-title-2: 20px;
-        --text-body: 15px;
-        --text-callout: 14px;
-        --text-subhead: 13px;
+        --text-large-title: 26px;
+        --text-title-1: 22px;
+        --text-title-2: 18px;
+        --text-body: 14px;
+        --text-callout: 13px;
+        --text-subhead: 12px;
+        --text-footnote: 11px;
     }
     
     .welcome-minimal {
-        padding: 32px 16px;
-        justify-content: flex-start;
-        padding-top: calc(24px + env(safe-area-inset-top));
+        padding: 16px;
+        justify-content: center;
+        padding-top: max(16px, env(safe-area-inset-top));
+        padding-bottom: max(16px, env(safe-area-inset-bottom));
     }
     
     .welcome-minimal-content {
-        gap: 20px;
+        gap: 24px;
     }
     
-    .welcome-minimal-title {
-        font-size: 28px;
+    .welcome-app-name {
+        font-size: 32px;
     }
     
-    .welcome-minimal-desc {
+    .welcome-quote {
+        font-size: 13px;
+        padding: 0 16px;
+    }
+    
+    .mode-selection {
+        margin-top: 8px;
+    }
+    
+    .mode-selection-title {
+        font-size: 11px;
+        margin-bottom: 10px;
+    }
+    
+    .mode-cards {
+        gap: 10px;
+    }
+    
+    .mode-card {
+        padding: 12px;
+        gap: 10px;
+    }
+    
+    .mode-card-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+    }
+    
+    .mode-card-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .mode-card-content h3 {
         font-size: 14px;
     }
     
+    .mode-card-content p {
+        font-size: 11px;
+    }
+    
+    .mode-card-arrow {
+        font-size: 18px;
+    }
+    
     .btn-minimal {
-        min-height: 50px;
-        padding: 14px 20px;
+        min-height: 44px;
+        padding: 12px 16px;
+        font-size: 15px;
     }
     
     .header h1 {
@@ -872,11 +917,19 @@ body {
     }
     
     .welcome-minimal {
-        padding: 48px 20px;
+        padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
     }
     
-    .welcome-minimal-title {
-        font-size: 34px;
+    .welcome-minimal-content {
+        gap: 32px;
+    }
+    
+    .welcome-app-name {
+        font-size: 40px;
+    }
+    
+    .welcome-quote {
+        font-size: 15px;
     }
     
     .sentence {
@@ -892,7 +945,6 @@ body {
         min-height: 52px;
         padding: 14px;
     }
-    
 }
 
 /* ═══ Large iPhones: Plus (428×926), Pro Max (430×932) ═══ */
@@ -906,15 +958,28 @@ body {
     }
     
     .welcome-minimal {
-        padding: 64px 28px;
+        padding: max(32px, env(safe-area-inset-top)) 28px max(32px, env(safe-area-inset-bottom));
     }
     
     .welcome-minimal-content {
-        gap: 32px;
+        gap: 40px;
     }
     
-    .welcome-minimal-title {
-        font-size: 40px;
+    .welcome-app-name {
+        font-size: 48px;
+    }
+    
+    .welcome-quote {
+        font-size: 16px;
+    }
+    
+    .mode-card {
+        padding: 18px 22px;
+    }
+    
+    .mode-card-icon {
+        width: 52px;
+        height: 52px;
     }
     
     .app {
@@ -975,11 +1040,23 @@ body {
     }
     
     .welcome-minimal {
-        padding: 80px 32px;
+        padding: max(40px, env(safe-area-inset-top)) 32px max(40px, env(safe-area-inset-bottom));
     }
     
-    .welcome-minimal-title {
-        font-size: 44px;
+    .welcome-minimal-content {
+        gap: 48px;
+    }
+    
+    .welcome-app-name {
+        font-size: 52px;
+    }
+    
+    .welcome-quote {
+        font-size: 18px;
+    }
+    
+    .mode-card {
+        padding: 20px 24px;
     }
     
     .sentence {
@@ -1001,11 +1078,50 @@ body {
 @media (max-height: 700px) {
     .welcome-minimal {
         justify-content: flex-start;
-        padding-top: 24px;
+        padding-top: max(8px, env(safe-area-inset-top));
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
     }
     
     .welcome-minimal-content {
-        gap: 16px;
+        gap: 10px;
+    }
+    
+    .welcome-app-name {
+        font-size: 26px;
+    }
+    
+    .welcome-minimal-desc {
+        font-size: 13px;
+    }
+    
+    .welcome-minimal-features {
+        gap: 6px;
+    }
+    
+    .feature-item {
+        font-size: 12px;
+    }
+    
+    .welcome-quote {
+        font-size: 11px;
+        margin: 4px 0;
+    }
+    
+    .mode-selection {
+        margin-top: 6px;
+    }
+    
+    .mode-selection-title {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .mode-cards {
+        gap: 8px;
+    }
+    
+    .mode-card {
+        padding: 10px 12px;
     }
     
     /* Compact feedback for smaller screens */
@@ -1028,6 +1144,66 @@ body {
 
 /* ═══ Extra compact screens (iPhone SE) ═══ */
 @media (max-height: 650px) {
+    .welcome-minimal {
+        padding: 12px 16px;
+        justify-content: center;
+    }
+    
+    .welcome-minimal-content {
+        gap: 16px;
+    }
+    
+    .welcome-app-name {
+        font-size: 26px;
+    }
+    
+    .welcome-quote {
+        font-size: 11px;
+        padding: 0 12px;
+    }
+    
+    .mode-selection {
+        margin-top: 4px;
+    }
+    
+    .mode-selection-title {
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
+    
+    .mode-cards {
+        gap: 6px;
+    }
+    
+    .mode-card {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+    
+    .mode-card-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+    }
+    
+    .mode-card-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .mode-card-content h3 {
+        font-size: 13px;
+        margin-bottom: 1px;
+    }
+    
+    .mode-card-content p {
+        font-size: 10px;
+    }
+    
+    .mode-card-arrow {
+        font-size: 16px;
+    }
+    
     .feedback {
         max-height: calc(100dvh - 180px);
         padding: 8px 10px;
@@ -1059,16 +1235,58 @@ body {
 /* ═══ Landscape safety (portrait only app) ═══ */
 @media (max-width: 900px) and (max-height: 400px) {
     .welcome-minimal {
-        padding: 16px;
-        justify-content: flex-start;
-    }
-    
-    .welcome-minimal-title {
-        font-size: 24px;
+        padding: 12px 16px;
+        justify-content: center;
     }
     
     .welcome-minimal-content {
-        gap: 12px;
+        gap: 16px;
+    }
+    
+    .welcome-app-name {
+        font-size: 26px;
+    }
+    
+    .welcome-quote {
+        font-size: 11px;
+        padding: 0 12px;
+    }
+    
+    .mode-selection {
+        margin-top: 4px;
+    }
+    
+    .mode-selection-title {
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
+    
+    .mode-cards {
+        flex-direction: row;
+        gap: 10px;
+    }
+    
+    .mode-card {
+        flex: 1;
+        padding: 10px;
+        min-width: 0;
+    }
+    
+    .mode-card-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .mode-card-content h3 {
+        font-size: 13px;
+    }
+    
+    .mode-card-content p {
+        display: none;
+    }
+    
+    .mode-card-arrow {
+        display: none;
     }
 }
 
@@ -1109,13 +1327,15 @@ button, .option {
     width: 100%;
     max-width: var(--content-max);
     margin: 0 auto;
-    padding: clamp(32px, 10vh, 80px) clamp(16px, 5vw, 32px);
+    padding: max(16px, env(safe-area-inset-top)) clamp(16px, 5vw, 32px) max(16px, env(safe-area-inset-bottom));
     min-height: 100vh;
     min-height: -webkit-fill-available;
     display: none;
     flex-direction: column;
     justify-content: center;
     background: var(--ios-system-background);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .welcome-minimal.active {
@@ -1125,7 +1345,9 @@ button, .option {
 .welcome-minimal-content {
     display: flex;
     flex-direction: column;
-    gap: clamp(20px, 5vh, 36px);
+    gap: clamp(24px, 6vh, 48px);
+    width: 100%;
+    max-width: 100%;
 }
 
 /* Header */
@@ -1134,11 +1356,12 @@ button, .option {
     flex-direction: column;
     align-items: center;
     gap: 0;
-    margin-bottom: clamp(8px, 2vh, 16px);
+    margin-bottom: 0;
+    flex-shrink: 0;
 }
 
 .welcome-app-name {
-    font-size: clamp(36px, 10vw, 48px);
+    font-size: clamp(32px, 10vw, 52px);
     font-weight: 800;
     color: var(--ios-label);
     letter-spacing: -1px;
@@ -1163,46 +1386,16 @@ button, .option {
     margin: 0;
 }
 
-/* Description */
-.welcome-minimal-desc {
-    font-size: var(--text-body);
-    color: var(--ios-label-secondary);
-    line-height: 1.6;
-    margin: 0;
-}
-
-/* Features */
-.welcome-minimal-features {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(10px, 2.5vh, 16px);
-}
-
-.feature-item {
-    display: flex;
-    align-items: center;
-    gap: clamp(8px, 2vw, 14px);
-    font-size: var(--text-subhead);
-    color: var(--ios-label);
-}
-
-.feature-dot {
-    width: 8px;
-    height: 8px;
-    background: var(--ios-system-green);
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
 /* Quote */
 .welcome-quote {
-    font-size: clamp(13px, 3.8vw, 16px);
+    font-size: clamp(14px, 4vw, 18px);
     font-style: italic;
     color: var(--ios-label-tertiary);
     text-align: center;
-    margin: clamp(8px, 2vh, 16px) 0;
+    margin: 0;
     line-height: 1.5;
-    padding: 0 clamp(8px, 3vw, 20px);
+    padding: 0 clamp(16px, 5vw, 32px);
+    flex-shrink: 0;
 }
 
 /* Action */
@@ -1253,10 +1446,41 @@ button, .option {
     .welcome-minimal-action {
         margin-top: 4px;
     }
+}
+
+/* ═══ Very small screens (iPhone SE 1st gen, 320px width) ═══ */
+@media (max-width: 320px) {
+    .welcome-minimal {
+        padding: 12px;
+    }
     
-    .feature-dot {
-        width: 6px;
-        height: 6px;
+    .welcome-minimal-content {
+        gap: 16px;
+    }
+    
+    .welcome-app-name {
+        font-size: 26px;
+    }
+    
+    .welcome-quote {
+        font-size: 11px;
+    }
+    
+    .mode-card {
+        padding: 10px;
+    }
+    
+    .mode-card-icon {
+        width: 34px;
+        height: 34px;
+    }
+    
+    .mode-card-content h3 {
+        font-size: 13px;
+    }
+    
+    .mode-card-content p {
+        font-size: 10px;
     }
 }
 
@@ -1276,7 +1500,8 @@ button, .option {
 /* ═══ Mode Selection on Welcome Page ═══ */
 .mode-selection {
     width: 100%;
-    margin-top: var(--space-xl);
+    margin-top: clamp(12px, 3vh, 24px);
+    flex-shrink: 0;
 }
 
 .mode-selection-title {
@@ -1292,21 +1517,22 @@ button, .option {
 .mode-cards {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: clamp(10px, 2.5vh, 16px);
 }
 
 .mode-card {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-lg);
+    gap: clamp(12px, 3vw, 16px);
+    padding: clamp(14px, 3.5vh, 20px) clamp(14px, 4vw, 20px);
     background: var(--ios-secondary-grouped-background);
     border: 1px solid var(--ios-separator);
-    border-radius: 16px;
+    border-radius: clamp(12px, 3vw, 16px);
     cursor: pointer;
     transition: all 0.2s var(--ios-spring);
     text-align: left;
     width: 100%;
+    min-height: 44px;
 }
 
 .mode-card:hover {
@@ -1321,10 +1547,10 @@ button, .option {
 
 .mode-card-icon {
     flex-shrink: 0;
-    width: 48px;
-    height: 48px;
+    width: clamp(40px, 12vw, 48px);
+    height: clamp(40px, 12vw, 48px);
     background: var(--ios-system-blue);
-    border-radius: 12px;
+    border-radius: clamp(10px, 3vw, 12px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1346,17 +1572,17 @@ button, .option {
 }
 
 .mode-card-content h3 {
-    font-size: var(--text-headline);
+    font-size: clamp(14px, 4vw, 17px);
     font-weight: 600;
     color: var(--ios-label);
-    margin: 0 0 4px 0;
+    margin: 0 0 clamp(2px, 1vh, 4px) 0;
 }
 
 .mode-card-content p {
-    font-size: var(--text-footnote);
+    font-size: clamp(12px, 3.5vw, 14px);
     color: var(--ios-label-secondary);
     margin: 0;
-    line-height: 1.4;
+    line-height: 1.35;
 }
 
 .mode-card-arrow {
@@ -1724,15 +1950,6 @@ button, .option {
     .flashcard-definition {
         font-size: var(--text-body);
         padding: 0 var(--space-xs);
-    }
-    
-    .mode-card {
-        padding: var(--space-md);
-    }
-    
-    .mode-card-icon {
-        width: 40px;
-        height: 40px;
     }
     
     .action-btn {

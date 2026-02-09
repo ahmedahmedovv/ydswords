@@ -4,33 +4,43 @@
 
 YDS Words is an iOS application designed for Turkish students preparing for the YDS (Yabancı Dil Sınavı - Foreign Language Exam). It's a vocabulary learning app that generates dynamic multiple-choice quiz questions and provides flashcard study modes using OpenAI's GPT-4o-mini model.
 
-The app follows a hybrid architecture:
+The app follows a **hybrid architecture**:
 - **Native iOS Layer**: Thin Swift wrapper using UIKit + WebKit (WKWebView)
 - **Application Layer**: HTML/CSS/JavaScript single-page application containing all UI, logic, and vocabulary data
 - **AI Backend**: Netlify Function acting as a secure proxy to OpenAI API
 
+---
+
 ## Technology Stack
 
 ### Native iOS Layer
-- **Language**: Swift 5.0
-- **Frameworks**: UIKit, WebKit
-- **IDE**: Xcode 14.3+ (LastUpgradeCheck = 1430)
-- **Minimum iOS Version**: iOS 14.0
-- **Target Device**: iPhone (portrait only, `TARGETED_DEVICE_FAMILY = 1`)
-- **Scene Support**: Single scene only (`UIApplicationSupportsMultipleScenes = false`)
+| Component | Value |
+|-----------|-------|
+| **Language** | Swift 5.0 |
+| **Frameworks** | UIKit, WebKit |
+| **IDE** | Xcode 14.3+ (LastUpgradeCheck = 1430) |
+| **Minimum iOS Version** | iOS 14.0 |
+| **Target Device** | iPhone (portrait only, `TARGETED_DEVICE_FAMILY = 1`) |
+| **Scene Support** | Single scene only (`UIApplicationSupportsMultipleScenes = false`) |
 
 ### Web Application Layer
-- **Frontend**: HTML5, CSS3, vanilla JavaScript (no frameworks)
-- **Design System**: iOS Native Design System with SF Pro typography
-- **Responsive Design**: Fluid typography using CSS `clamp()` for all iPhone sizes
-- **Dark Mode**: Full support via CSS `prefers-color-scheme` media queries
-- **Accessibility**: High contrast mode, reduced motion support, safe area insets
+| Component | Technology |
+|-----------|------------|
+| **Frontend** | HTML5, CSS3, vanilla JavaScript (no frameworks) |
+| **Design System** | iOS Native Design System with SF Pro typography |
+| **Responsive Design** | Fluid typography using CSS `clamp()` for all iPhone sizes |
+| **Dark Mode** | Full support via CSS `prefers-color-scheme` media queries |
+| **Accessibility** | High contrast mode, reduced motion support, safe area insets |
 
 ### Backend / AI Integration
-- **Platform**: Netlify Functions (serverless)
-- **AI Model**: OpenAI GPT-4o-mini
-- **API Proxy**: Node.js function (`generate-question.js`)
-- **Security**: API key stored in Netlify environment variables (never exposed to client)
+| Component | Value |
+|-----------|-------|
+| **Platform** | Netlify Functions (serverless) |
+| **AI Model** | OpenAI GPT-4o-mini |
+| **API Proxy** | Node.js function (`generate-question.js`) |
+| **Security** | API key stored in Netlify environment variables (never exposed to client) |
+
+---
 
 ## Project Structure
 
@@ -45,7 +55,7 @@ YDSWords/
 │   ├── Info.plist                   # App metadata, ATS settings, orientation
 │   ├── index.html                   # Main HTML file (SPA entry point)
 │   ├── assets/
-│   │   ├── css/styles.css           # iOS Design System styles (~1760 lines)
+│   │   ├── css/styles.css           # iOS Design System styles (~1977 lines)
 │   │   └── js/                      # JavaScript modules
 │   │       ├── words.js             # ~1000 English vocabulary words/phrases (1273 lines)
 │   │       ├── config.js            # App configuration & prompt templates
@@ -53,7 +63,7 @@ YDSWords/
 │   │       ├── api.js               # API functions (Netlify proxy calls)
 │   │       ├── utils.js             # Utility functions (XSS, validation, circuit breaker)
 │   │       ├── ui.js                # UI manipulation functions
-│   │       ├── flashcards.js        # Tinder-style flashcard study mode
+│   │       ├── flashcards.js        # Tinder-style flashcard study mode (740 lines)
 │   │       └── app.js               # Main application logic & event handlers
 │   └── Assets.xcassets/             # App icons (all iOS sizes)
 │       └── AppIcon.appiconset/
@@ -67,8 +77,12 @@ YDSWords/
 ├── .env.example                     # Example environment variables template
 ├── .gitignore                       # Git ignore rules
 ├── DEPLOYMENT.md                    # Deployment guide for Netlify
+├── CROSS_PLATFORM_GUIDE.md          # Cross-platform browser compatibility guide
+├── UI_REFRESH_SUMMARY.md            # UI refresh implementation summary
 └── AGENTS.md                        # This file
 ```
+
+---
 
 ## Key Components
 
@@ -172,7 +186,7 @@ Serverless function that acts as a secure proxy:
 - CORS headers configured for cross-origin requests
 - Model: `gpt-4o-mini` with temperature 0.8 and max_tokens 1024
 
-### 6. CSS (styles.css, 1760 lines)
+### 6. CSS (styles.css, ~1977 lines)
 iOS Design System implementation:
 - CSS custom properties for iOS system colors
 - Dark mode support via `prefers-color-scheme: dark`
@@ -183,6 +197,8 @@ iOS Design System implementation:
 - iOS-style components: buttons, cards, lists, toggles, inputs, segmented controls
 - Spring animations and transitions matching iOS feel
 - Flashcard swipe animations and visual states
+
+---
 
 ## Build Configuration
 
@@ -237,6 +253,8 @@ CODE_SIGN_STYLE = Automatic
     Referrer-Policy = "strict-origin-when-cross-origin"
 ```
 
+---
+
 ## Build and Run Commands
 
 ### Via Xcode IDE
@@ -271,6 +289,8 @@ netlify dev
 # Function available at: http://localhost:8888/.netlify/functions/generate-question
 ```
 
+---
+
 ## Development Guidelines
 
 ### Modifying Native Code
@@ -298,6 +318,8 @@ configuration.userContentController.add(self, name: "nativeHandler")
 ```
 2. Implement `WKScriptMessageHandler` protocol
 3. In JavaScript: `window.webkit.messageHandlers.nativeHandler.postMessage(data)`
+
+---
 
 ## Testing Strategy
 
@@ -343,6 +365,8 @@ configuration.userContentController.add(self, name: "nativeHandler")
 3. Tap Flashcards mode - first card should load instantly
 4. Swipe through cards - transitions should be smooth due to prefetching
 
+---
+
 ## Security Considerations
 
 ### App Transport Security
@@ -371,6 +395,8 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - JSON parsing with multiple fallback strategies
 - Length limits on sentence and option text
 
+---
+
 ## Deployment
 
 ### App Store Submission
@@ -386,6 +412,8 @@ configuration.userContentController.add(self, name: "nativeHandler")
 3. Add `OPENAI_API_KEY` environment variable in Netlify dashboard
 4. Update API endpoint in `assets/js/api.js` with deployed URL
 5. Rebuild and resubmit iOS app
+
+---
 
 ## Troubleshooting
 
@@ -420,6 +448,8 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - Check `prefers-color-scheme: dark` media queries are properly defined
 - Ensure WebKit respects color scheme via meta tags in HTML
 
+---
+
 ## Code Style Guidelines
 
 ### Swift
@@ -449,17 +479,23 @@ if (typeof module !== 'undefined' && module.exports) {
 - Dark mode via `prefers-color-scheme` media queries
 - Reduced motion support via `prefers-reduced-motion`
 
+---
+
 ## External Dependencies
 
-The project has no external Swift package dependencies.
+The project has **no external Swift package dependencies**.
 
 The web layer uses:
 - **iOS System Fonts**: SF Pro (system font, no CDN required)
 - **OpenAI API**: Requires valid API key configured in Netlify
 
+---
+
 ## Version History
 
 - **v1.0.0**: Initial release with AI-powered quiz generation, circuit breaker, offline detection, iOS Design System, dark mode support, and flashcard study mode
+
+---
 
 ## License and Attribution
 

@@ -1,8 +1,8 @@
 [build]
   # Build command (empty for static site)
   command = ""
-  # Publish the public folder containing the web app
-  publish = "public"
+  # Serve the iOS app folder directly - single source of truth for all platforms
+  publish = "YDSWords/YDSWords"
 
 [functions]
   directory = "netlify/functions"
@@ -14,7 +14,7 @@
   to = "/.netlify/functions/:splat"
   status = 200
 
-# SPA redirect - serve index.html for all routes
+# SPA redirect - serve index.html for all routes  
 [[redirects]]
   from = "/*"
   to = "/index.html"

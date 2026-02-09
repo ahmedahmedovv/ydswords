@@ -15,6 +15,11 @@ const FlashcardState = {
     currentDefinition: null,
     currentExample: null,
     
+    // Prefetch state
+    prefetchedContent: null,
+    prefetchPromise: null,
+    nextWordIndex: null,
+    
     reset() {
         this.currentIndex = 0;
         this.shuffledWords = [];
@@ -23,6 +28,9 @@ const FlashcardState = {
         this.isAnimating = false;
         this.currentDefinition = null;
         this.currentExample = null;
+        this.prefetchedContent = null;
+        this.prefetchPromise = null;
+        this.nextWordIndex = null;
     },
     
     shuffleWords() {
@@ -195,6 +203,41 @@ async function startFlashcardMode() {
     
     // Load first card
     await loadFlashcard();
+    
+    // Prefetch second card immediately after first loads
+    // This ensures while user reads card 1, card 2 is being prepared
+    prefetchNextFlashcard();
+}
+
+/**
+ * Prefetch next flashcard content in background
+ */
+function prefetchNextFlashcard() {
+    const nextIndex = FlashcardState.currentIndex + 1;
+    
+    // Don't prefetch if out of bounds
+    if (nextIndex >= FlashcardState.shuffledWords.length) return;
+    
+    // Don't prefetch if already have content for next index
+    if (FlashcardState.prefetchedContent && FlashcardState.nextWordIndex === nextIndex) return;
+    
+    // Don't prefetch if already fetching
+    if (FlashcardState.prefetchPromise) return;
+    
+    const nextWord = FlashcardState.shuffledWords[nextIndex];
+    FlashcardState.nextWordIndex = nextIndex;
+    
+    FlashcardState.prefetchPromise = generateFlashcardContent(nextWord)
+        .then(content => {
+            FlashcardState.prefetchedContent = content;
+            FlashcardState.prefetchPromise = null;
+        })
+        .catch(error => {
+            console.error('Flashcard prefetch failed:', error);
+            FlashcardState.prefetchPromise = null;
+            FlashcardState.prefetchedContent = null;
+            // Silent fail - will retry on load
+        });
 }
 
 /**
@@ -221,9 +264,20 @@ async function loadFlashcard() {
     // Reset card position
     resetCardPosition();
     
-    // Fetch content
+    // Check if we have prefetched content for this word
+    let content = null;
+    if (FlashcardState.prefetchedContent && FlashcardState.nextWordIndex === FlashcardState.currentIndex) {
+        content = FlashcardState.prefetchedContent;
+        FlashcardState.prefetchedContent = null;
+        FlashcardState.nextWordIndex = null;
+    }
+    
+    // Fetch content if not prefetched
     try {
-        const content = await generateFlashcardContent(word);
+        if (!content) {
+            content = await generateFlashcardContent(word);
+        }
+        
         FlashcardState.currentDefinition = content.definition;
         FlashcardState.currentExample = content.example;
         
@@ -238,6 +292,10 @@ async function loadFlashcard() {
             FlashcardDOM.flashcardExample.innerHTML = highlightedExample;
             FlashcardDOM.flashcardExample.classList.remove('loading');
         }
+        
+        // Prefetch next card while user reads this one
+        prefetchNextFlashcard();
+        
     } catch (error) {
         console.error('Failed to load flashcard:', error);
         if (FlashcardDOM.flashcardDefinition) {
@@ -312,6 +370,7 @@ function handleKnowWord() {
             card.classList.remove('swipe-right-animation');
             FlashcardState.currentIndex++;
             FlashcardState.isAnimating = false;
+            // Card content should already be prefetched, show instantly
             loadFlashcard();
         }, 300);
     } else {
@@ -340,6 +399,7 @@ function handleDontKnowWord() {
             card.classList.remove('swipe-left-animation');
             FlashcardState.currentIndex++;
             FlashcardState.isAnimating = false;
+            // Card content should already be prefetched, show instantly
             loadFlashcard();
         }, 300);
     } else {

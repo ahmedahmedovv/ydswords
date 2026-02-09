@@ -12,6 +12,7 @@
 		A00000000000000000000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000013 /* Assets.xcassets */; };
 		A00000000000000000000004 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000014 /* index.html */; };
 		A00000000000000000000005 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000016 /* SceneDelegate.swift */; };
+		A00000000000000000000017 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000018 /* assets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		A00000000000000000000014 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		A00000000000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A00000000000000000000016 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		A00000000000000000000018 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -49,6 +51,7 @@
 				A00000000000000000000012 /* ViewController.swift */,
 				A00000000000000000000013 /* Assets.xcassets */,
 				A00000000000000000000014 /* index.html */,
+				A00000000000000000000018 /* assets */,
 				A00000000000000000000015 /* Info.plist */,
 			);
 			path = YDSWords;
@@ -113,6 +116,7 @@
 			files = (
 				A00000000000000000000003 /* Assets.xcassets in Resources */,
 				A00000000000000000000004 /* index.html in Resources */,
+				A00000000000000000000017 /* assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

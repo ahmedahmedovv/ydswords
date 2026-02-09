@@ -462,26 +462,31 @@ let touchCurrentX = 0;
 let isDragging = false;
 
 function initFlashcardGestures() {
-    const card = FlashcardDOM.flashcardCard;
-    if (!card) return;
+    // Attach to the entire container (main swipe area) for full-area swiping
+    const swipeArea = FlashcardDOM.flashcardContainer;
+    if (!swipeArea) return;
     
-    // Touch events
-    card.addEventListener('touchstart', handleTouchStart, { passive: true });
-    card.addEventListener('touchmove', handleTouchMove, { passive: true });
-    card.addEventListener('touchend', handleTouchEnd);
+    // Touch events - on entire container
+    swipeArea.addEventListener('touchstart', handleTouchStart, { passive: true });
+    swipeArea.addEventListener('touchmove', handleTouchMove, { passive: true });
+    swipeArea.addEventListener('touchend', handleTouchEnd);
     
     // Mouse events (for desktop testing)
-    card.addEventListener('mousedown', handleMouseDown);
+    swipeArea.addEventListener('mousedown', handleMouseDown);
 }
 
 function handleTouchStart(e) {
     if (FlashcardState.isAnimating) return;
+    // Ignore if touching buttons
+    if (e.target.closest('.flashcard-action-btn')) return;
     touchStartX = e.touches[0].clientX;
     isDragging = true;
 }
 
 function handleMouseDown(e) {
     if (FlashcardState.isAnimating) return;
+    // Ignore if clicking buttons
+    if (e.target.closest('.flashcard-action-btn')) return;
     touchStartX = e.clientX;
     isDragging = true;
     

@@ -57,6 +57,15 @@ function validateQuestion(data) {
         opt.length > CONFIG.maxOptionLength ? opt.substring(0, CONFIG.maxOptionLength) + '...' : opt
     );
     
+    // Truncate explanations if too long
+    if (data.explanations && Array.isArray(data.explanations)) {
+        data.explanations = data.explanations.map(exp => 
+            typeof exp === 'string' && exp.length > CONFIG.maxExplanationLength 
+                ? exp.substring(0, CONFIG.maxExplanationLength) + '...' 
+                : exp
+        );
+    }
+    
     return true;
 }
 

@@ -20,6 +20,7 @@ const CONFIG = {
     // Input validation
     maxSentenceLength: 150,      // Max characters in sentence (was 2000)
     maxOptionLength: 50,         // Max characters per option (was 500)
+    maxExplanationLength: 120,   // Max characters per explanation (prevents UI overflow)
     
     getPrompt: function(word) {
         // DEFENSE: Validate word before using in prompt
@@ -58,7 +59,7 @@ Requirements:
 - Provide exactly 5 options including "${sanitizedWord}" - all options must be the same grammatical type
 - "${sanitizedWord}" must be the correct answer (index 0)
 - Other 4 options should be plausible distractors that would NOT fit naturally given the specific context
-- For EACH option, explain why it is correct or wrong based on the specific context clues in the sentence
+- For EACH option, provide a BRIEF explanation (max 10-15 words) why it is correct or wrong
 
 EXAMPLES of diverse contexts (for illustration only - create appropriate context for "${sanitizedWord}"):
 
@@ -76,11 +77,11 @@ Respond with JSON only:
   "options": ["${sanitizedWord}", "distractor1", "distractor2", "distractor3", "distractor4"],
   "correctIndex": 0,
   "explanations": [
-    "'${sanitizedWord}' is correct because [explain specific context clues].",
-    "'Distractor1' is wrong because [explain why it doesn't fit the specific context].",
-    "'Distractor2' is wrong because [explain why it doesn't fit the specific context].",
-    "'Distractor3' is wrong because [explain why it doesn't fit the specific context].",
-    "'Distractor4' is wrong because [explain why it doesn't fit the specific context]."
+    "'${sanitizedWord}' fits because it matches the context of _____.",
+    "'Distractor1' is wrong because it means _____, not _____.",
+    "'Distractor2' is wrong because it refers to _____, not _____.",
+    "'Distractor3' is wrong because it describes _____, not _____.",
+    "'Distractor4' is wrong because it implies _____, not _____."
   ]
 }`;
     }

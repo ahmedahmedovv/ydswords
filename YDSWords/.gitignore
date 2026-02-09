@@ -1,0 +1,30 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Node modules (if installed)
+node_modules/
+
+# Netlify
+.netlify/
+
+# macOS
+.DS_Store
+
+# Xcode
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+DerivedData/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp

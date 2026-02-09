@@ -3,6 +3,18 @@
    ═════════════════════════════════════════════════════════════════════════════ */
 
 /**
+ * API Configuration
+ * Change this URL to your Netlify function endpoint after deployment
+ */
+const API_CONFIG = {
+    // Local development (netlify dev)
+    // endpoint: 'http://localhost:8888/.netlify/functions/generate-question',
+    
+    // Production - replace with your actual Netlify site URL after deployment
+    endpoint: 'https://ydswords.netlify.app/.netlify/functions/generate-question'
+};
+
+/**
  * DEFENSE: Fetch with timeout and abort support
  * PROTECTS AGAINST: Hanging requests, slow networks
  */
@@ -57,19 +69,13 @@ async function generateQuestion(attempt = 1) {
     }
     
     try {
-        const response = await fetchWithTimeout('https://api.openai.com/v1/chat/completions', {
+        // Call our secure Netlify proxy instead of OpenAI directly
+        const response = await fetchWithTimeout(API_CONFIG.endpoint, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer REDACTED_OPENAI_API_KEY'
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                model: CONFIG.model,
-                messages: [{ role: 'user', content: prompt }],
-                temperature: CONFIG.temperature,
-                max_tokens: CONFIG.maxTokens,
-                response_format: { type: 'json_object' }
-            })
+            body: JSON.stringify({ prompt })
         });
         
         if (!response.ok) {
@@ -77,6 +83,9 @@ async function generateQuestion(attempt = 1) {
             
             // Specific error messages for common status codes
             switch (response.status) {
+                case 400:
+                    errorMessage = 'Invalid request. Please try again.';
+                    break;
                 case 401:
                     errorMessage = 'Authentication failed. Please contact support.';
                     break;
@@ -210,5 +219,5 @@ async function prefetchQuestion() {
 
 // Export for module systems (if needed in future)
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { fetchWithTimeout, generateQuestion, prefetchQuestion };
+    module.exports = { fetchWithTimeout, generateQuestion, prefetchQuestion, API_CONFIG };
 }

@@ -32,9 +32,26 @@ YDSWords/
 │   ├── AppDelegate.swift        # App lifecycle, window setup, navigation bar styling
 │   ├── ViewController.swift     # WKWebView setup and delegate handling
 │   ├── Info.plist               # App metadata, ATS settings, orientation config
-│   ├── index.html               # Complete web application (2993 lines)
+│   ├── index.html               # Main HTML file
+│   ├── assets/
+│   │   ├── css/styles.css       # Application styles
+│   │   └── js/                  # JavaScript modules
+│   │       ├── api.js           # API functions (calls Netlify proxy)
+│   │       ├── app.js           # Main application logic
+│   │       ├── config.js        # Configuration constants
+│   │       ├── state.js         # Application state management
+│   │       ├── ui.js            # UI manipulation functions
+│   │       ├── utils.js         # Utility functions
+│   │       └── words.js         # Vocabulary word list
 │   └── Assets.xcassets/         # App icons for all iOS sizes
 │       └── AppIcon.appiconset/
+├── netlify/
+│   └── functions/
+│       └── generate-question.js # Secure Netlify Function (OpenAI proxy)
+├── netlify.toml                 # Netlify configuration
+├── .env.example                 # Example environment variables
+├── .gitignore                   # Git ignore rules
+├── DEPLOYMENT.md                # Deployment guide for Netlify
 └── AGENTS.md                    # This file
 ```
 
@@ -56,13 +73,21 @@ YDSWords/
 - Injects safe area insets as CSS variables for iPhone notch support
 - Includes activity indicator for loading feedback
 
-### 3. index.html
+### 3. index.html & JavaScript Modules
 The core application containing:
 - **MYWORDS Array**: ~1000 English vocabulary words and phrases commonly tested in YDS
 - **Quiz Logic**: Fill-in-the-blank sentence questions with 5 options (A-E)
 - **UI Components**: Welcome screen, question area, feedback section, score tracking
-- **API Integration**: Calls OpenAI API (GPT-4o-mini) for question generation
+- **API Integration**: Calls Netlify Function proxy (which securely calls OpenAI API)
 - **Defense Patterns**: Circuit breaker, retry logic, rate limiting, XSS sanitization
+
+### 4. Netlify Function (generate-question.js)
+Serverless function that acts as a secure proxy:
+- Receives requests from the iOS app
+- Stores OpenAI API key in encrypted environment variables
+- Forwards requests to OpenAI API
+- Returns responses to the app
+- **API key is never exposed to the client**
 
 ## Build Configuration
 
@@ -139,10 +164,13 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - [ ] Orientation stays locked to portrait on iPhone
 
 ### Testing AI Integration
-The app depends on OpenAI API. To test:
+The app depends on Netlify Function → OpenAI API. To test:
 1. Ensure device/simulator has internet connection
-2. Monitor Xcode console for API errors
-3. Check that questions generate within ~5 seconds timeout
+2. Deploy Netlify function first (see `DEPLOYMENT.md`)
+3. Update `API_CONFIG.endpoint` in `assets/js/api.js` with your Netlify URL
+4. Monitor Xcode console for API errors
+5. Check Netlify Function logs for server-side errors
+6. Check that questions generate within ~5 seconds timeout
 
 ## Security Considerations
 
@@ -157,9 +185,12 @@ The web layer implements XSS protection:
 - All user-facing content is sanitized before DOM insertion
 
 ### API Key Handling
-⚠️ **Important**: The OpenAI API key is embedded in index.html JavaScript
-- Current implementation exposes the API key in client-side code
-- **Recommendation**: Move API calls to a backend proxy to protect credentials
+✅ **Secure**: OpenAI API key is stored in Netlify environment variables
+- API key is NOT exposed in client-side code
+- iOS app calls Netlify Function → Function calls OpenAI API
+- Key is encrypted at rest in Netlify, only decrypted during function execution
+- See `DEPLOYMENT.md` for setup instructions
+- **Important**: If you previously had the key in client-side code, rotate it immediately at https://platform.openai.com/api-keys
 
 ## Deployment
 

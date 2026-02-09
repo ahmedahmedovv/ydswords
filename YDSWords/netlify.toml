@@ -1,0 +1,17 @@
+[build]
+  # No build command needed for pure serverless functions
+  # But you can add one if you need to process the iOS app
+  command = ""
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"
+  # Node.js runtime for the functions
+  node_bundler = "esbuild"
+
+[[headers]]
+  # Security headers for the function
+  for = "/.netlify/functions/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"

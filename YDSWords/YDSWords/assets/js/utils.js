@@ -49,8 +49,11 @@ function validateQuestion(data) {
     }
     
     // Length limits (prevent memory issues)
+    // For sentences: truncate at last complete word if too long
     if (data.sentence.length > CONFIG.maxSentenceLength) {
-        data.sentence = data.sentence.substring(0, CONFIG.maxSentenceLength) + '...';
+        const truncated = data.sentence.substring(0, CONFIG.maxSentenceLength);
+        const lastSpace = truncated.lastIndexOf(' ');
+        data.sentence = lastSpace > 0 ? truncated.substring(0, lastSpace) + '...' : truncated + '...';
     }
     
     data.options = data.options.map(opt => 

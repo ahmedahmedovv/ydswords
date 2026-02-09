@@ -18,8 +18,8 @@ const CONFIG = {
     circuitBreakerTimeout: 60000, // Time before trying again (1 min)
     
     // Input validation
-    maxSentenceLength: 150,      // Max characters in sentence (was 2000)
-    maxOptionLength: 50,         // Max characters per option (was 500)
+    maxSentenceLength: 300,      // Max characters in sentence (was 2000) - 25 words ~ 200 chars with buffer
+    maxOptionLength: 60,         // Max characters per option (was 500)
     maxExplanationLength: 120,   // Max characters per explanation (prevents UI overflow)
     
     getPrompt: function(word) {
@@ -54,6 +54,7 @@ CRITICAL: Vary the sentence context based on the word's meaning. Do NOT default 
 
 Requirements:
 - Write a concise sentence (15-25 words) with rich context where "${sanitizedWord}" is the ONLY natural fit in the blank _____
+- The sentence MUST be complete - do not cut off or truncate the ending
 - Be concise but specific - include only essential context clues that make the correct choice unambiguous
 - The sentence should feel authentic to academic writing (research papers, essays, lectures, or formal discussions)
 - Provide exactly 5 options including "${sanitizedWord}" - all options must be the same grammatical type

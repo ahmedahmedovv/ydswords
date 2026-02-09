@@ -21,8 +21,9 @@ The app follows a hybrid architecture:
 
 ### Web Application Layer
 - **Frontend**: HTML5, CSS3, vanilla JavaScript (no frameworks)
-- **Font**: Crimson Pro (Google Fonts CDN)
+- **Design System**: iOS Native Design System with SF Pro typography
 - **Responsive Design**: Optimized for iPhone 13 Mini (375px width) with safe area support
+- **Dark Mode**: Full support via CSS `prefers-color-scheme` media queries
 
 ### Backend / AI Integration
 - **Platform**: Netlify Functions (serverless)
@@ -38,12 +39,12 @@ YDSWords/
 │   └── project.pbxproj              # Build settings and file references
 ├── YDSWords/
 │   ├── AppDelegate.swift            # App lifecycle (@main entry point)
-│   ├── SceneDelegate.swift          # Window scene management, appearance config
+│   ├── SceneDelegate.swift          # Window scene management, iOS appearance config
 │   ├── ViewController.swift         # WKWebView setup and delegate handling
 │   ├── Info.plist                   # App metadata, ATS settings, orientation
 │   ├── index.html                   # Main HTML file (SPA entry point)
 │   ├── assets/
-│   │   ├── css/styles.css           # Application styles with mobile optimizations
+│   │   ├── css/styles.css           # iOS Design System styles (~2000 lines)
 │   │   └── js/                      # JavaScript modules
 │   │       ├── words.js             # ~1000 English vocabulary words/phrases
 │   │       ├── config.js            # App configuration & prompt templates
@@ -74,11 +75,11 @@ YDSWords/
 - Handles app lifecycle events
 
 ### 2. SceneDelegate.swift
-- Creates window programmatically (no storyboard: `UILaunchStoryboardName = ""`)
+- Creates window programmatically (no storyboard: `UILaunchStoryboardName = ""
 - Sets up navigation controller with hidden navigation bar
-- Configures custom appearance:
-  - Background: `#fdfbf7` (cream white)
-  - Text: `#1e293b` (dark slate)
+- Configures iOS system appearance with automatic dark mode support:
+  - Uses `.systemBackground` and `.label` colors
+  - Supports both light and dark color schemes
 
 ### 3. ViewController.swift
 - Manages WKWebView with custom configuration
@@ -87,18 +88,21 @@ YDSWords/
 - Implements WKUIDelegate for JavaScript alerts/confirms/prompts
 - Activity indicator for loading feedback
 - Safe area layout support for iPhone notch
+- Uses `.systemBackground` for automatic dark mode support
 
 ### 4. JavaScript Application Architecture
 
 #### words.js
 - `MYWORDS` array: ~1000 English vocabulary words and phrases for YDS exam
 - Includes single words (e.g., "Abnormal", "Accelerate") and phrases (e.g., "Abide by", "Account for")
+- Total of 1273 lines
 
 #### config.js
 - `CONFIG` object with OpenAI parameters (model, temperature, maxTokens)
 - Timeout and retry configuration
 - Circuit breaker settings
 - `getPrompt(word)`: Generates detailed prompts for fill-in-the-blank questions with context-aware examples
+- Supports multi-word expressions with special handling
 
 #### state.js
 - `AppState` singleton managing:
@@ -113,6 +117,7 @@ YDSWords/
 - `fetchWithTimeout()`: AbortController-based timeout handling
 - `generateQuestion()`: Main API call with retry logic and circuit breaker
 - `prefetchQuestion()`: Background question prefetching for instant display
+- Production endpoint: `https://ydswordsios.netlify.app/.netlify/functions/generate-question`
 
 #### utils.js
 - `sanitizeHtml()`: XSS protection via textContent/innerHTML
@@ -127,6 +132,8 @@ YDSWords/
 - `showApp()`, `showWelcome()`: View transitions
 - `loadQuestion()`, `displayQuestion()`: Question flow management
 - `selectAnswer()`: Answer handling with visual feedback
+- Offline detection with indicator
+- Fisher-Yates shuffle for answer options
 
 #### app.js
 - Global error handlers (`error`, `unhandledrejection` events)
@@ -143,6 +150,18 @@ Serverless function that acts as a secure proxy:
 - Forwards to OpenAI API with JSON response format
 - Returns structured response to app
 - CORS headers configured for cross-origin requests
+- Model: `gpt-4o-mini` with temperature 0.8 and max_tokens 1024
+
+### 6. CSS (styles.css)
+iOS Design System implementation:
+- CSS custom properties for iOS system colors
+- Dark mode support via `prefers-color-scheme: dark`
+- High contrast mode support
+- Reduced motion support
+- Safe area inset support (`env(safe-area-inset-*)`)
+- Responsive breakpoints for iPhone 13 Mini (375px) and standard iPhone (390px)
+- iOS-style components: buttons, cards, lists, toggles, inputs, segmented controls
+- Spring animations and transitions matching iOS feel
 
 ## Build Configuration
 
@@ -235,13 +254,15 @@ netlify dev
 
 ### Modifying Native Code
 - **AppDelegate.swift**: App lifecycle, deep linking
-- **SceneDelegate.swift**: Window setup, appearance configuration
+- **SceneDelegate.swift**: Window setup, appearance configuration (uses iOS system colors)
 - **ViewController.swift**: WebView configuration, native-JS bridge (if needed)
 - **Info.plist**: App metadata, permissions, ATS settings
 
 ### Modifying Web Content
 - **index.html**: SPA structure, script loading order
 - **assets/css/styles.css**: Styling, responsive breakpoints (iPhone 13 Mini optimized)
+  - Uses CSS custom properties for iOS system colors
+  - Supports dark mode via `prefers-color-scheme`
 - **assets/js/words.js**: Update `MYWORDS` array to modify vocabulary
 - **assets/js/config.js**: Modify prompt templates, timeout values
 - **assets/js/api.js**: Update `API_CONFIG.endpoint` when deploying new Netlify URL
@@ -259,8 +280,8 @@ configuration.userContentController.add(self, name: "nativeHandler")
 
 ### Manual Testing Checklist
 - [ ] App launches without crash
-- [ ] Welcome screen displays correctly
-- [ ] "Start Learning" button transitions to quiz
+- [ ] Welcome screen displays correctly in both light and dark mode
+- [ ] "Start Practice" button transitions to quiz
 - [ ] Questions load from AI service (requires internet)
 - [ ] Answer selection updates score correctly
 - [ ] Explanations display after answering
@@ -271,6 +292,7 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - [ ] Error states display correctly (offline, API failure)
 - [ ] App handles iPhone notch/safe area correctly
 - [ ] Orientation stays locked to portrait on iPhone
+- [ ] Dark mode toggle works correctly
 
 ### Testing AI Integration
 1. Ensure device/simulator has internet connection
@@ -353,6 +375,11 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - Verify iOS Deployment Target is 14.0
 - Clean build folder: `Cmd+Shift+K`
 
+### Dark Mode Issues
+- Verify CSS uses `var(--ios-label)` and `var(--ios-system-background)`
+- Check `prefers-color-scheme: dark` media queries are properly defined
+- Ensure WebKit respects color scheme via meta tags in HTML
+
 ## Code Style Guidelines
 
 ### Swift
@@ -360,6 +387,7 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - Follow Apple's Swift API Design Guidelines
 - Use `MARK:` comments to separate sections
 - Prefer `let` over `var`, avoid force unwrapping
+- Use iOS system colors for automatic dark mode support
 
 ### JavaScript
 - Defensive programming patterns (extensive validation)
@@ -377,23 +405,24 @@ if (typeof module !== 'undefined' && module.exports) {
 - Mobile-first approach
 - iPhone 13 Mini specific breakpoint at 375px
 - Safe area inset support: `env(safe-area-inset-*)`
-- CSS variables for consistent colors
+- CSS variables for consistent colors (iOS Design System)
+- Dark mode via `prefers-color-scheme` media queries
+- Reduced motion support via `prefers-reduced-motion`
 
 ## External Dependencies
 
 The project has no external Swift package dependencies.
 
 The web layer uses:
-- **Google Fonts (Crimson Pro)**: Loaded from CDN (`fonts.googleapis.com`)
+- **iOS System Fonts**: SF Pro (system font, no CDN required)
 - **OpenAI API**: Requires valid API key configured in Netlify
 
 ## Version History
 
-- **v1.0.0**: Initial release with AI-powered quiz generation, circuit breaker, offline detection
+- **v1.0.0**: Initial release with AI-powered quiz generation, circuit breaker, offline detection, iOS Design System, dark mode support
 
 ## License and Attribution
 
 Ensure proper licensing for:
 - App icon assets
 - Vocabulary word list content (YDS exam words)
-- Google Fonts usage

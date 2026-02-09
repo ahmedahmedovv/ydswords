@@ -526,7 +526,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup mode selection buttons
     if (FlashcardDOM.btnModeQuiz) {
         FlashcardDOM.btnModeQuiz.addEventListener('click', () => {
-            showApp();
+            // Use prefetched question if available for instant display
+            if (AppState.prefetched) {
+                AppState.isFirstQuestion = false;
+                if (DOM.welcomePage) DOM.welcomePage.classList.remove('active');
+                if (DOM.appPage) DOM.appPage.classList.add('active');
+                showLoading(false);
+                AppState.currentQuestion = AppState.prefetched;
+                AppState.prefetched = null;
+                displayQuestion();
+                // Prefetch next one in background
+                prefetchQuestion();
+            } else {
+                showApp();
+            }
         });
     }
     

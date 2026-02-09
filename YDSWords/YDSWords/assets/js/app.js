@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Validate critical DOM elements exist
-    const criticalElements = ['welcomePage', 'appPage', 'btnStart', 'loading', 'questionArea'];
+    const criticalElements = ['welcomePage', 'appPage', 'modeSelection', 'loading', 'questionArea'];
     const missing = criticalElements.filter(id => !document.getElementById(id));
     if (missing.length > 0) {
         console.error('Missing critical DOM elements:', missing);

@@ -23,7 +23,10 @@ const DOM = {
     get scoreEl() { return $('score'); },
     get errorState() { return $('errorState'); },
     get errorMessage() { return $('errorMessage'); },
-    get btnRetry() { return $('btnRetry'); }
+    get btnRetry() { return $('btnRetry'); },
+    // Phase 4 (Revised) - Minimalist feedback elements
+    get feedbackResult() { return $('feedbackResult'); },
+    get feedbackExplanations() { return $('feedbackExplanations'); }
 };
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -272,18 +275,18 @@ function displayQuestion() {
             throw new Error('Shuffle algorithm error');
         }
         
-        // Render options with sanitization (lowercase) - iOS style with staggered animation
+        // Render options - minimalist style
         const keys = ['A', 'B', 'C', 'D', 'E'];
         if (DOM.options) {
             DOM.options.innerHTML = question.options.map((opt, i) => `
-                <button class="option" data-index="${i}" type="button" style="animation-delay: ${i * 0.05}s">
-                    <span class="key">${keys[i]}</span>
+                <button class="option-simple" data-index="${i}" type="button">
+                    <span class="option-key-simple">${keys[i]}</span>
                     <span>${sanitizeHtml(opt).toLowerCase()}</span>
                 </button>
             `).join('');
             
             // DEFENSE: Use event delegation and check for disabled state
-            DOM.options.querySelectorAll('.option').forEach(btn => {
+            DOM.options.querySelectorAll('.option-simple').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     if (!AppState.hasAnswered && !btn.disabled) {
@@ -326,36 +329,44 @@ function selectAnswer(index) {
     if (isCorrect) AppState.correct++;
     if (DOM.scoreEl) DOM.scoreEl.textContent = `${AppState.correct} / ${AppState.total}`;
     
-    // Update UI with visual feedback
-    const optionButtons = DOM.options ? DOM.options.querySelectorAll('.option') : [];
+    // Update UI with clean visual feedback
+    const optionButtons = DOM.options ? DOM.options.querySelectorAll('.option-simple') : [];
     optionButtons.forEach((btn, i) => {
         btn.disabled = true;
         if (i === index) btn.classList.add(isCorrect ? 'correct' : 'incorrect');
         if (i === question.correctIndex && !isCorrect) btn.classList.add('revealed');
     });
     
-    // Build feedback HTML with sanitization
+    // Build clean feedback
     const keys = ['A', 'B', 'C', 'D', 'E'];
-    let feedbackHTML = '';
     
+    // Feedback result header
+    if (DOM.feedbackResult) {
+        DOM.feedbackResult.className = 'feedback-result ' + (isCorrect ? 'correct' : 'incorrect');
+        DOM.feedbackResult.innerHTML = isCorrect 
+            ? '<span>✓</span><span>Correct</span>'
+            : '<span>✕</span><span>Incorrect</span>';
+    }
+    
+    // Build explanations
+    let explanationsHTML = '';
     if (question.explanations && question.explanations.length === 5) {
-        feedbackHTML = '<div class="explanation-list">';
         question.options.forEach((opt, i) => {
             const isOptCorrect = i === question.correctIndex;
             const explanation = question.explanations[i] || '';
-            feedbackHTML += `
-                <div class="explanation-item ${isOptCorrect ? 'correct' : 'wrong'}">
-                    <span class="opt-label">${keys[i]}</span>
-                    <span class="opt-text"><strong>${sanitizeHtml(opt).toLowerCase()}:</strong> ${sanitizeHtml(explanation)}</span>
+            explanationsHTML += `
+                <div class="explanation-row ${isOptCorrect ? 'correct' : 'incorrect'}">
+                    <span class="explanation-key">${keys[i]}</span>
+                    <span class="explanation-text">
+                        <strong>${sanitizeHtml(opt).toLowerCase()}</strong>
+                        ${explanation ? ': ' + sanitizeHtml(explanation) : ''}
+                    </span>
                 </div>
             `;
         });
-        feedbackHTML += '</div>';
-    } else {
-        feedbackHTML = `<p>${isCorrect ? '✅ Correct!' : '❌ Incorrect. The correct answer is shown above.'}</p>`;
     }
     
-    if (DOM.feedbackText) DOM.feedbackText.innerHTML = feedbackHTML;
+    if (DOM.feedbackExplanations) DOM.feedbackExplanations.innerHTML = explanationsHTML;
     if (DOM.feedback) DOM.feedback.classList.remove('hidden');
     if (DOM.btnNext) DOM.btnNext.classList.remove('hidden');
     

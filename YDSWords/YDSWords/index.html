@@ -94,41 +94,48 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════════
-         APP PAGE
+         QUIZ SCREEN - MINIMALIST IOS DESIGN
          ═══════════════════════════════════════════════════════════════════════ -->
     <div class="app" id="appPage">
-        <button class="btn-back" id="btnBack">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-            </svg>
-            Back
-        </button>
+        <!-- Clean Navigation -->
+        <nav class="quiz-nav-simple">
+            <button class="nav-back-simple" id="btnBack">
+                <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
+            <span class="nav-title-simple">Practice</span>
+            <div class="nav-score-simple" id="score">0 / 0</div>
+        </nav>
 
-        <header class="header">
-            <div class="header-top">
-                <h1>YDS Words</h1>
-                <div class="score" id="score">0 / 0</div>
-            </div>
-        </header>
-
-        <div class="loading hidden" id="loading">
-            <div class="spinner"></div>
-            <p id="loadingText">Generating question...</p>
+        <!-- Loading -->
+        <div class="loading-simple hidden" id="loading">
+            <div class="spinner-simple"></div>
         </div>
 
-        <div class="error-state hidden" id="errorState">
-            <h3>⚠️ Couldn't load question</h3>
-            <p id="errorMessage">Something went wrong. Please try again.</p>
-            <button id="btnRetry">Try Again</button>
+        <!-- Error -->
+        <div class="error-simple hidden" id="errorState">
+            <p class="error-text-simple" id="errorMessage">Something went wrong.</p>
+            <button class="btn-retry-simple" id="btnRetry">Try Again</button>
         </div>
 
-        <main class="question-area hidden" id="questionArea">
-            <p class="sentence" id="sentence"></p>
-            <div class="options" id="options"></div>
-            <div class="feedback hidden" id="feedback">
-                <p id="feedbackText"></p>
+        <!-- Question -->
+        <main class="quiz-main hidden" id="questionArea">
+            <!-- Question Card -->
+            <div class="question-card-simple">
+                <p class="question-label">Fill in the blank</p>
+                <p class="question-sentence" id="sentence"></p>
             </div>
-            <button class="btn-next hidden" id="btnNext">Next →</button>
+
+            <!-- Options -->
+            <div class="options-simple" id="options"></div>
+
+            <!-- Feedback -->
+            <div class="feedback-simple hidden" id="feedback">
+                <div class="feedback-result" id="feedbackResult"></div>
+                <div class="feedback-explanations" id="feedbackExplanations"></div>
+            </div>
+
+            <!-- Next Button -->
+            <button class="btn-next-simple hidden" id="btnNext">Continue</button>
         </main>
     </div>
 

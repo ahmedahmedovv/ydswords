@@ -1934,3 +1934,377 @@ button, .option {
         opacity: 0.8;
     }
 }
+
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   PHASE 4 (REVISED): MINIMALIST IOS QUIZ SCREEN
+   Clean, simple design inspired by iOS Shortcuts & Translate apps
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══ Simple Navigation ═══ */
+.quiz-nav-simple {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) 0;
+    margin-bottom: var(--space-lg);
+}
+
+.nav-back-simple {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ios-secondary-fill);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.nav-back-simple svg {
+    width: 22px;
+    height: 22px;
+    fill: var(--ios-system-blue);
+}
+
+.nav-back-simple:active {
+    transform: scale(0.9);
+    background: var(--ios-fill);
+}
+
+.nav-title-simple {
+    font-size: var(--text-headline);
+    font-weight: 600;
+    color: var(--ios-label);
+}
+
+.nav-score-simple {
+    font-family: var(--font-mono);
+    font-size: var(--text-subhead);
+    font-weight: 600;
+    color: var(--ios-label-secondary);
+    background: var(--ios-secondary-fill);
+    padding: 6px 14px;
+    border-radius: 100px;
+}
+
+/* ═══ Simple Loading ═══ */
+.loading-simple {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 0;
+}
+
+.loading-simple.hidden { display: none; }
+
+.spinner-simple {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--ios-tertiary-fill);
+    border-top-color: var(--ios-system-blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* ═══ Simple Error ═══ */
+.error-simple {
+    text-align: center;
+    padding: 60px 24px;
+}
+
+.error-simple.hidden { display: none; }
+
+.error-text-simple {
+    font-size: var(--text-body);
+    color: var(--ios-label-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+.btn-retry-simple {
+    padding: 14px 28px;
+    background: var(--ios-system-blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: var(--text-headline);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.btn-retry-simple:active {
+    transform: scale(0.96);
+}
+
+/* ═══ Quiz Main ═══ */
+.quiz-main {
+    animation: fadeUp 0.4s ease;
+}
+
+.quiz-main.hidden { display: none; }
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ═══ Question Card - Clean ═══ */
+.question-card-simple {
+    background: var(--ios-secondary-grouped-background);
+    border-radius: 16px;
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.question-label {
+    font-size: var(--text-footnote);
+    font-weight: 600;
+    color: var(--ios-label-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-sm);
+}
+
+.question-sentence {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--ios-label);
+    margin: 0;
+    font-weight: 400;
+}
+
+.question-sentence .blank {
+    display: inline-block;
+    min-width: 70px;
+    height: 28px;
+    background: var(--ios-fill);
+    border-radius: 6px;
+    margin: 0 4px;
+    vertical-align: middle;
+}
+
+/* ═══ Options - Clean Settings Style ═══ */
+.options-simple {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: var(--space-lg);
+}
+
+.option-simple {
+    display: flex;
+    align-items: center;
+    padding: 16px 18px;
+    background: var(--ios-secondary-grouped-background);
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: var(--text-body);
+    color: var(--ios-label);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    width: 100%;
+}
+
+.option-simple:active:not(:disabled):not(.correct):not(.incorrect) {
+    background: var(--ios-fill);
+    transform: scale(0.98);
+}
+
+.option-simple:disabled { cursor: default; }
+
+.option-key-simple {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ios-tertiary-fill);
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ios-label-secondary);
+    margin-right: 14px;
+    flex-shrink: 0;
+}
+
+/* States */
+.option-simple.correct {
+    background: rgba(52, 199, 89, 0.12);
+}
+
+.option-simple.correct .option-key-simple {
+    background: var(--ios-system-green);
+    color: white;
+}
+
+.option-simple.incorrect {
+    background: rgba(255, 59, 48, 0.08);
+}
+
+.option-simple.incorrect .option-key-simple {
+    background: var(--ios-system-red);
+    color: white;
+}
+
+.option-simple.revealed {
+    background: rgba(52, 199, 89, 0.08);
+    border: 1.5px solid var(--ios-system-green);
+}
+
+.option-simple.revealed .option-key-simple {
+    background: var(--ios-system-green);
+    color: white;
+}
+
+/* Checkmark for correct/incorrect */
+.option-simple.correct::after,
+.option-simple.incorrect::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    width: 22px;
+    height: 22px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.option-simple.correct::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2334C759'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+}
+
+.option-simple.incorrect::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FF3B30'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3C/svg%3E");
+}
+
+/* ═══ Feedback - Clean ═══ */
+.feedback-simple {
+    background: var(--ios-secondary-grouped-background);
+    border-radius: 16px;
+    padding: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.feedback-simple.hidden { display: none; }
+
+.feedback-result {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: var(--space-md);
+    margin-bottom: var(--space-md);
+    border-bottom: 0.5px solid var(--ios-separator);
+    font-size: var(--text-headline);
+    font-weight: 600;
+}
+
+.feedback-result.correct {
+    color: var(--ios-system-green);
+}
+
+.feedback-result.incorrect {
+    color: var(--ios-system-red);
+}
+
+.feedback-explanations {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.explanation-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: var(--text-subhead);
+    line-height: 1.5;
+    padding: 8px 10px;
+    border-radius: 8px;
+}
+
+.explanation-row:hover {
+    background: var(--ios-fill);
+}
+
+.explanation-key {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.explanation-row.correct .explanation-key {
+    background: var(--ios-system-green);
+    color: white;
+}
+
+.explanation-row.incorrect .explanation-key {
+    background: var(--ios-system-gray4);
+    color: var(--ios-label-secondary);
+}
+
+.explanation-text {
+    color: var(--ios-label-secondary);
+    flex: 1;
+}
+
+.explanation-text strong {
+    color: var(--ios-label);
+    font-weight: 600;
+}
+
+/* ═══ Next Button - Clean ═══ */
+.btn-next-simple {
+    width: 100%;
+    padding: 16px;
+    background: var(--ios-system-blue);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: var(--text-headline);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-next-simple.hidden { display: none; }
+
+.btn-next-simple:active {
+    transform: scale(0.98);
+    background: #0066CC;
+}
+
+/* ═══ Reduced Motion ═══ */
+@media (prefers-reduced-motion: reduce) {
+    .quiz-main,
+    .spinner-simple {
+        animation: none;
+    }
+    
+    .option-simple,
+    .btn-next-simple,
+    .nav-back-simple,
+    .btn-retry-simple {
+        transition: none;
+    }
+}

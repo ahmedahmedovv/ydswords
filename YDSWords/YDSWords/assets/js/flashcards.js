@@ -185,9 +185,15 @@ async function startFlashcardMode() {
         return;
     }
     
-    // Reset state
-    FlashcardState.reset();
-    FlashcardState.shuffleWords();
+    // Check if we have prefetched content from welcome screen
+    const hasPrefetched = FlashcardState.prefetchedContent && FlashcardState.nextWordIndex === 0;
+    
+    if (!hasPrefetched) {
+        // No prefetch available, need to shuffle and will fetch
+        FlashcardState.reset();
+        FlashcardState.shuffleWords();
+    }
+    // If prefetched, state is already set up with shuffledWords and content
     
     // Switch to flashcard page
     if (DOM.welcomePage) DOM.welcomePage.classList.remove('active');
@@ -201,17 +207,58 @@ async function startFlashcardMode() {
         FlashcardDOM.flashcardContainer.classList.remove('hidden');
     }
     
-    // Load first card
-    // Note: Flashcards don't prefetch on welcome screen because:
-    // 1. We don't know which mode user will choose (quiz vs flashcards)
-    // 2. Flashcards need different content (definition+example) vs quiz (questions)
+    // Load first card (will use prefetched content if available)
     console.log('[Flashcard] Starting flashcard mode - loading first card...');
+    if (hasPrefetched) {
+        console.log('[Flashcard] Using prefetched content!');
+    }
     await loadFlashcard();
     
     // Prefetch second card immediately after first loads
-    // This ensures while user reads card 1, card 2 is being prepared
     console.log('[Flashcard] First card loaded, prefetching second...');
     prefetchNextFlashcard();
+}
+
+/**
+ * Prefetch first flashcard content for welcome screen
+ * This runs in parallel with quiz mode prefetch
+ */
+function prefetchFirstFlashcard() {
+    // Don't prefetch if already have content
+    if (FlashcardState.prefetchedContent && FlashcardState.nextWordIndex === 0) {
+        console.log('[Flashcard Prefetch] First card already prefetched');
+        return Promise.resolve();
+    }
+    
+    // Don't prefetch if already fetching
+    if (FlashcardState.prefetchPromise) {
+        console.log('[Flashcard Prefetch] Already fetching first card');
+        return FlashcardState.prefetchPromise;
+    }
+    
+    // Need to shuffle first to know which word to prefetch
+    if (FlashcardState.shuffledWords.length === 0) {
+        FlashcardState.shuffleWords();
+    }
+    
+    const firstWord = FlashcardState.shuffledWords[0];
+    FlashcardState.nextWordIndex = 0;
+    
+    console.log(`[Flashcard Prefetch] Prefetching first card: "${firstWord}"`);
+    
+    FlashcardState.prefetchPromise = generateFlashcardContent(firstWord)
+        .then(content => {
+            console.log('[Flashcard Prefetch] First card ready');
+            FlashcardState.prefetchedContent = content;
+            FlashcardState.prefetchPromise = null;
+        })
+        .catch(error => {
+            console.error('[Flashcard Prefetch] First card failed:', error.message);
+            FlashcardState.prefetchPromise = null;
+            FlashcardState.prefetchedContent = null;
+        });
+    
+    return FlashcardState.prefetchPromise;
 }
 
 /**
@@ -687,6 +734,7 @@ if (typeof module !== 'undefined' && module.exports) {
         startFlashcardMode, 
         exitFlashcardMode,
         handleKnowWord,
-        handleDontKnowWord
+        handleDontKnowWord,
+        prefetchFirstFlashcard
     };
 }

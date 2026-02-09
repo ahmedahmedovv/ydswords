@@ -144,19 +144,22 @@ function showWelcome() {
     // DEFENSE: Cancel any pending requests when going back
     AppState.cancelPendingRequests();
     AppState.reset();
+    FlashcardState.reset(); // Also reset flashcard state
     
     if (DOM.appPage) DOM.appPage.classList.remove('active');
+    if (FlashcardDOM.flashcardPage) FlashcardDOM.flashcardPage.classList.remove('active');
     if (DOM.welcomePage) DOM.welcomePage.classList.add('active');
     
     // Reset score display
     if (DOM.scoreEl) DOM.scoreEl.textContent = '0 / 0';
     
-    // Prefetch for next time
-    console.log('[Prefetch] Returning to welcome - starting prefetch...');
-    prefetchQuestion().then(() => {
-        console.log('[Prefetch] Welcome screen prefetch completed.');
-    }).catch(err => {
-        console.log('[Prefetch] Welcome screen prefetch failed:', err.message);
+    // Prefetch BOTH modes when returning to welcome
+    console.log('[Prefetch] Returning to welcome - prefetching both modes...');
+    Promise.all([
+        prefetchQuestion().catch(err => console.log('[Prefetch] Quiz failed:', err.message)),
+        prefetchFirstFlashcard().catch(err => console.log('[Prefetch] Flashcard failed:', err.message))
+    ]).then(() => {
+        console.log('[Prefetch] Both modes ready on welcome');
     });
 }
 

@@ -320,24 +320,7 @@ body {
    APP STYLES - iOS
    ═════════════════════════════════════════════════════════════════════════════ */
 
-.app {
-    width: 100%;
-    max-width: var(--content-max);
-    margin: 0 auto;
-    padding: var(--space-sm) clamp(12px, 4vw, 24px);
-    padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
-    display: none;
-    background: var(--ios-grouped-background);
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    /* Flex layout for proper space distribution */
-    flex-direction: column;
-}
-
-.app.active {
-    display: flex;
-    animation: viewEnter 0.4s var(--ios-spring);
-}
+/* .app styles now unified with .flashcard-page - see "Unified Page Structure" section below */
 
 @keyframes viewEnter {
     from {
@@ -350,35 +333,50 @@ body {
     }
 }
 
-/* ═══ Header - iOS Style ═══ */
-.header {
-    margin-bottom: var(--space-md);
-    padding-top: var(--space-sm);
-}
+/* ═══ Unified Header Style (Quiz & Flashcards) ═══ */
 
-.header-top {
+/* Quiz Header */
+.quiz-header,
+.flashcard-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding-bottom: var(--space-sm);
-    border-bottom: 0.5px solid var(--ios-separator);
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    padding-top: max(var(--space-md), env(safe-area-inset-top));
+    background: var(--ios-system-background);
+    border-bottom: 1px solid var(--ios-separator);
+    flex-shrink: 0;
 }
 
-.header h1 {
-    font-size: clamp(24px, 7vw, 36px);
-    font-weight: 700;
-    color: var(--ios-label);
-    letter-spacing: -0.4px;
-}
-
-.score {
-    font-family: var(--font-mono);
-    font-size: clamp(12px, 3.5vw, 15px);
+.quiz-header-title,
+.flashcard-title {
+    font-size: var(--text-headline);
     font-weight: 600;
+    color: var(--ios-label);
+}
+
+.quiz-header-progress,
+.flashcard-progress-text {
+    font-size: var(--text-subhead);
     color: var(--ios-label-secondary);
-    background: var(--ios-secondary-fill);
-    padding: clamp(4px, 1.5vw, 8px) clamp(8px, 3vw, 14px);
-    border-radius: 100px;
+    font-weight: 500;
+    min-width: 60px;
+    text-align: right;
+}
+
+.quiz-progress-bar,
+.flashcard-progress-bar {
+    height: 3px;
+    background: var(--ios-system-gray5);
+    flex-shrink: 0;
+}
+
+.quiz-progress,
+.flashcard-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ios-system-blue), var(--ios-system-purple));
+    transition: width 0.3s var(--ios-ease-out);
+    width: 0%;
 }
 
 /* ═══ Back Button - iOS Style ═══ */
@@ -387,15 +385,19 @@ body {
     border: none;
     color: var(--ios-system-blue);
     font-family: inherit;
-    font-size: var(--text-body);
+    font-size: var(--text-subhead);
     cursor: pointer;
-    padding: var(--space-sm) 0;
-    margin-bottom: var(--space-xs);
-    margin-left: -8px;
+    padding: 0;
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
     transition: opacity 0.2s ease;
+}
+
+.btn-back svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
 }
 
 .btn-back:active {
@@ -484,19 +486,9 @@ body {
     opacity: 0.9;
 }
 
-/* ═══ Question Area - iOS Style ═══ */
-.question-area {
-    animation: fadeIn 0.3s var(--ios-default);
-    display: flex;
-    flex-direction: column;
-}
+/* Question area styles now unified with flashcard-container - see "Content Containers" section */
 
 .question-area.hidden { display: none; }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
 
 /* Sentence Card */
 .sentence {
@@ -775,64 +767,7 @@ body {
     font-weight: 600;
 }
 
-/* ═══ Next Button - iOS Style ═══ */
-.btn-next {
-    width: 100%;
-    min-height: clamp(48px, 12vh, 60px);
-    padding: clamp(10px, 3vh, 16px) clamp(16px, 5vw, 24px);
-    background: var(--ios-system-blue);
-    color: white;
-    border: none;
-    border-radius: clamp(10px, 2.5vw, 14px);
-    font-family: inherit;
-    font-size: clamp(15px, 4vw, 18px);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s var(--ios-spring);
-    touch-action: manipulation;
-    position: relative;
-    margin-bottom: clamp(12px, 4vw, 20px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(6px, 2vw, 10px);
-}
 
-.btn-next:hover:not(:disabled) {
-    background: var(--ios-system-blue-hover);
-    transform: scale(1.02);
-}
-
-.btn-next:active:not(:disabled) {
-    transform: scale(0.96);
-    opacity: 0.9;
-}
-
-.btn-next:disabled {
-    opacity: var(--ios-disabled-opacity);
-    cursor: not-allowed;
-}
-
-.btn-next.hidden { display: none; }
-
-.btn-next.loading {
-    color: transparent;
-}
-
-.btn-next.loading::after {
-    content: '';
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    left: 50%;
-    top: 50%;
-    margin-left: -9px;
-    margin-top: -9px;
-}
 
 /* ═══ Offline Indicator - iOS Style ═══ */
 .offline-indicator {
@@ -887,10 +822,6 @@ body {
     .btn-minimal {
         min-height: 50px;
         padding: 14px 20px;
-    }
-    
-    .app {
-        padding: 8px 12px;
     }
     
     .header h1 {
@@ -948,10 +879,6 @@ body {
         font-size: 34px;
     }
     
-    .app {
-        padding: 10px 16px;
-    }
-    
     .sentence {
         font-size: 15px;
         padding: 14px;
@@ -966,9 +893,6 @@ body {
         padding: 14px;
     }
     
-    .btn-next {
-        min-height: 54px;
-    }
 }
 
 /* ═══ Large iPhones: Plus (428×926), Pro Max (430×932) ═══ */
@@ -1058,10 +982,6 @@ body {
         font-size: 44px;
     }
     
-    .app {
-        padding: 20px 28px;
-    }
-    
     .sentence {
         font-size: 18px;
         padding: 20px;
@@ -1074,10 +994,6 @@ body {
     .option {
         min-height: 60px;
         font-size: 18px;
-    }
-    
-    .btn-next {
-        min-height: 60px;
     }
 }
 
@@ -1162,7 +1078,7 @@ body {
 
 /* Focus States for Keyboard Navigation */
 .btn-start:focus-visible,
-.btn-next:focus-visible,
+.action-btn:focus-visible,
 .option:focus-visible,
 .btn-back:focus-visible,
 .error-state button:focus-visible {
@@ -1176,7 +1092,7 @@ button, .option {
 }
 
 /* GPU Acceleration for smooth animations */
-.option, .btn-start, .btn-next, .feedback {
+.option, .btn-start, .action-btn, .feedback, .flashcard-card {
     will-change: transform;
     transform: translateZ(0);
 }
@@ -1348,5 +1264,497 @@ button, .option {
 @media (prefers-color-scheme: dark) {
     .welcome-minimal {
         background: var(--ios-system-background);
+    }
+}
+
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   FLASHCARD MODE STYLES
+   Tinder-style swipe study interface
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══ Mode Selection on Welcome Page ═══ */
+.mode-selection {
+    width: 100%;
+    margin-top: var(--space-xl);
+}
+
+.mode-selection-title {
+    font-size: var(--text-subhead);
+    font-weight: 600;
+    color: var(--ios-label-secondary);
+    text-align: center;
+    margin-bottom: var(--space-md);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mode-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.mode-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: var(--ios-secondary-grouped-background);
+    border: 1px solid var(--ios-separator);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s var(--ios-spring);
+    text-align: left;
+    width: 100%;
+}
+
+.mode-card:hover {
+    transform: scale(1.02);
+    border-color: var(--ios-system-blue);
+    background: var(--ios-tertiary-background);
+}
+
+.mode-card:active {
+    transform: scale(0.98);
+}
+
+.mode-card-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: var(--ios-system-blue);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.mode-card-icon--flashcard {
+    background: var(--ios-system-green);
+}
+
+.mode-card-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.mode-card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.mode-card-content h3 {
+    font-size: var(--text-headline);
+    font-weight: 600;
+    color: var(--ios-label);
+    margin: 0 0 4px 0;
+}
+
+.mode-card-content p {
+    font-size: var(--text-footnote);
+    color: var(--ios-label-secondary);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.mode-card-arrow {
+    font-size: var(--text-title-2);
+    color: var(--ios-label-quaternary);
+    transition: transform 0.2s var(--ios-spring);
+}
+
+.mode-card:hover .mode-card-arrow {
+    transform: translateX(4px);
+    color: var(--ios-system-blue);
+}
+
+/* ═══ Unified Page Structure ═══ */
+.app,
+.flashcard-page {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--ios-grouped-background);
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.app.active,
+.flashcard-page.active {
+    display: flex;
+}
+
+/* ═══ Content Containers ═══ */
+.question-area,
+.flashcard-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-md) var(--space-lg);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Flashcard specific - centered content */
+.flashcard-container {
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
+}
+
+/* Flashcard Card - Minimal & Clean */
+.flashcard-card {
+    width: 100%;
+    max-width: 340px;
+    background: var(--ios-system-background);
+    border-radius: 20px;
+    padding: var(--space-xl);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+    user-select: none;
+    touch-action: pan-y;
+    position: relative;
+}
+
+/* Swipe Animation Classes */
+.flashcard-card.swipe-left-animation {
+    animation: swipeLeft 0.3s var(--ios-spring) forwards;
+}
+
+.flashcard-card.swipe-right-animation {
+    animation: swipeRight 0.3s var(--ios-spring) forwards;
+}
+
+.flashcard-card.swiping-left::before,
+.flashcard-card.swiping-right::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.flashcard-card.swiping-left::before {
+    background: linear-gradient(90deg, rgba(255, 59, 48, 0.1), transparent);
+    opacity: 1;
+}
+
+.flashcard-card.swiping-right::before {
+    background: linear-gradient(-90deg, rgba(52, 199, 89, 0.1), transparent);
+    opacity: 1;
+}
+
+@keyframes swipeLeft {
+    to {
+        transform: translateX(-120%) rotate(-20deg);
+        opacity: 0;
+    }
+}
+
+@keyframes swipeRight {
+    to {
+        transform: translateX(120%) rotate(20deg);
+        opacity: 0;
+    }
+}
+
+/* ═══ Flashcard Content - Visual Hierarchy ═══ */
+
+/* Word - Main Focus */
+.flashcard-word {
+    font-size: var(--text-large-title);
+    font-weight: 800;
+    color: var(--ios-label);
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+}
+
+/* Example - Context Box */
+.flashcard-example {
+    font-size: var(--text-body);
+    line-height: 1.6;
+    color: var(--ios-label-secondary);
+    text-align: center;
+    font-style: italic;
+    margin-bottom: var(--space-xl);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--ios-secondary-background);
+    border-radius: 12px;
+    border-left: 3px solid var(--ios-system-blue);
+    transition: opacity 0.2s ease;
+}
+
+.flashcard-example.loading {
+    color: var(--ios-label-tertiary);
+    background: var(--ios-fill);
+    border-left-color: var(--ios-system-gray);
+}
+
+/* Definition - Meaning with subtle style */
+.flashcard-definition {
+    font-size: var(--text-headline);
+    line-height: 1.5;
+    color: var(--ios-label);
+    text-align: center;
+    font-weight: 500;
+    padding: 0 var(--space-sm);
+    transition: opacity 0.2s ease;
+}
+
+.flashcard-definition.loading {
+    color: var(--ios-label-tertiary);
+}
+
+/* Highlighted word in example */
+.word-highlight {
+    color: var(--ios-system-blue);
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* ═══ Unified Action Buttons ═══ */
+
+/* Action Container - Used by both Quiz and Flashcards */
+.quiz-actions,
+.flashcard-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-xl);
+    padding: var(--space-md) var(--space-lg);
+    padding-bottom: max(var(--space-lg), env(safe-area-inset-bottom));
+    flex-shrink: 0;
+}
+
+/* Circular Action Button - Base Style */
+.action-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: var(--ios-system-background);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.action-btn:active {
+    transform: scale(0.92);
+}
+
+/* Action Button Variants */
+.action-btn--dont-know {
+    color: var(--ios-system-red);
+}
+
+.action-btn--dont-know:active {
+    background: rgba(255, 59, 48, 0.1);
+}
+
+.action-btn--know {
+    color: var(--ios-system-green);
+}
+
+.action-btn--know:active {
+    background: rgba(52, 199, 89, 0.1);
+}
+
+.action-btn--next {
+    width: auto;
+    min-width: 140px;
+    border-radius: 28px;
+    padding: 0 var(--space-xl);
+    background: var(--ios-system-blue);
+    color: white;
+    font-size: var(--text-headline);
+    font-weight: 600;
+    gap: 8px;
+}
+
+.action-btn--next:active {
+    background: var(--ios-system-blue-hover);
+}
+
+/* Results Screen */
+.flashcard-results {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--ios-grouped-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+}
+
+.flashcard-results.hidden {
+    display: none;
+}
+
+.flashcard-results-content {
+    text-align: center;
+    max-width: 320px;
+}
+
+.flashcard-results-content h2 {
+    font-size: var(--text-title-1);
+    color: var(--ios-label);
+    margin-bottom: var(--space-xl);
+}
+
+.flashcard-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-number {
+    font-size: var(--text-title-1);
+    font-weight: 700;
+    color: var(--ios-system-blue);
+}
+
+.stat-number.stat-known {
+    color: var(--ios-system-green);
+}
+
+.stat-number.stat-unknown {
+    color: var(--ios-system-orange);
+}
+
+.stat-label {
+    font-size: var(--text-subhead);
+    color: var(--ios-label-secondary);
+}
+
+.flashcard-results-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.btn-minimal--secondary {
+    background: transparent;
+    color: var(--ios-system-blue);
+    border: 1px solid var(--ios-separator);
+}
+
+.btn-minimal--secondary:hover {
+    background: var(--ios-fill);
+}
+
+/* ═══ Dark Mode for Flashcards ═══ */
+@media (prefers-color-scheme: dark) {
+    .mode-card {
+        background: var(--ios-secondary-grouped-background);
+        border-color: var(--ios-separator);
+    }
+    
+    .mode-card:hover {
+        background: var(--ios-tertiary-grouped-background);
+    }
+    
+    .flashcard-card {
+        box-shadow: 
+            0 4px 24px rgba(0, 0, 0, 0.3),
+            0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .action-btn {
+        background: var(--ios-secondary-grouped-background);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .flashcard-example {
+        background: var(--ios-secondary-grouped-background);
+    }
+    
+    .flashcard-example.loading {
+        background: rgba(120, 120, 128, 0.24);
+    }
+}
+
+/* ═══ Responsive Adjustments for Flashcards ═══ */
+@media (max-width: 375px) {
+    .flashcard-card {
+        padding: var(--space-lg);
+        border-radius: 16px;
+    }
+    
+    .flashcard-word {
+        font-size: var(--text-title-1);
+        margin-bottom: var(--space-lg);
+    }
+    
+    .flashcard-example {
+        font-size: var(--text-callout);
+        padding: var(--space-sm) var(--space-md);
+        border-radius: 10px;
+        margin-bottom: var(--space-lg);
+    }
+    
+    .flashcard-definition {
+        font-size: var(--text-body);
+        padding: 0 var(--space-xs);
+    }
+    
+    .mode-card {
+        padding: var(--space-md);
+    }
+    
+    .mode-card-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .action-btn {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .action-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* ═══ Reduced Motion Support ═══ */
+@media (prefers-reduced-motion: reduce) {
+    .flashcard-card {
+        transition: none;
+    }
+    
+    .flashcard-card.swipe-left-animation,
+    .flashcard-card.swipe-right-animation {
+        animation: none;
+        opacity: 0;
     }
 }

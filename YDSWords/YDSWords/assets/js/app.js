@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Validate critical DOM elements exist
-    const criticalElements = ['welcomePage', 'appPage', 'btnStart', 'loading', 'questionArea'];
+    const criticalElements = ['welcomePage', 'appPage', 'modeSelection', 'loading', 'questionArea'];
     const missing = criticalElements.filter(id => !document.getElementById(id));
     if (missing.length > 0) {
         console.error('Missing critical DOM elements:', missing);
@@ -50,22 +50,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize offline detection
     initOfflineDetection();
     
-    // Start prefetching first question
-    prefetchQuestion();
+    // Prefetch BOTH quiz question AND flashcard content in parallel
+    // This way whichever mode user chooses, content is ready
+    console.log('[Prefetch] Starting parallel prefetch for both modes...');
+    Promise.all([
+        prefetchQuestion().then(() => {
+            console.log('[Prefetch] Quiz mode ready');
+        }).catch(err => {
+            console.log('[Prefetch] Quiz prefetch failed:', err.message);
+        }),
+        prefetchFirstFlashcard().then(() => {
+            console.log('[Prefetch] Flashcard mode ready');
+        }).catch(err => {
+            console.log('[Prefetch] Flashcard prefetch failed:', err.message);
+        })
+    ]).then(() => {
+        console.log('[Prefetch] Both modes ready!');
+    });
 });
 
 // ═════════════════════════════════════════════════════════════════════════════
 // EVENT LISTENERS
 // ═════════════════════════════════════════════════════════════════════════════
 
-// DEFENSE: Debounced start button
-if (DOM.btnStart) {
-    DOM.btnStart.addEventListener('click', debounce(showApp, CONFIG.debounceDelay));
-}
+// Note: Start button is now replaced by mode selection cards
+// Quiz mode is handled by btnModeQuiz in flashcards.js
+// Flashcard mode is handled by btnModeFlashcard in flashcards.js
 
 // DEFENSE: Debounced back button
 if (DOM.btnBack) {
-    DOM.btnBack.addEventListener('click', debounce(showWelcome, CONFIG.debounceDelay));
+    DOM.btnBack.addEventListener('click', debounce(() => {
+        // Cancel any pending requests when going back
+        AppState.cancelPendingRequests();
+        AppState.reset();
+        showWelcome();
+    }, CONFIG.debounceDelay));
 }
 
 // DEFENSE: Debounced next button

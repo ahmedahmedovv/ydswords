@@ -70,8 +70,45 @@
             <!-- Quote -->
             <p class="welcome-quote">"They're using AI to ask, so we'll use AI to answer."</p>
             
-            <!-- Action -->
-            <div class="welcome-minimal-action">
+            <!-- MODE SELECTION -->
+            <div class="mode-selection" id="modeSelection">
+                <p class="mode-selection-title">Choose your study mode</p>
+                
+                <div class="mode-cards">
+                    <button class="mode-card" id="btnModeQuiz">
+                        <div class="mode-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                        </div>
+                        <div class="mode-card-content">
+                            <h3>Quiz Mode</h3>
+                            <p>Answer AI-generated multiple choice questions with detailed explanations</p>
+                        </div>
+                        <div class="mode-card-arrow">→</div>
+                    </button>
+                    
+                    <button class="mode-card" id="btnModeFlashcard">
+                        <div class="mode-card-icon mode-card-icon--flashcard">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <line x1="8" y1="12" x2="16" y2="12"/>
+                                <line x1="12" y1="8" x2="12" y2="16"/>
+                            </svg>
+                        </div>
+                        <div class="mode-card-content">
+                            <h3>Flashcards</h3>
+                            <p>Swipe through words with definitions and examples. Swipe right if you know it!</p>
+                        </div>
+                        <div class="mode-card-arrow">→</div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Original Start Button (hidden when mode selection is shown) -->
+            <div class="welcome-minimal-action hidden" id="originalStartContainer">
                 <button class="btn-minimal" id="btnStart">
                     Start Practice
                 </button>
@@ -81,22 +118,25 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════════
-         APP PAGE
+         APP PAGE (Quiz Mode)
          ═══════════════════════════════════════════════════════════════════════ -->
     <div class="app" id="appPage">
-        <button class="btn-back" id="btnBack">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Back" role="img">
-                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-            </svg>
-            Back
-        </button>
-
-        <header class="header">
-            <div class="header-top">
-                <h1>YDS Words</h1>
-                <div class="score" id="score">0 / 0</div>
-            </div>
+        <!-- Header -->
+        <header class="quiz-header">
+            <button class="btn-back" id="btnBack">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Back">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+                Back
+            </button>
+            <div class="quiz-header-title">Quiz</div>
+            <div class="quiz-header-progress" id="quizProgressText">0 / 0</div>
         </header>
+
+        <!-- Progress Bar -->
+        <div class="quiz-progress-bar">
+            <div class="quiz-progress" id="quizProgress"></div>
+        </div>
 
         <div class="loading hidden" id="loading">
             <div class="spinner"></div>
@@ -115,8 +155,88 @@
             <div class="feedback hidden" id="feedback">
                 <p id="feedbackText"></p>
             </div>
-            <button class="btn-next hidden" id="btnNext">Next →</button>
+            <div class="quiz-actions">
+                <button class="action-btn action-btn--next hidden" id="btnNext">
+                    Next
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </button>
+            </div>
         </main>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         FLASHCARD PAGE (Tinder-style Study Mode)
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="flashcard-page" id="flashcardPage">
+        <!-- Header -->
+        <header class="flashcard-header">
+            <button class="btn-back" id="btnFlashcardBack">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Back">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+                Back
+            </button>
+            <div class="flashcard-title">Flashcards</div>
+            <div class="flashcard-progress-text" id="flashcardProgressText">1 / 1000</div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="flashcard-progress-bar">
+            <div class="flashcard-progress" id="flashcardProgress"></div>
+        </div>
+
+        <!-- Flashcard Container -->
+        <div class="flashcard-container" id="flashcardContainer">
+            <div class="flashcard-card" id="flashcardCard">
+                <!-- Word -->
+                <div class="flashcard-word" id="flashcardWord">Loading...</div>
+                
+                <!-- Example -->
+                <div class="flashcard-example loading" id="flashcardExample">
+                    Loading example...
+                </div>
+                
+                <!-- Definition -->
+                <div class="flashcard-definition loading" id="flashcardDefinition">
+                    Loading definition...
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flashcard-actions">
+            <button class="action-btn action-btn--dont-know" id="btnDontKnow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            <button class="action-btn action-btn--know" id="btnKnow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="flashcard-results hidden" id="flashcardResults">
+            <div class="flashcard-results-content">
+                <h2>Session Complete!</h2>
+                <div class="flashcard-stats" id="flashcardStats">
+                    <!-- Stats populated by JS -->
+                </div>
+                <div class="flashcard-results-actions">
+                    <button class="btn-minimal" id="btnFlashcardRestart">
+                        Study Again
+                    </button>
+                    <button class="btn-minimal btn-minimal--secondary" id="btnFlashcardFinish">
+                        Back to Home
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════════
@@ -128,6 +248,7 @@
     <script src="assets/js/utils.js"></script>
     <script src="assets/js/api.js"></script>
     <script src="assets/js/ui.js"></script>
+    <script src="assets/js/flashcards.js"></script>
     <script src="assets/js/app.js"></script>
 </body>
 </html>

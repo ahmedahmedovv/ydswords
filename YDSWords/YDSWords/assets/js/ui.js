@@ -20,10 +20,13 @@ const DOM = {
     get feedback() { return $('feedback'); },
     get feedbackText() { return $('feedbackText'); },
     get btnNext() { return $('btnNext'); },
+    get quizActions() { return document.querySelector('.quiz-actions'); },
     get scoreEl() { return $('score'); },
     get errorState() { return $('errorState'); },
     get errorMessage() { return $('errorMessage'); },
-    get btnRetry() { return $('btnRetry'); }
+    get btnRetry() { return $('btnRetry'); },
+    get quizProgressText() { return $('quizProgressText'); },
+    get quizProgress() { return $('quizProgress'); }
 };
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -144,15 +147,23 @@ function showWelcome() {
     // DEFENSE: Cancel any pending requests when going back
     AppState.cancelPendingRequests();
     AppState.reset();
+    FlashcardState.reset(); // Also reset flashcard state
     
     if (DOM.appPage) DOM.appPage.classList.remove('active');
+    if (FlashcardDOM.flashcardPage) FlashcardDOM.flashcardPage.classList.remove('active');
     if (DOM.welcomePage) DOM.welcomePage.classList.add('active');
     
     // Reset score display
     if (DOM.scoreEl) DOM.scoreEl.textContent = '0 / 0';
     
-    // Prefetch for next time
-    prefetchQuestion();
+    // Prefetch BOTH modes when returning to welcome
+    console.log('[Prefetch] Returning to welcome - prefetching both modes...');
+    Promise.all([
+        prefetchQuestion().catch(err => console.log('[Prefetch] Quiz failed:', err.message)),
+        prefetchFirstFlashcard().catch(err => console.log('[Prefetch] Flashcard failed:', err.message))
+    ]).then(() => {
+        console.log('[Prefetch] Both modes ready on welcome');
+    });
 }
 
 function showLoading(show) {
@@ -169,6 +180,26 @@ function showError(message, showRetry = true) {
         DOM.errorState.classList.remove('hidden');
         if (DOM.errorMessage) DOM.errorMessage.textContent = message;
         if (DOM.btnRetry) DOM.btnRetry.style.display = showRetry ? 'block' : 'none';
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// QUIZ PROGRESS
+// ═════════════════════════════════════════════════════════════════════════════
+
+function updateQuizProgress() {
+    // Update progress text
+    if (DOM.quizProgressText) {
+        DOM.quizProgressText.textContent = `${AppState.correct} / ${AppState.total}`;
+    }
+    
+    // Update progress bar
+    if (DOM.quizProgress) {
+        // Calculate percentage based on question count (show progress through session)
+        // Using total as a proxy for progress, max out at 20 questions for visual
+        const maxQuestions = 20;
+        const percentage = Math.min((AppState.total / maxQuestions) * 100, 100);
+        DOM.quizProgress.style.width = `${percentage}%`;
     }
 }
 
@@ -296,6 +327,9 @@ function displayQuestion() {
         if (DOM.feedback) DOM.feedback.classList.add('hidden');
         if (DOM.btnNext) DOM.btnNext.classList.add('hidden');
         
+        // Update progress display
+        updateQuizProgress();
+        
     } catch (error) {
         console.error('Error displaying question:', error);
         showError('Failed to display question. Please try again.');
@@ -325,6 +359,9 @@ function selectAnswer(index) {
     AppState.total++;
     if (isCorrect) AppState.correct++;
     if (DOM.scoreEl) DOM.scoreEl.textContent = `${AppState.correct} / ${AppState.total}`;
+    
+    // Update progress bar
+    updateQuizProgress();
     
     // Update UI with visual feedback
     const optionButtons = DOM.options ? DOM.options.querySelectorAll('.option') : [];

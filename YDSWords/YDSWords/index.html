@@ -94,97 +94,41 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════════
-         IOS-STYLE QUIZ SCREEN
+         APP PAGE
          ═══════════════════════════════════════════════════════════════════════ -->
     <div class="app" id="appPage">
-        <!-- Navigation Header -->
-        <nav class="quiz-nav">
-            <button class="nav-back" id="btnBack">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12.7 18.3L7.4 13H20v-2H7.4l5.3-5.3L11.3 4.3 3.6 12l7.7 7.7 1.4-1.4z"/>
-                </svg>
-                <span>Back</span>
-            </button>
-            <div class="nav-title">
-                <span>Practice</span>
-                <div class="nav-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="nav-score" id="scoreBadge">
-                <span class="score-correct" id="scoreCorrect">0</span>
-                <span class="score-divider">/</span>
-                <span class="score-total" id="scoreTotal">0</span>
-            </div>
-        </nav>
+        <button class="btn-back" id="btnBack">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            Back
+        </button>
 
-        <!-- Loading State -->
-        <div class="loading-state hidden" id="loading">
-            <div class="loading-spinner">
-                <div class="spinner-ring"></div>
-                <div class="spinner-ring"></div>
+        <header class="header">
+            <div class="header-top">
+                <h1>YDS Words</h1>
+                <div class="score" id="score">0 / 0</div>
             </div>
-            <p class="loading-text">Generating question...</p>
-            <p class="loading-subtext">AI is crafting your practice</p>
+        </header>
+
+        <div class="loading hidden" id="loading">
+            <div class="spinner"></div>
+            <p id="loadingText">Generating question...</p>
         </div>
 
-        <!-- Error State -->
-        <div class="error-container hidden" id="errorState">
-            <div class="error-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                </svg>
-            </div>
-            <h3 class="error-title">Couldn't load question</h3>
-            <p class="error-message" id="errorMessage">Something went wrong. Please try again.</p>
-            <button class="ios-btn ios-btn-primary error-btn" id="btnRetry">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                </svg>
-                Try Again
-            </button>
+        <div class="error-state hidden" id="errorState">
+            <h3>⚠️ Couldn't load question</h3>
+            <p id="errorMessage">Something went wrong. Please try again.</p>
+            <button id="btnRetry">Try Again</button>
         </div>
 
-        <!-- Question Area -->
-        <main class="quiz-content hidden" id="questionArea">
-            <!-- Question Card -->
-            <div class="question-card" id="questionCard">
-                <div class="question-badge">
-                    <span class="badge-icon">✏</span>
-                    <span class="badge-text">Fill in the blank</span>
-                </div>
-                <p class="question-text" id="sentence"></p>
+        <main class="question-area hidden" id="questionArea">
+            <p class="sentence" id="sentence"></p>
+            <div class="options" id="options"></div>
+            <div class="feedback hidden" id="feedback">
+                <p id="feedbackText"></p>
             </div>
-            
-            <!-- Options -->
-            <div class="options-container" id="optionsContainer">
-                <p class="options-label">Choose the correct answer:</p>
-                <div class="options-list" id="options"></div>
-            </div>
-            
-            <!-- Feedback Card -->
-            <div class="feedback-card hidden" id="feedback">
-                <div class="feedback-header" id="feedbackHeader">
-                    <div class="feedback-icon-wrapper" id="feedbackIconWrapper">
-                        <span id="feedbackIcon"></span>
-                    </div>
-                    <div class="feedback-title-group">
-                        <h4 class="feedback-title" id="feedbackTitle"></h4>
-                        <p class="feedback-subtitle" id="feedbackSubtitle"></p>
-                    </div>
-                </div>
-                <div class="feedback-content" id="feedbackContent"></div>
-            </div>
-            
-            <!-- Next Button -->
-            <button class="btn-next ios-btn-primary hidden" id="btnNext">
-                <span>Next Question</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
-                </svg>
-            </button>
+            <button class="btn-next hidden" id="btnNext">Next →</button>
         </main>
     </div>
 

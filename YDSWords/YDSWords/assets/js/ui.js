@@ -23,17 +23,7 @@ const DOM = {
     get scoreEl() { return $('score'); },
     get errorState() { return $('errorState'); },
     get errorMessage() { return $('errorMessage'); },
-    get btnRetry() { return $('btnRetry'); },
-    // New Phase 4 elements
-    get scoreCorrect() { return $('scoreCorrect'); },
-    get scoreTotal() { return $('scoreTotal'); },
-    get progressFill() { return $('progressFill'); },
-    get feedbackHeader() { return $('feedbackHeader'); },
-    get feedbackIconWrapper() { return $('feedbackIconWrapper'); },
-    get feedbackIcon() { return $('feedbackIcon'); },
-    get feedbackTitle() { return $('feedbackTitle'); },
-    get feedbackSubtitle() { return $('feedbackSubtitle'); },
-    get feedbackContent() { return $('feedbackContent'); }
+    get btnRetry() { return $('btnRetry'); }
 };
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -344,28 +334,10 @@ function selectAnswer(index) {
         if (i === question.correctIndex && !isCorrect) btn.classList.add('revealed');
     });
     
-    // Build feedback with new iOS-style structure
+    // Build feedback HTML with sanitization
     const keys = ['A', 'B', 'C', 'D', 'E'];
-    
-    // Update feedback header
-    if (DOM.feedbackIconWrapper) {
-        DOM.feedbackIconWrapper.className = 'feedback-icon-wrapper ' + (isCorrect ? 'success' : 'error');
-    }
-    if (DOM.feedbackIcon) {
-        DOM.feedbackIcon.textContent = isCorrect ? '✓' : '✕';
-    }
-    if (DOM.feedbackTitle) {
-        DOM.feedbackTitle.textContent = isCorrect ? 'Correct!' : 'Not quite';
-    }
-    if (DOM.feedbackSubtitle) {
-        const correctWord = question.options[question.correctIndex];
-        DOM.feedbackSubtitle.textContent = isCorrect 
-            ? 'Great job! Keep it up.' 
-            : `The correct answer is "${sanitizeHtml(correctWord).toLowerCase()}"`;
-    }
-    
-    // Build explanations HTML
     let feedbackHTML = '';
+    
     if (question.explanations && question.explanations.length === 5) {
         feedbackHTML = '<div class="explanation-list">';
         question.options.forEach((opt, i) => {
@@ -374,17 +346,16 @@ function selectAnswer(index) {
             feedbackHTML += `
                 <div class="explanation-item ${isOptCorrect ? 'correct' : 'wrong'}">
                     <span class="opt-label">${keys[i]}</span>
-                    <span class="opt-text">
-                        <strong>${sanitizeHtml(opt).toLowerCase()}</strong>
-                        ${explanation ? ': ' + sanitizeHtml(explanation) : ''}
-                    </span>
+                    <span class="opt-text"><strong>${sanitizeHtml(opt).toLowerCase()}:</strong> ${sanitizeHtml(explanation)}</span>
                 </div>
             `;
         });
         feedbackHTML += '</div>';
+    } else {
+        feedbackHTML = `<p>${isCorrect ? '✅ Correct!' : '❌ Incorrect. The correct answer is shown above.'}</p>`;
     }
     
-    if (DOM.feedbackContent) DOM.feedbackContent.innerHTML = feedbackHTML;
+    if (DOM.feedbackText) DOM.feedbackText.innerHTML = feedbackHTML;
     if (DOM.feedback) DOM.feedback.classList.remove('hidden');
     if (DOM.btnNext) DOM.btnNext.classList.remove('hidden');
     

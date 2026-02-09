@@ -58,14 +58,18 @@ document.addEventListener('DOMContentLoaded', () => {
 // EVENT LISTENERS
 // ═════════════════════════════════════════════════════════════════════════════
 
-// DEFENSE: Debounced start button
-if (DOM.btnStart) {
-    DOM.btnStart.addEventListener('click', debounce(showApp, CONFIG.debounceDelay));
-}
+// Note: Start button is now replaced by mode selection cards
+// Quiz mode is handled by btnModeQuiz in flashcards.js
+// Flashcard mode is handled by btnModeFlashcard in flashcards.js
 
 // DEFENSE: Debounced back button
 if (DOM.btnBack) {
-    DOM.btnBack.addEventListener('click', debounce(showWelcome, CONFIG.debounceDelay));
+    DOM.btnBack.addEventListener('click', debounce(() => {
+        // Cancel any pending requests when going back
+        AppState.cancelPendingRequests();
+        AppState.reset();
+        showWelcome();
+    }, CONFIG.debounceDelay));
 }
 
 // DEFENSE: Debounced next button

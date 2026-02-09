@@ -1,0 +1,597 @@
+/* ═════════════════════════════════════════════════════════════════════════════
+   YDS Words - Tinder-Style Flashcard Study Mode
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+// ═════════════════════════════════════════════════════════════════════════════
+// FLASHCARD STATE
+// ═════════════════════════════════════════════════════════════════════════════
+
+const FlashcardState = {
+    currentIndex: 0,
+    shuffledWords: [],
+    knownWords: [],
+    unknownWords: [],
+    isAnimating: false,
+    currentDefinition: null,
+    currentExample: null,
+    
+    reset() {
+        this.currentIndex = 0;
+        this.shuffledWords = [];
+        this.knownWords = [];
+        this.unknownWords = [];
+        this.isAnimating = false;
+        this.currentDefinition = null;
+        this.currentExample = null;
+    },
+    
+    shuffleWords() {
+        if (!Array.isArray(MYWORDS) || MYWORDS.length === 0) {
+            console.error('MYWORDS not available for flashcards');
+            return [];
+        }
+        // Fisher-Yates shuffle
+        this.shuffledWords = [...MYWORDS];
+        for (let i = this.shuffledWords.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [this.shuffledWords[i], this.shuffledWords[j]] = [this.shuffledWords[j], this.shuffledWords[i]];
+        }
+        return this.shuffledWords;
+    }
+};
+
+// ═════════════════════════════════════════════════════════════════════════════
+// DOM REFERENCES FOR FLASHCARDS
+// ═════════════════════════════════════════════════════════════════════════════
+
+const FlashcardDOM = {
+    get flashcardPage() { return $('flashcardPage'); },
+    get flashcardContainer() { return $('flashcardContainer'); },
+    get flashcardCard() { return $('flashcardCard'); },
+    get flashcardWord() { return $('flashcardWord'); },
+    get flashcardDefinition() { return $('flashcardDefinition'); },
+    get flashcardExample() { return $('flashcardExample'); },
+    get flashcardProgress() { return $('flashcardProgress'); },
+    get flashcardProgressText() { return $('flashcardProgressText'); },
+    get btnFlashcardBack() { return $('btnFlashcardBack'); },
+    get btnDontKnow() { return $('btnDontKnow'); },
+    get btnKnow() { return $('btnKnow'); },
+    get flashcardResults() { return $('flashcardResults'); },
+    get flashcardStats() { return $('flashcardStats'); },
+    get btnFlashcardRestart() { return $('btnFlashcardRestart'); },
+    get btnFlashcardFinish() { return $('btnFlashcardFinish'); },
+    get modeSelection() { return $('modeSelection'); },
+    get btnModeQuiz() { return $('btnModeQuiz'); },
+    get btnModeFlashcard() { return $('btnModeFlashcard'); }
+};
+
+// ═════════════════════════════════════════════════════════════════════════════
+// FLASHCARD API - Get definition and example from OpenAI
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Generate flashcard content (definition + example) for a word
+ */
+async function generateFlashcardContent(word) {
+    // Check circuit breaker
+    if (isCircuitOpen()) {
+        const waitSeconds = Math.ceil((AppState.circuitOpenUntil - Date.now()) / 1000);
+        throw new Error(`Too many failures. Please wait ${waitSeconds} seconds.`);
+    }
+    
+    // Check online status
+    if (!navigator.onLine) {
+        throw new Error('You\'re offline. Please check your internet connection.');
+    }
+    
+    const prompt = `For the English word/phrase "${word}" (commonly used in academic/YDS exam contexts), provide:
+1. A clear, concise definition suitable for English language learners
+2. One academic-style example sentence showing natural usage
+
+Respond ONLY in this exact JSON format:
+{
+  "definition": "brief definition here",
+  "example": "Example sentence here."
+}
+
+Keep the definition under 20 words. The example should be academic/formal in tone.`;
+
+    try {
+        const response = await fetchWithTimeout(API_CONFIG.endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Server error (${response.status})`);
+        }
+        
+        const data = await response.json();
+        
+        if (!data?.choices?.[0]?.message?.content) {
+            throw new Error('Invalid response format');
+        }
+        
+        const text = data.choices[0].message.content;
+        
+        // Parse JSON response
+        let content;
+        try {
+            content = JSON.parse(text);
+        } catch (e) {
+            // Try extracting from markdown code block
+            const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+            if (jsonMatch) {
+                content = JSON.parse(jsonMatch[1].trim());
+            } else {
+                // Try finding JSON object
+                const objMatch = text.match(/\{[\s\S]*"definition"[\s\S]*"example"[\s\S]*\}/);
+                if (objMatch) {
+                    content = JSON.parse(objMatch[0]);
+                } else {
+                    throw new Error('Could not parse flashcard content');
+                }
+            }
+        }
+        
+        // Validate
+        if (!content.definition || !content.example) {
+            throw new Error('Missing definition or example');
+        }
+        
+        recordSuccess();
+        return content;
+        
+    } catch (error) {
+        recordFailure();
+        throw error;
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// FLASHCARD UI FUNCTIONS
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Show mode selection on welcome page
+ */
+function showModeSelection() {
+    if (FlashcardDOM.modeSelection) {
+        FlashcardDOM.modeSelection.classList.remove('hidden');
+    }
+    // Hide the original start button
+    const originalStart = document.getElementById('btnStart');
+    if (originalStart) {
+        originalStart.style.display = 'none';
+    }
+}
+
+/**
+ * Start flashcard mode
+ */
+async function startFlashcardMode() {
+    // Validate MYWORDS
+    if (!Array.isArray(MYWORDS) || MYWORDS.length === 0) {
+        showNotification('error', 'Word list is not available.');
+        return;
+    }
+    
+    // Reset state
+    FlashcardState.reset();
+    FlashcardState.shuffleWords();
+    
+    // Switch to flashcard page
+    if (DOM.welcomePage) DOM.welcomePage.classList.remove('active');
+    if (FlashcardDOM.flashcardPage) FlashcardDOM.flashcardPage.classList.add('active');
+    
+    // Hide results if visible
+    if (FlashcardDOM.flashcardResults) {
+        FlashcardDOM.flashcardResults.classList.add('hidden');
+    }
+    if (FlashcardDOM.flashcardContainer) {
+        FlashcardDOM.flashcardContainer.classList.remove('hidden');
+    }
+    
+    // Load first card
+    await loadFlashcard();
+}
+
+/**
+ * Load current flashcard
+ */
+async function loadFlashcard() {
+    if (FlashcardState.currentIndex >= FlashcardState.shuffledWords.length) {
+        showFlashcardResults();
+        return;
+    }
+    
+    const word = FlashcardState.shuffledWords[FlashcardState.currentIndex];
+    
+    // Show loading state on card
+    if (FlashcardDOM.flashcardWord) FlashcardDOM.flashcardWord.textContent = word;
+    if (FlashcardDOM.flashcardDefinition) FlashcardDOM.flashcardDefinition.textContent = 'Loading definition...';
+    if (FlashcardDOM.flashcardExample) FlashcardDOM.flashcardExample.textContent = 'Loading example...';
+    if (FlashcardDOM.flashcardDefinition) FlashcardDOM.flashcardDefinition.classList.add('loading');
+    if (FlashcardDOM.flashcardExample) FlashcardDOM.flashcardExample.classList.add('loading');
+    
+    // Update progress
+    updateFlashcardProgress();
+    
+    // Reset card position
+    resetCardPosition();
+    
+    // Fetch content
+    try {
+        const content = await generateFlashcardContent(word);
+        FlashcardState.currentDefinition = content.definition;
+        FlashcardState.currentExample = content.example;
+        
+        // Update UI
+        if (FlashcardDOM.flashcardDefinition) {
+            FlashcardDOM.flashcardDefinition.textContent = content.definition;
+            FlashcardDOM.flashcardDefinition.classList.remove('loading');
+        }
+        if (FlashcardDOM.flashcardExample) {
+            // Highlight the word in the example
+            const highlightedExample = highlightWordInExample(content.example, word);
+            FlashcardDOM.flashcardExample.innerHTML = highlightedExample;
+            FlashcardDOM.flashcardExample.classList.remove('loading');
+        }
+    } catch (error) {
+        console.error('Failed to load flashcard:', error);
+        if (FlashcardDOM.flashcardDefinition) {
+            FlashcardDOM.flashcardDefinition.textContent = 'Definition unavailable';
+            FlashcardDOM.flashcardDefinition.classList.remove('loading');
+        }
+        if (FlashcardDOM.flashcardExample) {
+            FlashcardDOM.flashcardExample.textContent = 'Example unavailable';
+            FlashcardDOM.flashcardExample.classList.remove('loading');
+        }
+    }
+}
+
+/**
+ * Highlight word in example sentence
+ */
+function highlightWordInExample(example, word) {
+    // Escape HTML
+    let safeExample = sanitizeHtml(example);
+    
+    // Create case-insensitive regex to find the word
+    const wordRegex = new RegExp(`\\b(${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b`, 'gi');
+    
+    // Wrap in highlight span
+    return safeExample.replace(wordRegex, '<span class="word-highlight">$1</span>');
+}
+
+/**
+ * Update progress text
+ */
+function updateFlashcardProgress() {
+    const current = FlashcardState.currentIndex + 1;
+    const total = FlashcardState.shuffledWords.length;
+    
+    if (FlashcardDOM.flashcardProgressText) {
+        FlashcardDOM.flashcardProgressText.textContent = `${current} / ${total}`;
+    }
+    if (FlashcardDOM.flashcardProgress) {
+        const percentage = (FlashcardState.currentIndex / total) * 100;
+        FlashcardDOM.flashcardProgress.style.width = `${percentage}%`;
+    }
+}
+
+/**
+ * Reset card position after swipe
+ */
+function resetCardPosition() {
+    const card = FlashcardDOM.flashcardCard;
+    if (!card) return;
+    
+    card.style.transform = '';
+    card.style.opacity = '1';
+    card.classList.remove('swiping-left', 'swiping-right');
+}
+
+/**
+ * Handle swipe/know word
+ */
+function handleKnowWord() {
+    if (FlashcardState.isAnimating) return;
+    FlashcardState.isAnimating = true;
+    
+    const word = FlashcardState.shuffledWords[FlashcardState.currentIndex];
+    FlashcardState.knownWords.push(word);
+    
+    // Animate card off to right
+    const card = FlashcardDOM.flashcardCard;
+    if (card) {
+        card.classList.add('swipe-right-animation');
+        
+        setTimeout(() => {
+            card.classList.remove('swipe-right-animation');
+            FlashcardState.currentIndex++;
+            FlashcardState.isAnimating = false;
+            loadFlashcard();
+        }, 300);
+    } else {
+        FlashcardState.currentIndex++;
+        FlashcardState.isAnimating = false;
+        loadFlashcard();
+    }
+}
+
+/**
+ * Handle swipe/don't know word
+ */
+function handleDontKnowWord() {
+    if (FlashcardState.isAnimating) return;
+    FlashcardState.isAnimating = true;
+    
+    const word = FlashcardState.shuffledWords[FlashcardState.currentIndex];
+    FlashcardState.unknownWords.push(word);
+    
+    // Animate card off to left
+    const card = FlashcardDOM.flashcardCard;
+    if (card) {
+        card.classList.add('swipe-left-animation');
+        
+        setTimeout(() => {
+            card.classList.remove('swipe-left-animation');
+            FlashcardState.currentIndex++;
+            FlashcardState.isAnimating = false;
+            loadFlashcard();
+        }, 300);
+    } else {
+        FlashcardState.currentIndex++;
+        FlashcardState.isAnimating = false;
+        loadFlashcard();
+    }
+}
+
+/**
+ * Show flashcard results
+ */
+function showFlashcardResults() {
+    if (FlashcardDOM.flashcardContainer) {
+        FlashcardDOM.flashcardContainer.classList.add('hidden');
+    }
+    if (FlashcardDOM.flashcardResults) {
+        FlashcardDOM.flashcardResults.classList.remove('hidden');
+    }
+    
+    // Update stats
+    const known = FlashcardState.knownWords.length;
+    const unknown = FlashcardState.unknownWords.length;
+    const total = known + unknown;
+    const percentage = total > 0 ? Math.round((known / total) * 100) : 0;
+    
+    if (FlashcardDOM.flashcardStats) {
+        FlashcardDOM.flashcardStats.innerHTML = `
+            <div class="stat-item">
+                <span class="stat-number stat-known">${known}</span>
+                <span class="stat-label">Known</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number stat-unknown">${unknown}</span>
+                <span class="stat-label">Study Again</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${percentage}%</span>
+                <span class="stat-label">Mastery</span>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Return to welcome page from flashcards
+ */
+function exitFlashcardMode() {
+    FlashcardState.reset();
+    if (FlashcardDOM.flashcardPage) FlashcardDOM.flashcardPage.classList.remove('active');
+    if (DOM.welcomePage) DOM.welcomePage.classList.add('active');
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// TOUCH/SWIPE HANDLING
+// ═════════════════════════════════════════════════════════════════════════════
+
+let touchStartX = 0;
+let touchCurrentX = 0;
+let isDragging = false;
+
+function initFlashcardGestures() {
+    const card = FlashcardDOM.flashcardCard;
+    if (!card) return;
+    
+    // Touch events
+    card.addEventListener('touchstart', handleTouchStart, { passive: true });
+    card.addEventListener('touchmove', handleTouchMove, { passive: true });
+    card.addEventListener('touchend', handleTouchEnd);
+    
+    // Mouse events (for desktop testing)
+    card.addEventListener('mousedown', handleMouseDown);
+}
+
+function handleTouchStart(e) {
+    if (FlashcardState.isAnimating) return;
+    touchStartX = e.touches[0].clientX;
+    isDragging = true;
+}
+
+function handleMouseDown(e) {
+    if (FlashcardState.isAnimating) return;
+    touchStartX = e.clientX;
+    isDragging = true;
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+}
+
+function handleMouseMove(e) {
+    if (!isDragging) return;
+    touchCurrentX = e.clientX;
+    updateCardPosition();
+}
+
+function handleTouchMove(e) {
+    if (!isDragging) return;
+    touchCurrentX = e.touches[0].clientX;
+    updateCardPosition();
+}
+
+function updateCardPosition() {
+    const card = FlashcardDOM.flashcardCard;
+    if (!card) return;
+    
+    const deltaX = touchCurrentX - touchStartX;
+    const rotate = deltaX * 0.05; // Rotation based on drag
+    const opacity = 1 - Math.abs(deltaX) / 500;
+    
+    card.style.transform = `translateX(${deltaX}px) rotate(${rotate}deg)`;
+    card.style.opacity = Math.max(0.5, opacity);
+    
+    // Visual feedback
+    card.classList.remove('swiping-left', 'swiping-right');
+    if (deltaX > 50) {
+        card.classList.add('swiping-right');
+    } else if (deltaX < -50) {
+        card.classList.add('swiping-left');
+    }
+}
+
+function handleTouchEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    
+    const deltaX = touchCurrentX - touchStartX;
+    const threshold = 100; // Swipe threshold
+    
+    if (deltaX > threshold) {
+        handleKnowWord();
+    } else if (deltaX < -threshold) {
+        handleDontKnowWord();
+    } else {
+        // Snap back
+        resetCardPosition();
+    }
+}
+
+function handleMouseUp() {
+    handleTouchEnd();
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// KEYBOARD SUPPORT FOR FLASHCARDS
+// ═════════════════════════════════════════════════════════════════════════════
+
+document.addEventListener('keydown', (e) => {
+    // Only handle when flashcard page is active
+    if (!FlashcardDOM.flashcardPage?.classList.contains('active')) return;
+    
+    // Don't handle if currently animating
+    if (FlashcardState.isAnimating) return;
+    
+    const key = e.key.toUpperCase();
+    
+    switch (key) {
+        case 'ARROWLEFT':
+        case 'LEFT':
+        case 'N': // N for "No/Don't know"
+            e.preventDefault();
+            handleDontKnowWord();
+            break;
+        case 'ARROWRIGHT':
+        case 'RIGHT':
+        case 'K': // K for "Know"
+        case 'Y': // Y for "Yes"
+            e.preventDefault();
+            handleKnowWord();
+            break;
+        case 'ESCAPE':
+            e.preventDefault();
+            exitFlashcardMode();
+            break;
+    }
+});
+
+// ═════════════════════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ═════════════════════════════════════════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Setup mode selection buttons
+    if (FlashcardDOM.btnModeQuiz) {
+        FlashcardDOM.btnModeQuiz.addEventListener('click', () => {
+            showApp();
+        });
+    }
+    
+    if (FlashcardDOM.btnModeFlashcard) {
+        FlashcardDOM.btnModeFlashcard.addEventListener('click', () => {
+            startFlashcardMode();
+        });
+    }
+    
+    // Setup flashcard control buttons
+    if (FlashcardDOM.btnFlashcardBack) {
+        FlashcardDOM.btnFlashcardBack.addEventListener('click', exitFlashcardMode);
+    }
+    
+    if (FlashcardDOM.btnDontKnow) {
+        FlashcardDOM.btnDontKnow.addEventListener('click', handleDontKnowWord);
+    }
+    
+    if (FlashcardDOM.btnKnow) {
+        FlashcardDOM.btnKnow.addEventListener('click', handleKnowWord);
+    }
+    
+    if (FlashcardDOM.btnFlashcardRestart) {
+        FlashcardDOM.btnFlashcardRestart.addEventListener('click', () => {
+            // Study unknown words first, then shuffle rest
+            const wordsToStudy = FlashcardState.unknownWords.length > 0 
+                ? [...FlashcardState.unknownWords, ...FlashcardState.knownWords]
+                : [...MYWORDS];
+            
+            FlashcardState.reset();
+            FlashcardState.shuffledWords = wordsToStudy;
+            
+            // Fisher-Yates shuffle
+            for (let i = wordsToStudy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [wordsToStudy[i], wordsToStudy[j]] = [wordsToStudy[j], wordsToStudy[i]];
+            }
+            
+            if (FlashcardDOM.flashcardResults) {
+                FlashcardDOM.flashcardResults.classList.add('hidden');
+            }
+            if (FlashcardDOM.flashcardContainer) {
+                FlashcardDOM.flashcardContainer.classList.remove('hidden');
+            }
+            
+            loadFlashcard();
+        });
+    }
+    
+    if (FlashcardDOM.btnFlashcardFinish) {
+        FlashcardDOM.btnFlashcardFinish.addEventListener('click', exitFlashcardMode);
+    }
+    
+    // Initialize gestures
+    initFlashcardGestures();
+});
+
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { 
+        FlashcardState, 
+        FlashcardDOM, 
+        startFlashcardMode, 
+        exitFlashcardMode,
+        handleKnowWord,
+        handleDontKnowWord
+    };
+}

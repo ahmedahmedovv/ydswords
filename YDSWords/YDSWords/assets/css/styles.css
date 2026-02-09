@@ -1934,3 +1934,400 @@ button, .option {
         opacity: 0.8;
     }
 }
+
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   PHASE 5: ANIMATION REFINEMENTS
+   Polished iOS-style transitions and micro-interactions
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══ Page Transition Animations ═══ */
+
+/* Welcome to Quiz transition */
+.welcome-container.exiting {
+    animation: welcomeExit 0.3s var(--ios-ease-in) forwards;
+}
+
+@keyframes welcomeExit {
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+.app.entering {
+    animation: appEnter 0.4s var(--ios-spring) forwards;
+}
+
+@keyframes appEnter {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Quiz to Welcome transition */
+.app.exiting {
+    animation: appExit 0.25s var(--ios-ease-in) forwards;
+}
+
+@keyframes appExit {
+    to {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+.welcome-container.entering-back {
+    animation: welcomeEnterBack 0.35s var(--ios-spring) forwards;
+}
+
+@keyframes welcomeEnterBack {
+    from {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ═══ Button Micro-interactions ═══ */
+
+/* Enhanced button press with ripple effect */
+.btn-start,
+.btn-next,
+.btn-retry-simple {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-start::before,
+.btn-next::before,
+.btn-retry-simple::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.btn-start:active::before,
+.btn-next:active::before,
+.btn-retry-simple:active::before {
+    width: 200%;
+    height: 200%;
+}
+
+/* Option button press effect */
+.option,
+.option-simple {
+    position: relative;
+    overflow: hidden;
+}
+
+.option::after,
+.option-simple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(0, 122, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+    pointer-events: none;
+}
+
+.option:active::after,
+.option-simple:active::after {
+    width: 150%;
+    height: 150%;
+}
+
+/* ═══ Loading Animation Refinements ═══ */
+
+/* Smooth spinner with fade */
+.spinner,
+.spinner-simple {
+    animation: spin 0.8s linear infinite, spinnerFade 0.3s ease;
+}
+
+@keyframes spinnerFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Loading text pulse */
+.loading p,
+.loading-text {
+    animation: textPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes textPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* ═══ Score Update Animation ═══ */
+
+.score-updating {
+    animation: scoreBump 0.3s var(--ios-spring);
+}
+
+@keyframes scoreBump {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* ═══ Feedback Card Entrance ═══ */
+
+.feedback,
+.feedback-simple {
+    animation: feedbackSlide 0.4s var(--ios-spring);
+}
+
+@keyframes feedbackSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ═══ Correct/Incorrect Answer Animations ═══ */
+
+.option.correct,
+.option-simple.correct {
+    animation: correctPulse 0.5s var(--ios-spring);
+}
+
+@keyframes correctPulse {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.option.incorrect,
+.option-simple.incorrect {
+    animation: incorrectShake 0.4s ease;
+}
+
+@keyframes incorrectShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+}
+
+/* ═══ Staggered List Animations ═══ */
+
+/* Options stagger entrance */
+.options .option:nth-child(1),
+.options-simple .option-simple:nth-child(1) {
+    animation: optionEnter 0.4s var(--ios-spring) 0.05s backwards;
+}
+
+.options .option:nth-child(2),
+.options-simple .option-simple:nth-child(2) {
+    animation: optionEnter 0.4s var(--ios-spring) 0.1s backwards;
+}
+
+.options .option:nth-child(3),
+.options-simple .option-simple:nth-child(3) {
+    animation: optionEnter 0.4s var(--ios-spring) 0.15s backwards;
+}
+
+.options .option:nth-child(4),
+.options-simple .option-simple:nth-child(4) {
+    animation: optionEnter 0.4s var(--ios-spring) 0.2s backwards;
+}
+
+.options .option:nth-child(5),
+.options-simple .option-simple:nth-child(5) {
+    animation: optionEnter 0.4s var(--ios-spring) 0.25s backwards;
+}
+
+@keyframes optionEnter {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ═══ Explanation Items Stagger ═══ */
+
+.explanation-item:nth-child(1),
+.explanation-row:nth-child(1) {
+    animation: explanationEnter 0.3s var(--ios-spring) 0.1s backwards;
+}
+
+.explanation-item:nth-child(2),
+.explanation-row:nth-child(2) {
+    animation: explanationEnter 0.3s var(--ios-spring) 0.15s backwards;
+}
+
+.explanation-item:nth-child(3),
+.explanation-row:nth-child(3) {
+    animation: explanationEnter 0.3s var(--ios-spring) 0.2s backwards;
+}
+
+.explanation-item:nth-child(4),
+.explanation-row:nth-child(4) {
+    animation: explanationEnter 0.3s var(--ios-spring) 0.25s backwards;
+}
+
+.explanation-item:nth-child(5),
+.explanation-row:nth-child(5) {
+    animation: explanationEnter 0.3s var(--ios-spring) 0.3s backwards;
+}
+
+@keyframes explanationEnter {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ═══ Next Button Entrance ═══ */
+
+.btn-next,
+.btn-next-simple {
+    animation: nextButtonEnter 0.4s var(--ios-spring) 0.2s backwards;
+}
+
+@keyframes nextButtonEnter {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ═══ Nav Back Button ═══ */
+
+.nav-back-simple {
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.nav-back-simple:hover {
+    background: var(--ios-fill);
+}
+
+.nav-back-simple:active {
+    transform: scale(0.9);
+}
+
+/* ═══ Notification Slide ═══ */
+
+.notification {
+    animation: notificationSlide 0.4s var(--ios-spring);
+}
+
+@keyframes notificationSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.notification.exit {
+    animation: notificationExit 0.3s var(--ios-ease-in) forwards;
+}
+
+@keyframes notificationExit {
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* ═══ Smooth Scroll Behavior ═══ */
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* ═══ Focus Animations for Accessibility ═══ */
+
+button:focus-visible,
+.option:focus-visible,
+.option-simple:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.3);
+    animation: focusPulse 0.3s ease;
+}
+
+@keyframes focusPulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.5); }
+    100% { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.3); }
+}
+
+/* ═══ Reduced Motion Support ═══ */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .btn-start::before,
+    .btn-next::before,
+    .option::after,
+    .option-simple::after {
+        display: none;
+    }
+}
+
+/* ═══ GPU Acceleration ═══ */
+
+.welcome-container,
+.app,
+.question-card,
+.question-card-simple,
+.option,
+.option-simple,
+.feedback,
+.feedback-simple,
+.btn-next,
+.btn-next-simple,
+.notification {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}

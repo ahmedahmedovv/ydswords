@@ -123,8 +123,21 @@ function showApp() {
         return;
     }
     
-    if (DOM.welcomePage) DOM.welcomePage.classList.remove('active');
-    if (DOM.appPage) DOM.appPage.classList.add('active');
+    // Apply exit animation to welcome page
+    if (DOM.welcomePage) {
+        DOM.welcomePage.classList.add('exiting');
+        setTimeout(() => {
+            DOM.welcomePage.classList.remove('active', 'exiting');
+        }, 300);
+    }
+    
+    // Apply enter animation to app page
+    if (DOM.appPage) {
+        DOM.appPage.classList.add('active', 'entering');
+        setTimeout(() => {
+            DOM.appPage.classList.remove('entering');
+        }, 400);
+    }
     
     // Use prefetched question if available (instant display)
     if (AppState.prefetched && AppState.isFirstQuestion) {
@@ -145,8 +158,21 @@ function showWelcome() {
     AppState.cancelPendingRequests();
     AppState.reset();
     
-    if (DOM.appPage) DOM.appPage.classList.remove('active');
-    if (DOM.welcomePage) DOM.welcomePage.classList.add('active');
+    // Apply exit animation to app page
+    if (DOM.appPage) {
+        DOM.appPage.classList.add('exiting');
+        setTimeout(() => {
+            DOM.appPage.classList.remove('active', 'exiting');
+        }, 250);
+    }
+    
+    // Apply enter animation to welcome page
+    if (DOM.welcomePage) {
+        DOM.welcomePage.classList.add('active', 'entering-back');
+        setTimeout(() => {
+            DOM.welcomePage.classList.remove('entering-back');
+        }, 350);
+    }
     
     // Reset score display
     if (DOM.scoreEl) DOM.scoreEl.textContent = '0 / 0';
@@ -321,10 +347,14 @@ function selectAnswer(index) {
     
     const isCorrect = index === question.correctIndex;
     
-    // Update score
+    // Update score with animation
     AppState.total++;
     if (isCorrect) AppState.correct++;
-    if (DOM.scoreEl) DOM.scoreEl.textContent = `${AppState.correct} / ${AppState.total}`;
+    if (DOM.scoreEl) {
+        DOM.scoreEl.textContent = `${AppState.correct} / ${AppState.total}`;
+        DOM.scoreEl.classList.add('score-updating');
+        setTimeout(() => DOM.scoreEl.classList.remove('score-updating'), 300);
+    }
     
     // Update UI with visual feedback
     const optionButtons = DOM.options ? DOM.options.querySelectorAll('.option') : [];

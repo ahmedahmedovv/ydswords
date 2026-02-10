@@ -76,11 +76,7 @@ YDSWords/
 ├── netlify/
 │   └── functions/
 │       └── generate-question.js     # Secure Netlify Function (OpenRouter proxy)
-├── netlify.toml                     # Netlify configuration (functions, redirects, headers)
-├── CROSS_PLATFORM_GUIDE.md          # Browser compatibility documentation
-├── DEPLOYMENT.md                    # Netlify deployment instructions
-├── UI_REFRESH_SUMMARY.md            # UI redesign history
-└── AGENTS.md                        # This file
+└── netlify.toml                     # Netlify configuration (functions, redirects, headers)
 ```
 
 ---

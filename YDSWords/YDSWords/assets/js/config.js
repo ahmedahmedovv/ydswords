@@ -20,7 +20,7 @@ const CONFIG = {
     // Input validation
     maxSentenceLength: 300,      // Max characters in sentence (was 2000) - 25 words ~ 200 chars with buffer
     maxOptionLength: 60,         // Max characters per option (was 500)
-    maxExplanationLength: 120,   // Max characters per explanation (prevents UI overflow)
+    maxExplanationLength: 200,   // Max characters per explanation (allows complete sentences)
     
     getPrompt: function(word) {
         // DEFENSE: Validate word before using in prompt
@@ -60,7 +60,7 @@ Requirements:
 - Provide exactly 5 options including "${sanitizedWord}" - all options must be the same grammatical type
 - "${sanitizedWord}" must be the correct answer (index 0)
 - Other 4 options should be plausible distractors that would NOT fit naturally given the specific context
-- For EACH option, provide a BRIEF explanation (max 10-15 words) why it is correct or wrong
+- For EACH option, provide a clear explanation (1-2 complete sentences) why it is correct or wrong
 
 EXAMPLES of diverse contexts (for illustration only - create appropriate context for "${sanitizedWord}"):
 

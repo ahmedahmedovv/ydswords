@@ -60,13 +60,25 @@ function validateQuestion(data) {
         opt.length > CONFIG.maxOptionLength ? opt.substring(0, CONFIG.maxOptionLength) + '...' : opt
     );
     
-    // Truncate explanations if too long
+    // Truncate explanations if too long - cut at sentence end or word boundary
     if (data.explanations && Array.isArray(data.explanations)) {
-        data.explanations = data.explanations.map(exp => 
-            typeof exp === 'string' && exp.length > CONFIG.maxExplanationLength 
-                ? exp.substring(0, CONFIG.maxExplanationLength) + '...' 
-                : exp
-        );
+        data.explanations = data.explanations.map(exp => {
+            if (typeof exp !== 'string' || exp.length <= CONFIG.maxExplanationLength) {
+                return exp;
+            }
+            // Try to find sentence ending (., !, ?) within limit
+            const truncated = exp.substring(0, CONFIG.maxExplanationLength);
+            const sentenceEnd = truncated.search(/[.!?](?!.*[.!?])/);
+            if (sentenceEnd > 50) { // At least 50 chars before cutting at sentence
+                return truncated.substring(0, sentenceEnd + 1);
+            }
+            // Otherwise cut at last word boundary
+            const lastSpace = truncated.lastIndexOf(' ');
+            if (lastSpace > 50) {
+                return truncated.substring(0, lastSpace);
+            }
+            return truncated + '...';
+        });
     }
     
     return true;

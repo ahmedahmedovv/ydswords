@@ -312,8 +312,11 @@ function displayQuestion() {
         if (DOM.options) {
             DOM.options.innerHTML = question.options.map((opt, i) => `
                 <button class="option" data-index="${i}" type="button" style="animation-delay: ${i * 0.05}s">
-                    <span class="key">${keys[i]}</span>
-                    <span>${sanitizeHtml(opt).toLowerCase()}</span>
+                    <div class="option-main">
+                        <span class="key">${keys[i]}</span>
+                        <span class="option-text">${sanitizeHtml(opt).toLowerCase()}</span>
+                    </div>
+                    <div class="option-explanation" data-index="${i}"></div>
                 </button>
             `).join('');
             
@@ -368,49 +371,29 @@ function selectAnswer(index) {
     // Update score display
     updateQuizScore();
     
-    // Update UI with visual feedback
+    // Update UI with visual feedback and show explanations in options
     const optionButtons = DOM.options ? DOM.options.querySelectorAll('.option') : [];
     optionButtons.forEach((btn, i) => {
         btn.disabled = true;
         if (i === index) btn.classList.add(isCorrect ? 'correct' : 'incorrect');
         if (i === question.correctIndex && !isCorrect) btn.classList.add('revealed');
+        
+        // Show explanation inside each option
+        const explanationDiv = btn.querySelector('.option-explanation');
+        if (explanationDiv && question.explanations && question.explanations[i]) {
+            explanationDiv.textContent = question.explanations[i];
+            explanationDiv.classList.add('show');
+        }
     });
     
-    // Build feedback HTML with sanitization
-    const keys = ['A', 'B', 'C', 'D', 'E'];
-    let feedbackHTML = '';
-    
-    if (question.explanations && question.explanations.length === 5) {
-        feedbackHTML = '<div class="explanation-list">';
-        question.options.forEach((opt, i) => {
-            const isOptCorrect = i === question.correctIndex;
-            const explanation = question.explanations[i] || '';
-            feedbackHTML += `
-                <div class="explanation-item ${isOptCorrect ? 'correct' : 'wrong'}">
-                    <span class="opt-label">${keys[i]}</span>
-                    <span class="opt-text"><strong>${sanitizeHtml(opt).toLowerCase()}:</strong> ${sanitizeHtml(explanation)}</span>
-                </div>
-            `;
-        });
-        feedbackHTML += '</div>';
-    } else {
-        feedbackHTML = `<p>${isCorrect ? '✅ Correct!' : '❌ Incorrect. The correct answer is shown above.'}</p>`;
-    }
-    
-    if (DOM.feedbackText) DOM.feedbackText.innerHTML = feedbackHTML;
-    if (DOM.feedback) DOM.feedback.classList.remove('hidden');
     if (DOM.btnNext) DOM.btnNext.classList.remove('hidden');
     if (DOM.questionArea) DOM.questionArea.classList.add('answered');
     
-    // Scroll to show all feedback content at the bottom
+    // Scroll to show the selected option with its explanation
     setTimeout(() => {
-        // Scroll within the question-area container to show the feedback and Next button
-        const questionArea = DOM.questionArea;
-        if (questionArea) {
-            questionArea.scrollTo({ 
-                top: questionArea.scrollHeight, 
-                behavior: 'smooth' 
-            });
+        const selectedBtn = optionButtons[index];
+        if (selectedBtn) {
+            selectedBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }, 200);
 }

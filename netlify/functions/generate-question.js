@@ -72,7 +72,7 @@ exports.handler = async (event, context) => {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${apiKey}`,
-                'HTTP-Referer': 'https://ydswordsios.netlify.app',
+                'HTTP-Referer': 'https://thunder.yds.today',
                 'X-Title': 'YDS Words'
             },
             body: JSON.stringify({

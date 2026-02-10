@@ -7,6 +7,17 @@ class ViewController: UIViewController {
     private var webView: WKWebView!
     private var activityIndicator: UIActivityIndicatorView!
     
+    // MARK: - Streak Storage Keys (must match streak.js)
+    private let streakKeys = [
+        "yds_quiz_streak",
+        "yds_flashcard_streak",
+        "yds_quiz_progress",
+        "yds_flashcard_progress",
+        "yds_last_study_date",
+        "yds_quiz_completed_today",
+        "yds_flashcard_completed_today"
+    ]
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +50,9 @@ class ViewController: UIViewController {
         
         // Configure process pool for shared state
         configuration.processPool = WKProcessPool()
+        
+        // Add JavaScript message handler for native storage bridge
+        configuration.userContentController.add(self, name: "nativeStorage")
         
         // Create web view with iPhone 13 mini optimized frame
         webView = WKWebView(frame: .zero, configuration: configuration)
@@ -100,6 +114,28 @@ class ViewController: UIViewController {
         webView.loadFileURL(htmlUrl, allowingReadAccessTo: bundleUrl)
     }
     
+    // MARK: - Native Storage Bridge
+    
+    /// Save streak data to UserDefaults (persistent across app restarts)
+    private func saveStreakData(key: String, value: String) {
+        UserDefaults.standard.set(value, forKey: key)
+        print("[NativeStorage] Saved \(key)")
+    }
+    
+    /// Load streak data from UserDefaults
+    private func loadStreakData(key: String) -> String? {
+        let value = UserDefaults.standard.string(forKey: key)
+        print("[NativeStorage] Loaded \(key): \(value != nil ? "found" : "not found")")
+        return value
+    }
+    
+    /// Migrate existing data from localStorage to UserDefaults (one-time)
+    private func migrateFromLocalStorage() {
+        // This is called from JavaScript when app loads
+        // JavaScript will send localStorage data if it exists
+        print("[NativeStorage] Migration check complete")
+    }
+    
     // MARK: - Error Handling
     private func showErrorAlert(message: String) {
         let alert = UIAlertController(
@@ -112,6 +148,83 @@ class ViewController: UIViewController {
         })
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(alert, animated: true)
+    }
+}
+
+// MARK: - WKScriptMessageHandler (Native Storage Bridge)
+extension ViewController: WKScriptMessageHandler {
+    
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard message.name == "nativeStorage" else { return }
+        
+        // Parse message body
+        guard let body = message.body as? [String: Any],
+              let action = body["action"] as? String else {
+            print("[NativeStorage] Invalid message format")
+            return
+        }
+        
+        switch action {
+        case "save":
+            if let key = body["key"] as? String,
+               let value = body["value"] as? String {
+                saveStreakData(key: key, value: value)
+                
+                // Send success callback to JavaScript
+                let callback = body["callback"] as? String ?? ""
+                if !callback.isEmpty {
+                    let js = "\(callback)(true)"
+                    webView.evaluateJavaScript(js, completionHandler: nil)
+                }
+            }
+            
+        case "load":
+            if let key = body["key"] as? String {
+                let value = loadStreakData(key: key) ?? ""
+                
+                // Send value back to JavaScript via callback
+                let callback = body["callback"] as? String ?? ""
+                if !callback.isEmpty {
+                    let escapedValue = value.replacingOccurrences(of: "'", with: "\\'")
+                                           .replacingOccurrences(of: "\"", with: "\\\"")
+                                           .replacingOccurrences(of: "\n", with: "\\n")
+                    let js = "\(callback)(\"\(escapedValue)\")"
+                    webView.evaluateJavaScript(js, completionHandler: nil)
+                }
+            }
+            
+        case "loadAll":
+            // Load all streak data at once
+            var allData: [String: String] = [:]
+            for key in streakKeys {
+                if let value = UserDefaults.standard.string(forKey: key) {
+                    allData[key] = value
+                }
+            }
+            
+            // Send back to JavaScript
+            if let callback = body["callback"] as? String, !callback.isEmpty {
+                do {
+                    let jsonData = try JSONSerialization.data(withJSONObject: allData)
+                    if let jsonString = String(data: jsonData, encoding: .utf8) {
+                        let js = "\(callback)(\(jsonString))"
+                        webView.evaluateJavaScript(js, completionHandler: nil)
+                    }
+                } catch {
+                    print("[NativeStorage] Error serializing data: \(error)")
+                }
+            }
+            
+        case "clear":
+            // Clear all streak data (for testing)
+            for key in streakKeys {
+                UserDefaults.standard.removeObject(forKey: key)
+            }
+            print("[NativeStorage] All streak data cleared")
+            
+        default:
+            print("[NativeStorage] Unknown action: \(action)")
+        }
     }
 }
 

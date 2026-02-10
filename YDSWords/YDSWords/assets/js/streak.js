@@ -1,7 +1,156 @@
 /* ═════════════════════════════════════════════════════════════════════════════
    YDS Words - Streak System
    Tracks daily study streaks separately for Quiz and Flashcard modes
+   Uses native iOS storage (UserDefaults) via WKWebView bridge for persistence
    ═════════════════════════════════════════════════════════════════════════════ */
+
+// ═════════════════════════════════════════════════════════════════════════════
+// NATIVE STORAGE BRIDGE
+// Provides persistent storage via iOS UserDefaults instead of volatile localStorage
+// ═════════════════════════════════════════════════════════════════════════════
+
+const NativeStorage = {
+    // Check if running in native iOS app with storage bridge
+    isAvailable() {
+        return window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeStorage;
+    },
+    
+    // Save data to native storage
+    async save(key, value) {
+        return new Promise((resolve) => {
+            if (!this.isAvailable()) {
+                // Fallback to localStorage for browser testing
+                try {
+                    localStorage.setItem(key, value);
+                    resolve(true);
+                } catch (e) {
+                    console.error('[NativeStorage] Fallback save failed:', e);
+                    resolve(false);
+                }
+                return;
+            }
+            
+            // Use native storage
+            const callbackId = 'native_save_' + Date.now();
+            window[callbackId] = (success) => {
+                delete window[callbackId];
+                resolve(success);
+            };
+            
+            window.webkit.messageHandlers.nativeStorage.postMessage({
+                action: 'save',
+                key: key,
+                value: value,
+                callback: callbackId
+            });
+            
+            // Timeout fallback
+            setTimeout(() => {
+                if (window[callbackId]) {
+                    delete window[callbackId];
+                    resolve(false);
+                }
+            }, 1000);
+        });
+    },
+    
+    // Load data from native storage
+    async load(key) {
+        return new Promise((resolve) => {
+            if (!this.isAvailable()) {
+                // Fallback to localStorage for browser testing
+                try {
+                    const value = localStorage.getItem(key) || '';
+                    resolve(value);
+                } catch (e) {
+                    console.error('[NativeStorage] Fallback load failed:', e);
+                    resolve('');
+                }
+                return;
+            }
+            
+            // Use native storage
+            const callbackId = 'native_load_' + Date.now();
+            window[callbackId] = (value) => {
+                delete window[callbackId];
+                resolve(value || '');
+            };
+            
+            window.webkit.messageHandlers.nativeStorage.postMessage({
+                action: 'load',
+                key: key,
+                callback: callbackId
+            });
+            
+            // Timeout fallback
+            setTimeout(() => {
+                if (window[callbackId]) {
+                    delete window[callbackId];
+                    resolve('');
+                }
+            }, 1000);
+        });
+    },
+    
+    // Load all streak data at once
+    async loadAll() {
+        return new Promise((resolve) => {
+            if (!this.isAvailable()) {
+                // Fallback to localStorage for browser testing
+                const data = {};
+                try {
+                    for (const key of Object.values(STREAK_CONFIG.storageKeys)) {
+                        const value = localStorage.getItem(key);
+                        if (value !== null) {
+                            data[key] = value;
+                        }
+                    }
+                } catch (e) {
+                    console.error('[NativeStorage] Fallback loadAll failed:', e);
+                }
+                resolve(data);
+                return;
+            }
+            
+            // Use native storage
+            const callbackId = 'native_loadall_' + Date.now();
+            window[callbackId] = (data) => {
+                delete window[callbackId];
+                resolve(data || {});
+            };
+            
+            window.webkit.messageHandlers.nativeStorage.postMessage({
+                action: 'loadAll',
+                callback: callbackId
+            });
+            
+            // Timeout fallback
+            setTimeout(() => {
+                if (window[callbackId]) {
+                    delete window[callbackId];
+                    resolve({});
+                }
+            }, 1000);
+        });
+    },
+    
+    // Clear all streak data (for testing)
+    async clear() {
+        if (this.isAvailable()) {
+            window.webkit.messageHandlers.nativeStorage.postMessage({
+                action: 'clear'
+            });
+        }
+        // Also clear localStorage fallback
+        try {
+            for (const key of Object.values(STREAK_CONFIG.storageKeys)) {
+                localStorage.removeItem(key);
+            }
+        } catch (e) {
+            console.error('[NativeStorage] Clear fallback failed:', e);
+        }
+    }
+};
 
 // ═════════════════════════════════════════════════════════════════════════════
 // STREAK CONFIGURATION
@@ -11,7 +160,7 @@ const STREAK_CONFIG = {
     // Number of words needed to complete a streak for each mode
     wordsPerStreak: 20,
     
-    // Storage keys for localStorage
+    // Storage keys (must match ViewController.swift)
     storageKeys: {
         quizStreak: 'yds_quiz_streak',
         flashcardStreak: 'yds_flashcard_streak',
@@ -46,27 +195,55 @@ const StreakState = {
     // UI notification callback
     onStreakComplete: null,
     
+    // Track pending saves to prevent data loss
+    _pendingSaves: 0,
+    
     /**
-     * Initialize streak state from localStorage
+     * Initialize streak state from native storage
      */
-    init() {
-        this.loadFromStorage();
+    async init() {
+        console.log('[Streak] Initializing with native storage...');
+        await this.loadFromStorage();
         this.checkDateReset();
         console.log('[Streak] Initialized:', this.getStatus());
+        
+        // Set up periodic save check (in case app is terminated)
+        this._setupAutoSave();
     },
     
     /**
-     * Load all streak data from localStorage
+     * Setup auto-save on page hide/visibility change
      */
-    loadFromStorage() {
+    _setupAutoSave() {
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Page is being hidden - ensure data is saved
+                this.saveToStorage();
+            }
+        });
+        
+        window.addEventListener('beforeunload', () => {
+            // App is closing - emergency save
+            this.saveToStorage();
+        });
+    },
+    
+    /**
+     * Load all streak data from native storage
+     */
+    async loadFromStorage() {
         try {
-            this.quizStreak = parseInt(localStorage.getItem(STREAK_CONFIG.storageKeys.quizStreak)) || 0;
-            this.flashcardStreak = parseInt(localStorage.getItem(STREAK_CONFIG.storageKeys.flashcardStreak)) || 0;
-            this.quizProgress = parseInt(localStorage.getItem(STREAK_CONFIG.storageKeys.quizProgress)) || 0;
-            this.flashcardProgress = parseInt(localStorage.getItem(STREAK_CONFIG.storageKeys.flashcardProgress)) || 0;
-            this.lastStudyDate = localStorage.getItem(STREAK_CONFIG.storageKeys.lastStudyDate);
-            this.quizCompletedToday = localStorage.getItem(STREAK_CONFIG.storageKeys.quizCompletedToday) === 'true';
-            this.flashcardCompletedToday = localStorage.getItem(STREAK_CONFIG.storageKeys.flashcardCompletedToday) === 'true';
+            const data = await NativeStorage.loadAll();
+            
+            this.quizStreak = parseInt(data[STREAK_CONFIG.storageKeys.quizStreak]) || 0;
+            this.flashcardStreak = parseInt(data[STREAK_CONFIG.storageKeys.flashcardStreak]) || 0;
+            this.quizProgress = parseInt(data[STREAK_CONFIG.storageKeys.quizProgress]) || 0;
+            this.flashcardProgress = parseInt(data[STREAK_CONFIG.storageKeys.flashcardProgress]) || 0;
+            this.lastStudyDate = data[STREAK_CONFIG.storageKeys.lastStudyDate] || null;
+            this.quizCompletedToday = data[STREAK_CONFIG.storageKeys.quizCompletedToday] === 'true';
+            this.flashcardCompletedToday = data[STREAK_CONFIG.storageKeys.flashcardCompletedToday] === 'true';
+            
+            console.log('[Streak] Loaded from native storage');
         } catch (e) {
             console.error('[Streak] Error loading from storage:', e);
             this.reset();
@@ -74,17 +251,29 @@ const StreakState = {
     },
     
     /**
-     * Save all streak data to localStorage
+     * Save all streak data to native storage
      */
-    saveToStorage() {
+    async saveToStorage() {
+        this._pendingSaves++;
+        const currentSave = this._pendingSaves;
+        
         try {
-            localStorage.setItem(STREAK_CONFIG.storageKeys.quizStreak, this.quizStreak.toString());
-            localStorage.setItem(STREAK_CONFIG.storageKeys.flashcardStreak, this.flashcardStreak.toString());
-            localStorage.setItem(STREAK_CONFIG.storageKeys.quizProgress, this.quizProgress.toString());
-            localStorage.setItem(STREAK_CONFIG.storageKeys.flashcardProgress, this.flashcardProgress.toString());
-            localStorage.setItem(STREAK_CONFIG.storageKeys.lastStudyDate, this.lastStudyDate || '');
-            localStorage.setItem(STREAK_CONFIG.storageKeys.quizCompletedToday, this.quizCompletedToday.toString());
-            localStorage.setItem(STREAK_CONFIG.storageKeys.flashcardCompletedToday, this.flashcardCompletedToday.toString());
+            const saves = [
+                NativeStorage.save(STREAK_CONFIG.storageKeys.quizStreak, this.quizStreak.toString()),
+                NativeStorage.save(STREAK_CONFIG.storageKeys.flashcardStreak, this.flashcardStreak.toString()),
+                NativeStorage.save(STREAK_CONFIG.storageKeys.quizProgress, this.quizProgress.toString()),
+                NativeStorage.save(STREAK_CONFIG.storageKeys.flashcardProgress, this.flashcardProgress.toString()),
+                NativeStorage.save(STREAK_CONFIG.storageKeys.lastStudyDate, this.lastStudyDate || ''),
+                NativeStorage.save(STREAK_CONFIG.storageKeys.quizCompletedToday, this.quizCompletedToday.toString()),
+                NativeStorage.save(STREAK_CONFIG.storageKeys.flashcardCompletedToday, this.flashcardCompletedToday.toString())
+            ];
+            
+            await Promise.all(saves);
+            
+            // Only log if this was the most recent save
+            if (currentSave === this._pendingSaves) {
+                console.log('[Streak] Saved to native storage');
+            }
         } catch (e) {
             console.error('[Streak] Error saving to storage:', e);
         }
@@ -280,7 +469,7 @@ const StreakState = {
     /**
      * Reset all streak data (for testing)
      */
-    reset() {
+    async reset() {
         this.quizStreak = 0;
         this.flashcardStreak = 0;
         this.quizProgress = 0;
@@ -288,7 +477,7 @@ const StreakState = {
         this.quizCompletedToday = false;
         this.flashcardCompletedToday = false;
         this.lastStudyDate = null;
-        this.saveToStorage();
+        await NativeStorage.clear();
         console.log('[Streak] All streak data reset');
     },
     
@@ -427,8 +616,8 @@ function showStreakCelebration(status) {
 /**
  * Initialize streak system
  */
-function initStreak() {
-    StreakState.init();
+async function initStreak() {
+    await StreakState.init();
     StreakState.setStreakCompleteCallback(showStreakCelebration);
     updateStreakBadges();
 }
@@ -436,6 +625,7 @@ function initStreak() {
 // Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { 
+        NativeStorage,
         StreakState, 
         STREAK_CONFIG,
         updateStreakBadges,

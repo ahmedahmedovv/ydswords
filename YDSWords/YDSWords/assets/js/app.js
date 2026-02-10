@@ -33,7 +33,7 @@ window.addEventListener('unhandledrejection', (event) => {
 const appInitStartTime = performance.now();
 console.log('[App] DOMContentLoaded - starting app initialization');
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const domStartTime = performance.now();
     console.log(`[App] DOMContentLoaded handler started at ${Math.round(domStartTime - appInitStartTime)}ms from start`);
     
@@ -58,11 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
     initOfflineDetection();
     console.log(`[App] Offline detection initialized in ${Math.round(performance.now() - offlineStart)}ms`);
     
-    // Initialize streak system
+    // Initialize streak system (async - uses native storage)
     if (typeof initStreak === 'function') {
         const streakStart = performance.now();
-        initStreak();
-        console.log(`[App] Streak system initialized in ${Math.round(performance.now() - streakStart)}ms`);
+        try {
+            await initStreak();
+            console.log(`[App] Streak system initialized in ${Math.round(performance.now() - streakStart)}ms`);
+        } catch (err) {
+            console.error('[App] Streak initialization failed:', err);
+        }
     }
     
     // Prefetch BOTH quiz question AND flashcard content in parallel

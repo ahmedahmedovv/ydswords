@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Thunder YDS is an iOS application designed for Turkish students preparing for the YDS (Yabancı Dil Sınavı - Foreign Language Exam). It's a vocabulary learning app that generates dynamic multiple-choice quiz questions and provides flashcard study modes using AI through the OpenRouter API.
+Thunder YDS is an iOS application designed for Turkish students preparing for the YDS (Yabancı Dil Sınavı - Foreign Language Exam). It's a vocabulary learning app that generates dynamic multiple-choice quiz questions and provides Tinder-style flashcard study modes using AI through the OpenRouter API.
 
 The app follows a **hybrid architecture**:
 - **Native iOS Layer**: Thin Swift wrapper using UIKit + WebKit (WKWebView)
@@ -22,6 +22,8 @@ The app follows a **hybrid architecture**:
 | **Minimum iOS Version** | iOS 14.0 |
 | **Target Device** | iPhone (portrait only, `TARGETED_DEVICE_FAMILY = 1`) |
 | **Scene Support** | Single scene only (`UIApplicationSupportsMultipleScenes = false`) |
+| **Bundle Identifier** | com.yourcompany.YDSWords |
+| **Display Name** | Thunder YDS |
 
 ### Web Application Layer
 | Component | Technology |
@@ -36,9 +38,10 @@ The app follows a **hybrid architecture**:
 | Component | Value |
 |-----------|-------|
 | **Platform** | Netlify Functions (serverless) |
-| **AI Model** | OpenRouter (Mistral Ministral 8B) |
+| **AI Model** | OpenRouter (`mistralai/ministral-8b`) |
 | **API Proxy** | Node.js function → OpenRouter API |
 | **Security** | API key stored in Netlify environment variables (never exposed to client) |
+| **Production URL** | https://thunder.yds.today/.netlify/functions/generate-question |
 
 ---
 
@@ -57,7 +60,7 @@ YDSWords/
 │   ├── assets/
 │   │   ├── css/styles.css           # iOS Design System styles (~2210 lines)
 │   │   └── js/                      # JavaScript modules
-│   │       ├── words.js             # ~1000 English vocabulary words/phrases (1273 lines)
+│   │       ├── words.js             # ~1000 English vocabulary words/phrases
 │   │       ├── config.js            # App configuration & prompt templates
 │   │       ├── state.js             # Application state management
 │   │       ├── api.js               # API functions (Netlify proxy calls)
@@ -107,7 +110,7 @@ YDSWords/
 
 ### 4. JavaScript Application Architecture
 
-#### words.js (1273 lines)
+#### words.js
 - `MYWORDS` array: ~1000 English vocabulary words and phrases for YDS exam
 - Includes single words (e.g., "Abnormal", "Accelerate") and phrases (e.g., "Abide by", "Account for")
 - Fisher-Yates shuffle algorithm used for randomization
@@ -129,10 +132,11 @@ YDSWords/
   - Rate limiting timestamps
 
 #### api.js
-- `API_CONFIG.endpoint`: Points to Netlify function URL (`https://thunder.yds.today/.netlify/functions/generate-question`)
+- `API_CONFIG.endpoint`: Points to Netlify function URL
 - `fetchWithTimeout()`: AbortController-based timeout handling with adaptive timeouts for WiFi/cellular
 - `generateQuestion()`: Main API call with retry logic and circuit breaker
 - `prefetchQuestion()`: Background question prefetching for instant display
+- Connection type detection for adaptive timeouts
 
 #### utils.js
 - `sanitizeHtml()`: XSS protection via textContent/innerHTML
@@ -194,7 +198,7 @@ Serverless function that acts as a secure proxy:
 - Response format forced to JSON
 - Performance notes documented for alternative models
 
-### 6. CSS (styles.css, ~2210 lines)
+### 6. CSS (styles.css)
 iOS Design System implementation:
 - CSS custom properties for iOS system colors
 - Dark mode support via `prefers-color-scheme: dark`
@@ -216,7 +220,7 @@ iOS Design System implementation:
 PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.YDSWords
 DEVELOPMENT_TEAM = 8A8XJBZ4CH
 CURRENT_PROJECT_VERSION = 1
-MARKETING_VERSION = 1.0.0
+MARKETING_VERSION = 1.0
 IPHONEOS_DEPLOYMENT_TARGET = 14.0
 TARGETED_DEVICE_FAMILY = 1  (iPhone only)
 SWIFT_VERSION = 5.0
@@ -435,13 +439,13 @@ window.webkit.messageHandlers.nativeStorage.postMessage({
 - `validateQuestion()` ensures API response structure
 
 ### API Key Handling
-✅ **Secure Architecture**:
+**Secure Architecture**:
 - OpenRouter API key stored in Netlify environment variables (encrypted at rest)
 - iOS app calls Netlify Function → Function calls OpenRouter API
 - Key is never exposed to client-side code
 - Key only exists in server memory during function execution
 
-⚠️ **If key was previously exposed**:
+**If key was previously exposed**:
 1. Rotate immediately at https://openrouter.ai/keys
 2. Update Netlify environment variable
 3. Never commit keys to version control

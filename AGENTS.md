@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-YDS Words is an iOS application designed for Turkish students preparing for the YDS (Yabancı Dil Sınavı - Foreign Language Exam). It's a vocabulary learning app that generates dynamic multiple-choice quiz questions and provides flashcard study modes using AI through OpenRouter API.
+YDS Words is an iOS application designed for Turkish students preparing for the YDS (Yabancı Dil Sınavı - Foreign Language Exam). It's a vocabulary learning app that generates dynamic multiple-choice quiz questions and provides flashcard study modes using AI through the OpenRouter API.
 
 The app follows a **hybrid architecture**:
 - **Native iOS Layer**: Thin Swift wrapper using UIKit + WebKit (WKWebView)
@@ -51,7 +51,7 @@ YDSWords/
 ├── YDSWords/
 │   ├── AppDelegate.swift            # App lifecycle (@main entry point)
 │   ├── SceneDelegate.swift          # Window scene management, iOS appearance config
-│   ├── ViewController.swift         # WKWebView setup and delegate handling
+│   ├── ViewController.swift         # WKWebView setup, native storage bridge, delegates
 │   ├── Info.plist                   # App metadata, ATS settings, orientation
 │   ├── index.html                   # Main HTML file (SPA entry point)
 │   ├── assets/
@@ -62,22 +62,21 @@ YDSWords/
 │   │       ├── state.js             # Application state management
 │   │       ├── api.js               # API functions (Netlify proxy calls)
 │   │       ├── utils.js             # Utility functions (XSS, validation, circuit breaker)
-│   │       ├── streak.js            # Daily streak tracking system (446 lines)
+│   │       ├── streak.js            # Daily streak tracking system (~675 lines)
 │   │       ├── ui.js                # UI manipulation functions
-│   │       ├── flashcards.js        # Tinder-style flashcard study mode (748 lines)
+│   │       ├── flashcards.js        # Tinder-style flashcard study mode (~748 lines)
 │   │       └── app.js               # Main application logic & event handlers
 │   └── Assets.xcassets/             # App icons (all iOS sizes)
 │       └── AppIcon.appiconset/
-│           ├── 1024.png, 120.png, 152.png, 167.png, 180.png
-│           ├── 20.png, 29.png, 40.png, 58.png, 60.png, 76.png, 80.png, 87.png
-│           └── Contents.json
+│           ├── Contents.json
+│           └── Multiple PNG sizes (20.png through 1024.png)
 ├── netlify/
 │   └── functions/
 │       └── generate-question.js     # Secure Netlify Function (OpenRouter proxy)
 ├── netlify.toml                     # Netlify configuration (functions, redirects, headers)
+├── CROSS_PLATFORM_GUIDE.md          # Browser compatibility documentation
 ├── DEPLOYMENT.md                    # Netlify deployment instructions
-├── CROSS_PLATFORM_GUIDE.md          # Browser compatibility guide
-├── UI_REFRESH_SUMMARY.md            # UI redesign documentation
+├── UI_REFRESH_SUMMARY.md            # UI redesign history
 └── AGENTS.md                        # This file
 ```
 
@@ -100,14 +99,11 @@ YDSWords/
 ### 3. ViewController.swift
 - Manages WKWebView with custom configuration
 - Loads `index.html` from app bundle via `loadFileURL(_:allowingReadAccessTo:)`
+- **Native Storage Bridge**: Implements `WKScriptMessageHandler` for persistent streak data storage using iOS UserDefaults
 - Handles navigation delegate methods for loading states
-- Implements WKUIDelegate for JavaScript alerts/confirms/prompts
-- **Native Storage Bridge**: Implements `WKScriptMessageHandler` for persistent streak data storage via UserDefaults
-  - JavaScript calls: `window.webkit.messageHandlers.nativeStorage.postMessage({action: 'save'|'load'|'loadAll'|'clear', key, value, callback})`
-  - Storage keys defined in both Swift and JavaScript (must match)
+- Implements `WKUIDelegate` for JavaScript alerts/confirms/prompts
 - Activity indicator for loading feedback
 - Safe area layout support for iPhone notch
-- Uses `.systemBackground` for automatic dark mode support
 
 ### 4. JavaScript Application Architecture
 
@@ -131,17 +127,12 @@ YDSWords/
   - Request management (AbortController, loading states)
   - Circuit breaker state
   - Rate limiting timestamps
-- `FlashcardState` singleton (in flashcards.js) managing:
-  - Current card index, shuffled words
-  - Known/unknown word tracking
-  - Prefetch state for smooth UX
 
 #### api.js
-- `API_CONFIG.endpoint`: Points to Netlify function URL
+- `API_CONFIG.endpoint`: Points to Netlify function URL (`https://thunder.yds.today/.netlify/functions/generate-question`)
 - `fetchWithTimeout()`: AbortController-based timeout handling with adaptive timeouts for WiFi/cellular
 - `generateQuestion()`: Main API call with retry logic and circuit breaker
 - `prefetchQuestion()`: Background question prefetching for instant display
-- Production endpoint: `https://thunder.yds.today/.netlify/functions/generate-question`
 
 #### utils.js
 - `sanitizeHtml()`: XSS protection via textContent/innerHTML
@@ -159,20 +150,22 @@ YDSWords/
 - `selectAnswer()`: Answer handling with visual feedback and explanations
 - `updateQuizScore()`: Score display
 - Offline detection with indicator
-- Fisher-Yates shuffle for answer options
 
-#### streak.js (446+ lines)
+#### streak.js
 - `StreakState` singleton for tracking daily study streaks
 - Separate streak tracking for Quiz and Flashcard modes
 - 20 words per day to complete a streak for each mode
-- **Persistent Storage via Native iOS Bridge**: Uses `UserDefaults` through WKWebView message handlers
-  - `NativeStorage` wrapper handles iOS native storage with localStorage fallback for browser testing
-  - Data survives app termination, iOS updates, and WebView cache clears
+- **Native Storage Integration**: Uses `NativeStorage` bridge to persist data via iOS UserDefaults
+- Persistence via localStorage fallback for browser testing
 - Streak breaking logic for missed days
 - UI badges showing progress on mode selection cards
 - Celebration effects on streak completion
 
-#### flashcards.js (748 lines)
+#### flashcards.js
+- `FlashcardState` singleton managing:
+  - Current card index, shuffled words
+  - Known/unknown word tracking
+  - Prefetch state for smooth UX
 - Tinder-style swipeable flashcard interface
 - Touch and mouse gesture support for swiping
 - Keyboard navigation (Arrow keys, K/Y for know, N for don't know)
@@ -223,7 +216,7 @@ iOS Design System implementation:
 PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.YDSWords
 DEVELOPMENT_TEAM = 8A8XJBZ4CH
 CURRENT_PROJECT_VERSION = 1
-MARKETING_VERSION = 1.0
+MARKETING_VERSION = 1.0.0
 IPHONEOS_DEPLOYMENT_TARGET = 14.0
 TARGETED_DEVICE_FAMILY = 1  (iPhone only)
 SWIFT_VERSION = 5.0
@@ -232,6 +225,8 @@ CODE_SIGN_STYLE = Automatic
 
 ### Info.plist Key Settings
 ```xml
+- CFBundleShortVersionString: 1.0.0
+- CFBundleVersion: 1
 - UISupportedInterfaceOrientations: Portrait only on iPhone
 - UISupportedInterfaceOrientations~ipad: All orientations on iPad
 - NSAppTransportSecurity: NSAllowsArbitraryLoads = YES (required for AI API)
@@ -239,6 +234,7 @@ CODE_SIGN_STYLE = Automatic
 - UIApplicationSceneManifest: Supports multiple scenes = NO
 - UILaunchStoryboardName: Empty string (programmatic UI)
 - UIApplicationSupportsIndirectInputEvents: YES
+- UIRequiredDeviceCapabilities: armv7, arm64
 ```
 
 ### Netlify Configuration (netlify.toml)
@@ -306,6 +302,13 @@ netlify dev
 # Function available at: http://localhost:8888/.netlify/functions/generate-question
 ```
 
+### Local Web Testing
+```bash
+cd YDSWords/YDSWords
+python3 -m http.server 8000
+# Open http://localhost:8000 in browser
+```
+
 ---
 
 ## Development Guidelines
@@ -313,7 +316,7 @@ netlify dev
 ### Modifying Native Code
 - **AppDelegate.swift**: App lifecycle, deep linking
 - **SceneDelegate.swift**: Window setup, appearance configuration (uses iOS system colors)
-- **ViewController.swift**: WebView configuration, native-JS bridge (if needed)
+- **ViewController.swift**: WebView configuration, native-JS bridge (storage bridge)
 - **Info.plist**: App metadata, permissions, ATS settings
 
 ### Modifying Web Content
@@ -328,14 +331,32 @@ netlify dev
 - **assets/js/streak.js**: Modify streak requirements, storage keys, or celebration effects
 - **assets/js/flashcards.js**: Modify flashcard behavior, gestures, animations
 
-### Adding Native-JavaScript Bridge
-To expose native functions to JavaScript:
-1. In `ViewController.swift`, add script message handler:
+### Native-JavaScript Bridge (Storage)
+The app implements a native storage bridge for persistent streak data:
+
+**Swift Side (ViewController.swift):**
 ```swift
-configuration.userContentController.add(self, name: "nativeHandler")
+configuration.userContentController.add(self, name: "nativeStorage")
 ```
-2. Implement `WKScriptMessageHandler` protocol
-3. In JavaScript: `window.webkit.messageHandlers.nativeHandler.postMessage(data)`
+
+**JavaScript Side (streak.js):**
+```javascript
+window.webkit.messageHandlers.nativeStorage.postMessage({
+    action: 'save',  // or 'load', 'loadAll', 'clear'
+    key: 'yds_quiz_streak',
+    value: 'data',
+    callback: 'callbackFunctionName'
+});
+```
+
+**Storage Keys (must match between Swift and JS):**
+- `yds_quiz_streak`
+- `yds_flashcard_streak`
+- `yds_quiz_progress`
+- `yds_flashcard_progress`
+- `yds_last_study_date`
+- `yds_quiz_completed_today`
+- `yds_flashcard_completed_today`
 
 ---
 
@@ -359,7 +380,7 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - [ ] Keyboard shortcuts work (Quiz: A-E, 1-5, Enter, Escape; Flashcards: ←, →, K, N, Escape)
 - [ ] Back button returns to welcome screen
 - [ ] Score resets when returning to welcome
-- [ ] Streak progress persists across sessions
+- [ ] Streak progress persists across sessions (test by closing and reopening app)
 - [ ] Streak completion celebration displays
 - [ ] Error states display correctly (offline, API failure)
 - [ ] App handles iPhone notch/safe area correctly
@@ -383,7 +404,7 @@ configuration.userContentController.add(self, name: "nativeHandler")
 ### Testing Streak System
 1. Study 20 words in quiz mode - verify streak completion
 2. Check that streak badge updates on welcome screen
-3. Close app, reopen - verify streak progress persists
+3. Close app, reopen - verify streak progress persists (via UserDefaults)
 4. Test streak breaking by changing device date (simulator)
 
 ### Testing Flashcard Prefetch
@@ -391,6 +412,108 @@ configuration.userContentController.add(self, name: "nativeHandler")
 2. Check console logs for "[Prefetch] Flashcard mode ready"
 3. Tap Flashcards mode - first card should load instantly
 4. Swipe through cards - transitions should be smooth due to prefetching
+
+### Testing Native Storage Bridge
+1. Complete some quiz questions
+2. Check Xcode console for "[NativeStorage] Saved" logs
+3. Kill app completely
+4. Reopen app - verify streak data is preserved
+5. Check Xcode console for "[NativeStorage] Loaded" logs
+
+---
+
+## Security Considerations
+
+### App Transport Security
+- `NSAllowsArbitraryLoads = YES` in Info.plist (required for AI API)
+- Exception domain `thunder.yds.today` configured with TLS 1.2
+- **Note**: In production, consider pinning to specific HTTPS endpoints
+
+### Input Sanitization (Web Layer)
+- `sanitizeHtml()` function escapes HTML entities
+- All AI-generated content is sanitized before DOM insertion
+- `validateQuestion()` ensures API response structure
+
+### API Key Handling
+✅ **Secure Architecture**:
+- OpenRouter API key stored in Netlify environment variables (encrypted at rest)
+- iOS app calls Netlify Function → Function calls OpenRouter API
+- Key is never exposed to client-side code
+- Key only exists in server memory during function execution
+
+⚠️ **If key was previously exposed**:
+1. Rotate immediately at https://openrouter.ai/keys
+2. Update Netlify environment variable
+3. Never commit keys to version control
+
+### XSS Protection
+- All user-facing content sanitized via `textContent`
+- JSON parsing with multiple fallback strategies
+- Length limits on sentence and option text
+
+### Native Storage Security
+- Streak data stored in iOS UserDefaults (sandboxed per app)
+- No sensitive user data is stored
+- Data persists across app updates but not device resets
+
+---
+
+## Deployment
+
+### App Store Submission
+1. Update `PRODUCT_BUNDLE_IDENTIFIER` to unique ID
+2. Set `DEVELOPMENT_TEAM` to your Apple Developer Team ID
+3. Update `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in Info.plist and project.pbxproj
+4. Verify all icon sizes present in `Assets.xcassets`
+5. Archive and upload via Xcode Organizer or `xcodebuild`
+
+### Netlify Function Deployment
+1. Push code to Git repository
+2. Connect repo to Netlify or deploy manually
+3. Add `OPENROUTER_API_KEY` environment variable in Netlify dashboard
+4. Update API endpoint in `assets/js/api.js` with deployed URL
+5. Rebuild and resubmit iOS app
+
+---
+
+## Troubleshooting
+
+### White Screen on Launch
+- Check `index.html` is in "Copy Bundle Resources" build phase
+- Verify file path in `Bundle.main.url(forResource:withExtension:)`
+- Check Safari Web Inspector for JS errors
+
+### Questions Not Loading
+- Verify internet connection
+- Check Xcode console for API errors
+- Verify `OPENROUTER_API_KEY` is set in Netlify
+- Check Netlify Function logs
+
+### Flashcards Not Loading
+- Verify network connection
+- Check console for prefetch errors
+- Verify API endpoint is correct
+
+### Streak Not Persisting
+- Check native storage bridge is working (look for logs in Xcode console)
+- Verify no private browsing mode (localStorage disabled)
+- Check console for storage errors
+- Ensure `window.webkit.messageHandlers.nativeStorage` is available
+
+### Layout Issues on Notch Devices
+- Verify `env(safe-area-inset-*)` CSS properties applied
+- Check WebView uses `safeAreaLayoutGuide` constraints
+
+### Build Errors
+- Ensure Xcode 14.3+ installed
+- Check Swift version is 5.0
+- Verify iOS Deployment Target is 14.0
+- Clean build folder: `Cmd+Shift+K`
+
+### Dark Mode Issues
+- Verify CSS uses `var(--ios-label)` and `var(--ios-system-background)`
+- Check `prefers-color-scheme: dark` media queries are properly defined
+- Ensure WebKit respects color scheme via meta tags in HTML
 
 ---
 
@@ -425,95 +548,6 @@ if (typeof module !== 'undefined' && module.exports) {
 
 ---
 
-## Security Considerations
-
-### App Transport Security
-- `NSAllowsArbitraryLoads = YES` in Info.plist (required for AI API)
-- Exception domain `thunder.yds.today` configured with TLS 1.2
-- **Note**: In production, consider pinning to specific HTTPS endpoints
-
-### Input Sanitization (Web Layer)
-- `sanitizeHtml()` function escapes HTML entities
-- All AI-generated content is sanitized before DOM insertion
-- `validateQuestion()` ensures API response structure
-
-### API Key Handling
-✅ **Secure Architecture**:
-- OpenRouter API key stored in Netlify environment variables (encrypted at rest)
-- iOS app calls Netlify Function → Function calls OpenRouter API
-- Key is never exposed to client-side code
-- Key only exists in server memory during function execution
-
-⚠️ **If key was previously exposed**:
-1. Rotate immediately at https://openrouter.ai/keys
-2. Update Netlify environment variable
-3. Never commit keys to version control
-
-### XSS Protection
-- All user-facing content sanitized via `textContent`
-- JSON parsing with multiple fallback strategies
-- Length limits on sentence and option text
-
----
-
-## Deployment
-
-### App Store Submission
-1. Update `PRODUCT_BUNDLE_IDENTIFIER` to unique ID
-2. Set `DEVELOPMENT_TEAM` to your Apple Developer Team ID
-3. Update `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION`
-4. Verify all icon sizes present in `Assets.xcassets`
-5. Archive and upload via Xcode Organizer or `xcodebuild`
-
-### Netlify Function Deployment
-1. Push code to Git repository
-2. Connect repo to Netlify or deploy manually
-3. Add `OPENROUTER_API_KEY` environment variable in Netlify dashboard
-4. Update API endpoint in `assets/js/api.js` with deployed URL
-5. Rebuild and resubmit iOS app
-
----
-
-## Troubleshooting
-
-### White Screen on Launch
-- Check `index.html` is in "Copy Bundle Resources" build phase
-- Verify file path in `Bundle.main.url(forResource:withExtension:)`
-- Check Safari Web Inspector for JS errors
-
-### Questions Not Loading
-- Verify internet connection
-- Check Xcode console for API errors
-- Verify `OPENROUTER_API_KEY` is set in Netlify
-- Check Netlify Function logs
-
-### Flashcards Not Loading
-- Verify network connection
-- Check console for prefetch errors
-- Verify API endpoint is correct
-
-### Streak Not Persisting
-- Check localStorage is enabled in WebKit configuration
-- Verify no private browsing mode (localStorage disabled)
-- Check console for storage errors
-
-### Layout Issues on Notch Devices
-- Verify `env(safe-area-inset-*)` CSS properties applied
-- Check WebView uses `safeAreaLayoutGuide` constraints
-
-### Build Errors
-- Ensure Xcode 14.3+ installed
-- Check Swift version is 5.0
-- Verify iOS Deployment Target is 14.0
-- Clean build folder: `Cmd+Shift+K`
-
-### Dark Mode Issues
-- Verify CSS uses `var(--ios-label)` and `var(--ios-system-background)`
-- Check `prefers-color-scheme: dark` media queries are properly defined
-- Ensure WebKit respects color scheme via meta tags in HTML
-
----
-
 ## External Dependencies
 
 The project has **no external Swift package dependencies**.
@@ -526,15 +560,7 @@ The web layer uses:
 
 ## Version History
 
-- **v1.0.0**: Initial release with AI-powered quiz generation, circuit breaker, offline detection, iOS Design System, dark mode support, flashcard study mode, and daily streak tracking
-
----
-
-## Additional Documentation
-
-- **DEPLOYMENT.md**: Detailed Netlify deployment instructions
-- **CROSS_PLATFORM_GUIDE.md**: Browser compatibility and web deployment options
-- **UI_REFRESH_SUMMARY.md**: UI redesign history and current state
+- **v1.0.0**: Initial release with AI-powered quiz generation, circuit breaker, offline detection, iOS Design System, dark mode support, flashcard study mode, daily streak tracking, and native storage bridge
 
 ---
 

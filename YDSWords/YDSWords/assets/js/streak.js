@@ -407,7 +407,12 @@ function showStreakCelebration(status) {
     const modeName = status.mode === 'quiz' ? 'Quiz' : 'Flashcards';
     const message = `🔥 ${modeName} Streak: ${status.streak} day${status.streak !== 1 ? 's' : ''}!`;
     
-    showNotification('success', message, 5000);
+    // DEFENSE: Check if showNotification is available (loaded from ui.js)
+    if (typeof showNotification === 'function') {
+        showNotification('success', message, 5000);
+    } else {
+        console.log('[Streak] Celebration:', message);
+    }
     
     // Add visual celebration effect
     const container = document.getElementById(status.mode === 'quiz' ? 'appPage' : 'flashcardPage');

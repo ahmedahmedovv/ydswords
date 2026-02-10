@@ -152,7 +152,10 @@ function showWelcome() {
     // DEFENSE: Cancel any pending requests when going back
     AppState.cancelPendingRequests();
     AppState.reset();
-    FlashcardState.reset(); // Also reset flashcard state
+    // DEFENSE: Check if FlashcardState is available before resetting
+    if (typeof FlashcardState !== 'undefined' && FlashcardState.reset) {
+        FlashcardState.reset(); // Also reset flashcard state
+    }
     
     if (DOM.appPage) DOM.appPage.classList.remove('active');
     if (FlashcardDOM.flashcardPage) FlashcardDOM.flashcardPage.classList.remove('active');

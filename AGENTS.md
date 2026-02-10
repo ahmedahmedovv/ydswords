@@ -62,7 +62,7 @@ YDSWords/
 │   │       ├── state.js             # Application state management
 │   │       ├── api.js               # API functions (Netlify proxy calls)
 │   │       ├── utils.js             # Utility functions (XSS, validation, circuit breaker)
-│   │       ├── streak.js            # Daily streak tracking system (441 lines)
+│   │       ├── streak.js            # Daily streak tracking system (446 lines)
 │   │       ├── ui.js                # UI manipulation functions
 │   │       ├── flashcards.js        # Tinder-style flashcard study mode (748 lines)
 │   │       └── app.js               # Main application logic & event handlers
@@ -75,6 +75,9 @@ YDSWords/
 │   └── functions/
 │       └── generate-question.js     # Secure Netlify Function (OpenRouter proxy)
 ├── netlify.toml                     # Netlify configuration (functions, redirects, headers)
+├── DEPLOYMENT.md                    # Netlify deployment instructions
+├── CROSS_PLATFORM_GUIDE.md          # Browser compatibility guide
+├── UI_REFRESH_SUMMARY.md            # UI redesign documentation
 └── AGENTS.md                        # This file
 ```
 
@@ -155,7 +158,7 @@ YDSWords/
 - Offline detection with indicator
 - Fisher-Yates shuffle for answer options
 
-#### streak.js (441 lines)
+#### streak.js (446 lines)
 - `StreakState` singleton for tracking daily study streaks
 - Separate streak tracking for Quiz and Flashcard modes
 - 20 words per day to complete a streak for each mode
@@ -386,6 +389,37 @@ configuration.userContentController.add(self, name: "nativeHandler")
 
 ---
 
+## Code Style Guidelines
+
+### Swift
+- 4-space indentation
+- Follow Apple's Swift API Design Guidelines
+- Use `MARK:` comments to separate sections
+- Prefer `let` over `var`, avoid force unwrapping
+- Use iOS system colors for automatic dark mode support
+
+### JavaScript
+- Defensive programming patterns (extensive validation)
+- Comment sections with decorative banners (`/* ═══...═══ */`)
+- Prefix defense mechanisms with `DEFENSE:` in comments
+- Use `const` by default, `let` when reassignment needed
+- Module export pattern for future compatibility:
+```javascript
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { ... };
+}
+```
+
+### CSS
+- Mobile-first approach
+- Fluid typography using `clamp()` for responsive scaling
+- Safe area inset support: `env(safe-area-inset-*)`
+- CSS variables for consistent colors (iOS Design System)
+- Dark mode via `prefers-color-scheme` media queries
+- Reduced motion support via `prefers-reduced-motion`
+
+---
+
 ## Security Considerations
 
 ### App Transport Security
@@ -475,37 +509,6 @@ configuration.userContentController.add(self, name: "nativeHandler")
 
 ---
 
-## Code Style Guidelines
-
-### Swift
-- 4-space indentation
-- Follow Apple's Swift API Design Guidelines
-- Use `MARK:` comments to separate sections
-- Prefer `let` over `var`, avoid force unwrapping
-- Use iOS system colors for automatic dark mode support
-
-### JavaScript
-- Defensive programming patterns (extensive validation)
-- Comment sections with decorative banners (`/* ═══...═══ */`)
-- Prefix defense mechanisms with `DEFENSE:` in comments
-- Use `const` by default, `let` when reassignment needed
-- Module export pattern for future compatibility:
-```javascript
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { ... };
-}
-```
-
-### CSS
-- Mobile-first approach
-- Fluid typography using `clamp()` for responsive scaling
-- Safe area inset support: `env(safe-area-inset-*)`
-- CSS variables for consistent colors (iOS Design System)
-- Dark mode via `prefers-color-scheme` media queries
-- Reduced motion support via `prefers-reduced-motion`
-
----
-
 ## External Dependencies
 
 The project has **no external Swift package dependencies**.
@@ -519,6 +522,14 @@ The web layer uses:
 ## Version History
 
 - **v1.0.0**: Initial release with AI-powered quiz generation, circuit breaker, offline detection, iOS Design System, dark mode support, flashcard study mode, and daily streak tracking
+
+---
+
+## Additional Documentation
+
+- **DEPLOYMENT.md**: Detailed Netlify deployment instructions
+- **CROSS_PLATFORM_GUIDE.md**: Browser compatibility and web deployment options
+- **UI_REFRESH_SUMMARY.md**: UI redesign history and current state
 
 ---
 

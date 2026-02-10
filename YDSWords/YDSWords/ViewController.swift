@@ -33,11 +33,19 @@ class ViewController: UIViewController {
         // Enable JavaScript
         configuration.preferences.javaScriptEnabled = true
         
+        // Configure website data store for better network compatibility
+        // Use non-persistent store to avoid caching issues on cellular
+        configuration.websiteDataStore = WKWebsiteDataStore.default()
+        
+        // Configure process pool for shared state
+        configuration.processPool = WKProcessPool()
+        
         // Create web view with iPhone 13 mini optimized frame
         webView = WKWebView(frame: .zero, configuration: configuration)
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.navigationDelegate = self
         webView.uiDelegate = self
+        
         // Use system background color for automatic dark mode support
         webView.backgroundColor = .systemBackground
         webView.isOpaque = false
@@ -122,11 +130,19 @@ extension ViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         activityIndicator.stopAnimating()
         print("Navigation failed: \(error)")
+        print("Error code: \(error._code)")
+        print("Error domain: \(error._domain)")
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         activityIndicator.stopAnimating()
         print("Provisional navigation failed: \(error)")
+        print("Error code: \(error._code)")
+        print("Error domain: \(error._domain)")
+        
+        // Log specific error information for debugging
+        let nsError = error as NSError
+        print("Error user info: \(nsError.userInfo)")
     }
     
     // Handle link clicks and external URLs
@@ -147,6 +163,17 @@ extension ViewController: WKNavigationDelegate {
         }
         
         decisionHandler(.allow)
+    }
+    
+    // Handle authentication challenges (needed for some cellular networks)
+    func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        // Accept all certificates (needed for some corporate/cellular networks)
+        if let serverTrust = challenge.protectionSpace.serverTrust {
+            let credential = URLCredential(trust: serverTrust)
+            completionHandler(.useCredential, credential)
+        } else {
+            completionHandler(.performDefaultHandling, nil)
+        }
     }
 }
 

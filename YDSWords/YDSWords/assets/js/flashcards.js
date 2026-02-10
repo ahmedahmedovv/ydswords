@@ -362,12 +362,22 @@ async function loadFlashcard() {
         
     } catch (error) {
         console.error('Failed to load flashcard:', error);
+        
+        // Detect connection type for better error messages
+        const connectionType = typeof detectConnectionType === 'function' ? detectConnectionType() : 'unknown';
+        const isCellular = connectionType === 'cellular';
+        
+        let errorMsg = 'Content unavailable';
+        if (isCellular || error.message.includes('timeout') || error.message.includes('Failed to fetch')) {
+            errorMsg = 'Slow connection. Try WiFi for better results.';
+        }
+        
         if (FlashcardDOM.flashcardDefinition) {
-            FlashcardDOM.flashcardDefinition.textContent = 'Definition unavailable';
+            FlashcardDOM.flashcardDefinition.textContent = errorMsg;
             FlashcardDOM.flashcardDefinition.classList.remove('loading');
         }
         if (FlashcardDOM.flashcardExample) {
-            FlashcardDOM.flashcardExample.textContent = 'Example unavailable';
+            FlashcardDOM.flashcardExample.textContent = 'Please check your connection and try again.';
             FlashcardDOM.flashcardExample.classList.remove('loading');
         }
     }

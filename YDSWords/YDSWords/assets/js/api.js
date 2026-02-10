@@ -10,17 +10,43 @@ const API_CONFIG = {
     // Local development (netlify dev)
     // endpoint: 'http://localhost:8888/.netlify/functions/generate-question',
     
-    // Production - your deployed Netlify function
-    endpoint: 'https://ydswordsios.netlify.app/.netlify/functions/generate-question'
+    // Production - custom domain endpoint
+    endpoint: 'https://test.yds.today/.netlify/functions/generate-question',
+    
+    // Fallback configuration for cellular networks
+    timeout: {
+        wifi: 30000,      // 30 seconds for WiFi
+        cellular: 60000   // 60 seconds for cellular (slower networks)
+    }
 };
+
+/**
+ * DEFENSE: Detect connection type for adaptive timeouts
+ * PROTECTS AGAINST: Cellular networks being slower than WiFi
+ */
+function detectConnectionType() {
+    // Check if Network Information API is available
+    if ('connection' in navigator) {
+        const connection = navigator.connection;
+        if (connection.type === 'cellular' || connection.effectiveType === '2g' || connection.effectiveType === '3g') {
+            return 'cellular';
+        }
+    }
+    // Fallback: assume cellular if online but we can't detect
+    return navigator.onLine ? 'wifi' : 'offline';
+}
 
 /**
  * DEFENSE: Fetch with timeout and abort support
  * PROTECTS AGAINST: Hanging requests, slow networks
  */
-async function fetchWithTimeout(url, options = {}, timeoutMs = CONFIG.apiTimeout) {
+async function fetchWithTimeout(url, options = {}, timeoutMs = null) {
+    // Adaptive timeout based on connection type
+    const connectionType = detectConnectionType();
+    const actualTimeout = timeoutMs || API_CONFIG.timeout[connectionType] || CONFIG.apiTimeout;
+    
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    const timeoutId = setTimeout(() => controller.abort(), actualTimeout);
     
     try {
         const response = await fetch(url, {

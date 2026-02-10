@@ -232,16 +232,30 @@ async function loadQuestion() {
         let userMessage = 'Couldn\'t load the question.';
         let showRetry = true;
         
+        // Detect connection type for better error messages
+        const connectionType = detectConnectionType();
+        const isCellular = connectionType === 'cellular';
+        
         if (error.message.includes('offline')) {
             userMessage = 'You\'re offline. Check your connection and try again.';
         } else if (error.message.includes('timeout')) {
-            userMessage = 'The server is taking too long. Please try again.';
+            if (isCellular) {
+                userMessage = 'Your cellular connection is slow. Try moving to an area with better signal, or connect to WiFi.';
+            } else {
+                userMessage = 'The server is taking too long. Please try again.';
+            }
         } else if (error.message.includes('Too many')) {
             userMessage = error.message;
             showRetry = false;
         } else if (error.message.includes('circuit')) {
             userMessage = 'Service temporarily unavailable. Please wait a moment.';
             showRetry = false;
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            if (isCellular) {
+                userMessage = 'Network error on cellular. Some carriers block certain domains. Try WiFi or check your mobile data settings.';
+            } else {
+                userMessage = 'Network error. Please check your connection and try again.';
+            }
         }
         
         showError(userMessage, showRetry);

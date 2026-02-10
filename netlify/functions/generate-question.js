@@ -1,6 +1,14 @@
 /* ═════════════════════════════════════════════════════════════════════════════
    YDS Words - Netlify Function (OpenRouter Proxy)
    Securely proxies requests to OpenRouter API without exposing API key
+   
+   PERFORMANCE NOTES:
+   - Current model: mistralai/ministral-8b (~6-10s response time)
+   - Faster alternatives:
+     * meta-llama/llama-3.2-1b-instruct (~2-4s, lower quality)
+     * google/gemini-flash-1.5 (~1-3s, good balance)
+     * openai/gpt-4o-mini (~2-4s, good quality)
+   - Caching: Responses are not cached - each request hits the API
    ═════════════════════════════════════════════════════════════════════════════ */
 
 exports.handler = async (event, context) => {
@@ -56,6 +64,9 @@ exports.handler = async (event, context) => {
         }
 
         // Call OpenRouter API
+        console.log('[Netlify] Starting OpenRouter request');
+        const startTime = Date.now();
+        
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -68,10 +79,13 @@ exports.handler = async (event, context) => {
                 model: 'mistralai/ministral-8b',
                 messages: [{ role: 'user', content: prompt }],
                 temperature: 0.8,
-                max_tokens: 1024,
+                max_tokens: 768,  // Reduced from 1024 - responses are typically 300-500 tokens
                 response_format: { type: 'json_object' }
             })
         });
+        
+        const duration = Date.now() - startTime;
+        console.log(`[Netlify] OpenRouter response received in ${duration}ms, status: ${response.status}`);
 
         if (!response.ok) {
             const errorText = await response.text();

@@ -23,6 +23,9 @@ const CONFIG = {
     maxExplanationLength: 200,   // Max characters per explanation (allows complete sentences)
     
     getPrompt: function(word) {
+        const startTime = performance.now();
+        console.log(`[Config] Generating prompt for word: "${word}"`);
+        
         // DEFENSE: Validate word before using in prompt
         if (!word || typeof word !== 'string') {
             throw new Error('Invalid word provided to prompt generator');

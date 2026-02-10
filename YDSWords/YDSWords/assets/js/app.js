@@ -30,7 +30,13 @@ window.addEventListener('unhandledrejection', (event) => {
  * DEFENSE: DOM Content Loaded validation
  * PROTECTS AGAINST: MYWORDS not loaded, missing elements
  */
+const appInitStartTime = performance.now();
+console.log('[App] DOMContentLoaded - starting app initialization');
+
 document.addEventListener('DOMContentLoaded', () => {
+    const domStartTime = performance.now();
+    console.log(`[App] DOMContentLoaded handler started at ${Math.round(domStartTime - appInitStartTime)}ms from start`);
+    
     // Validate MYWORDS exists and is valid
     if (typeof MYWORDS === 'undefined' || !Array.isArray(MYWORDS) || MYWORDS.length === 0) {
         console.error('MYWORDS is not properly defined');
@@ -48,16 +54,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Initialize offline detection
+    const offlineStart = performance.now();
     initOfflineDetection();
+    console.log(`[App] Offline detection initialized in ${Math.round(performance.now() - offlineStart)}ms`);
     
     // Initialize streak system
     if (typeof initStreak === 'function') {
+        const streakStart = performance.now();
         initStreak();
+        console.log(`[App] Streak system initialized in ${Math.round(performance.now() - streakStart)}ms`);
     }
     
     // Prefetch BOTH quiz question AND flashcard content in parallel
     // This way whichever mode user chooses, content is ready
-    console.log('[Prefetch] Starting parallel prefetch for both modes...');
+    console.log('[App] Starting parallel prefetch for both modes...');
+    const prefetchStart = performance.now();
     Promise.all([
         prefetchQuestion().then(() => {
             console.log('[Prefetch] Quiz mode ready');
@@ -70,7 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('[Prefetch] Flashcard prefetch failed:', err.message);
         })
     ]).then(() => {
-        console.log('[Prefetch] Both modes ready!');
+        const prefetchDuration = Math.round(performance.now() - prefetchStart);
+        console.log(`[App] Both modes prefetched in ${prefetchDuration}ms`);
+        
+        const totalInitTime = Math.round(performance.now() - appInitStartTime);
+        console.log(`[App] Total initialization completed in ${totalInitTime}ms`);
     });
 });
 

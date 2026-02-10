@@ -84,6 +84,9 @@ const FlashcardDOM = {
  * Generate flashcard content (definition + example) for a word
  */
 async function generateFlashcardContent(word) {
+    const startTime = performance.now();
+    console.log(`[Flashcard] generateFlashcardContent() called for word: "${word}"`);
+    
     // Check circuit breaker
     if (isCircuitOpen()) {
         const waitSeconds = Math.ceil((AppState.circuitOpenUntil - Date.now()) / 1000);
@@ -155,6 +158,8 @@ Keep the definition under 20 words. The example should be academic/formal in ton
         content.example = content.example.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1');
         
         recordSuccess();
+        const duration = Math.round(performance.now() - startTime);
+        console.log(`[Flashcard] Content generated in ${duration}ms`);
         return content;
         
     } catch (error) {
@@ -185,6 +190,9 @@ function showModeSelection() {
  * Start flashcard mode
  */
 async function startFlashcardMode() {
+    const startTime = performance.now();
+    console.log('[Flashcard] startFlashcardMode() called');
+    
     // Validate MYWORDS
     if (!Array.isArray(MYWORDS) || MYWORDS.length === 0) {
         showNotification('error', 'Word list is not available.');
@@ -225,6 +233,8 @@ async function startFlashcardMode() {
     // Prefetch second card immediately after first loads
     console.log('[Flashcard] First card loaded, prefetching second...');
     prefetchNextFlashcard();
+    
+    console.log(`[Flashcard] startFlashcardMode() completed in ${Math.round(performance.now() - startTime)}ms`);
 }
 
 /**
@@ -316,6 +326,9 @@ function prefetchNextFlashcard() {
  * Load current flashcard
  */
 async function loadFlashcard() {
+    const startTime = performance.now();
+    console.log(`[Flashcard] loadFlashcard() called for index ${FlashcardState.currentIndex}`);
+    
     // If we've gone through all words, reshuffle and continue (unlimited mode)
     if (FlashcardState.currentIndex >= FlashcardState.shuffledWords.length) {
         FlashcardState.reshuffleAndContinue();
@@ -367,6 +380,8 @@ async function loadFlashcard() {
         
         // Prefetch next card while user reads this one
         prefetchNextFlashcard();
+        
+        console.log(`[Flashcard] loadFlashcard() completed in ${Math.round(performance.now() - startTime)}ms`);
         
     } catch (error) {
         console.error('Failed to load flashcard:', error);

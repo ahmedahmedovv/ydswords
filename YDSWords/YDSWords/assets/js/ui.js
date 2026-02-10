@@ -208,8 +208,14 @@ function updateQuizScore() {
 // ═════════════════════════════════════════════════════════════════════════════
 
 async function loadQuestion() {
+    const startTime = performance.now();
+    console.log('[UI] loadQuestion() started');
+    
     // DEFENSE: Prevent concurrent loads
-    if (AppState.isLoading) return;
+    if (AppState.isLoading) {
+        console.log('[UI] loadQuestion() - already loading, skipping');
+        return;
+    }
     
     // DEFENSE: Reset answer state
     AppState.hasAnswered = false;
@@ -226,8 +232,12 @@ async function loadQuestion() {
             AppState.currentQuestion = await generateQuestion();
         }
         
+        console.log(`[UI] loadQuestion() - data ready, displaying...`);
         displayQuestion();
         showLoading(false);
+        
+        const duration = Math.round(performance.now() - startTime);
+        console.log(`[UI] loadQuestion() completed in ${duration}ms`);
         
         // Scroll to show question area after it's visible
         setTimeout(() => {
@@ -285,6 +295,9 @@ async function loadQuestion() {
 }
 
 function displayQuestion() {
+    const startTime = performance.now();
+    console.log('[UI] displayQuestion() started');
+    
     const question = AppState.currentQuestion;
     
     // DEFENSE: Validate question before display
@@ -363,15 +376,23 @@ function displayQuestion() {
         // Update score display
         updateQuizScore();
         
+        console.log(`[UI] displayQuestion() completed in ${Math.round(performance.now() - startTime)}ms`);
+        
     } catch (error) {
-        console.error('Error displaying question:', error);
+        console.error('[UI] Error displaying question:', error);
         showError('Failed to display question. Please try again.');
     }
 }
 
 function selectAnswer(index) {
+    console.log(`[UI] selectAnswer() called for index ${index}`);
+    const startTime = performance.now();
+    
     // DEFENSE: Prevent multiple answers
-    if (AppState.hasAnswered) return;
+    if (AppState.hasAnswered) {
+        console.log('[UI] Already answered, ignoring');
+        return;
+    }
     AppState.hasAnswered = true;
     
     // DEFENSE: Validate index

@@ -9,9 +9,16 @@
 function sanitizeHtml(text) {
     if (typeof text !== 'string') return '';
     
+    const startTime = performance.now();
     const div = document.createElement('div');
     div.textContent = text;
-    return div.innerHTML;
+    const result = div.innerHTML;
+    
+    const duration = performance.now() - startTime;
+    if (duration > 1) { // Only log if it takes more than 1ms
+        console.log(`[Utils] sanitizeHtml took ${duration.toFixed(2)}ms`);
+    }
+    return result;
 }
 
 /**
@@ -19,6 +26,8 @@ function sanitizeHtml(text) {
  * PROTECTS AGAINST: Malformed AI responses, missing fields
  */
 function validateQuestion(data) {
+    const startTime = performance.now();
+    
     if (!data || typeof data !== 'object') {
         throw new Error('Invalid question data: not an object');
     }
@@ -81,6 +90,8 @@ function validateQuestion(data) {
         });
     }
     
+    const duration = performance.now() - startTime;
+    console.log(`[Utils] validateQuestion took ${duration.toFixed(2)}ms`);
     return true;
 }
 
@@ -91,8 +102,12 @@ function validateQuestion(data) {
 function debounce(fn, delay) {
     let timeoutId;
     return function(...args) {
+        console.log(`[Utils] Debounce triggered, waiting ${delay}ms`);
         clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn.apply(this, args), delay);
+        timeoutId = setTimeout(() => {
+            console.log('[Utils] Debounce executing function');
+            fn.apply(this, args);
+        }, delay);
     };
 }
 

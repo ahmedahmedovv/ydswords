@@ -41,9 +41,14 @@ function detectConnectionType() {
  * PROTECTS AGAINST: Hanging requests, slow networks
  */
 async function fetchWithTimeout(url, options = {}, timeoutMs = null) {
+    const startTime = performance.now();
+    console.log(`[API] Starting fetch request to ${url}`);
+    
     // Adaptive timeout based on connection type
     const connectionType = detectConnectionType();
     const actualTimeout = timeoutMs || API_CONFIG.timeout[connectionType] || CONFIG.apiTimeout;
+    
+    console.log(`[API] Connection type: ${connectionType}, timeout: ${actualTimeout}ms`);
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), actualTimeout);
@@ -54,9 +59,13 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = null) {
             signal: controller.signal
         });
         clearTimeout(timeoutId);
+        const duration = Math.round(performance.now() - startTime);
+        console.log(`[API] Fetch completed in ${duration}ms, status: ${response.status}`);
         return response;
     } catch (error) {
         clearTimeout(timeoutId);
+        const duration = Math.round(performance.now() - startTime);
+        console.error(`[API] Fetch failed after ${duration}ms:`, error.message);
         if (error.name === 'AbortError') {
             throw new Error('Request timed out. Please check your connection.');
         }
@@ -69,6 +78,9 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = null) {
  * PROTECTS AGAINST: Network failures, API errors, timeout
  */
 async function generateQuestion(attempt = 1) {
+    const totalStartTime = performance.now();
+    console.log(`[API] generateQuestion() called, attempt ${attempt}`);
+    
     // Check circuit breaker
     if (isCircuitOpen()) {
         const waitSeconds = Math.ceil((AppState.circuitOpenUntil - Date.now()) / 1000);
@@ -132,7 +144,9 @@ async function generateQuestion(attempt = 1) {
             throw new Error(errorMessage);
         }
         
+        const jsonStartTime = performance.now();
         const data = await response.json();
+        console.log(`[API] JSON parsed in ${Math.round(performance.now() - jsonStartTime)}ms`);
         
         // DEFENSE: Validate response structure
         if (!data || typeof data !== 'object') {
@@ -191,6 +205,8 @@ async function generateQuestion(attempt = 1) {
         // Success! Reset failure count
         recordSuccess();
         
+        const totalDuration = Math.round(performance.now() - totalStartTime);
+        console.log(`[API] generateQuestion() completed successfully in ${totalDuration}ms`);
         return question;
         
     } catch (error) {
@@ -222,8 +238,14 @@ async function generateQuestion(attempt = 1) {
  * PROTECTS AGAINST: Multiple simultaneous prefetch requests
  */
 async function prefetchQuestion() {
+    console.log('[API] prefetchQuestion() called');
+    const startTime = performance.now();
+    
     // Don't prefetch if already have one
-    if (AppState.prefetched) return;
+    if (AppState.prefetched) {
+        console.log('[API] Already have prefetched question, skipping');
+        return;
+    }
     
     // Don't prefetch if already fetching
     if (AppState.prefetchPromise) return;
@@ -231,11 +253,14 @@ async function prefetchQuestion() {
     // Create a single promise that can be shared
     AppState.prefetchPromise = generateQuestion()
         .then(question => {
+            const duration = Math.round(performance.now() - startTime);
+            console.log(`[API] Prefetch completed in ${duration}ms`);
             AppState.prefetched = question;
             AppState.prefetchPromise = null;
         })
         .catch(error => {
-            console.error('Prefetch failed:', error);
+            const duration = Math.round(performance.now() - startTime);
+            console.error(`[API] Prefetch failed after ${duration}ms:`, error);
             AppState.prefetchPromise = null;
             // Don't show error for prefetch failures - silent fail
         });

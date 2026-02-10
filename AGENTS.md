@@ -55,7 +55,7 @@ YDSWords/
 │   ├── Info.plist                   # App metadata, ATS settings, orientation
 │   ├── index.html                   # Main HTML file (SPA entry point)
 │   ├── assets/
-│   │   ├── css/styles.css           # iOS Design System styles (~2005 lines)
+│   │   ├── css/styles.css           # iOS Design System styles (~2046 lines)
 │   │   └── js/                      # JavaScript modules
 │   │       ├── words.js             # ~1000 English vocabulary words/phrases (1273 lines)
 │   │       ├── config.js            # App configuration & prompt templates
@@ -63,7 +63,7 @@ YDSWords/
 │   │       ├── api.js               # API functions (Netlify proxy calls)
 │   │       ├── utils.js             # Utility functions (XSS, validation, circuit breaker)
 │   │       ├── ui.js                # UI manipulation functions
-│   │       ├── flashcards.js        # Tinder-style flashcard study mode (670 lines)
+│   │       ├── flashcards.js        # Tinder-style flashcard study mode (688 lines)
 │   │       └── app.js               # Main application logic & event handlers
 │   └── Assets.xcassets/             # App icons (all iOS sizes)
 │       └── AppIcon.appiconset/
@@ -74,11 +74,7 @@ YDSWords/
 │   └── functions/
 │       └── generate-question.js     # Secure Netlify Function (OpenRouter proxy)
 ├── netlify.toml                     # Netlify configuration (functions, redirects, headers)
-├── .env.example                     # Example environment variables template
-├── .gitignore                       # Git ignore rules
 ├── DEPLOYMENT.md                    # Deployment guide for Netlify
-├── CROSS_PLATFORM_GUIDE.md          # Cross-platform browser compatibility guide
-├── UI_REFRESH_SUMMARY.md            # UI refresh implementation summary
 └── AGENTS.md                        # This file
 ```
 
@@ -140,7 +136,7 @@ YDSWords/
 - `generateQuestion()`: Main API call with retry logic and circuit breaker
 - `prefetchQuestion()`: Background question prefetching for instant display
 - `generateFlashcardContent()`: Fetches word definition and example for flashcards
-- Production endpoint: `https://ydswordsios.netlify.app/.netlify/functions/generate-question`
+- Production endpoint: `https://test.yds.today/.netlify/functions/generate-question`
 
 #### utils.js
 - `sanitizeHtml()`: XSS protection via textContent/innerHTML
@@ -160,14 +156,14 @@ YDSWords/
 - Offline detection with indicator
 - Fisher-Yates shuffle for answer options
 
-#### flashcards.js (670 lines)
+#### flashcards.js (688 lines)
 - Tinder-style swipeable flashcard interface
 - Touch and mouse gesture support for swiping
 - Keyboard navigation (Arrow keys, K/Y for know, N for don't know)
 - Word highlighting in example sentences
 - Session results with stats (known, study again, mastery %)
 - Prefetching for smooth card transitions
-- "Study Again" mode prioritizes unknown words
+- Unlimited study mode: reshuffles words when reaching the end
 
 #### app.js
 - Global error handlers (`error`, `unhandledrejection` events)
@@ -186,7 +182,7 @@ Serverless function that acts as a secure proxy:
 - CORS headers configured for cross-origin requests
 - Model: `mistralai/ministral-8b` with temperature 0.8 and max_tokens 1024
 
-### 6. CSS (styles.css, ~2005 lines)
+### 6. CSS (styles.css, ~2046 lines)
 iOS Design System implementation:
 - CSS custom properties for iOS system colors
 - Dark mode support via `prefers-color-scheme: dark`
@@ -281,7 +277,7 @@ xcodebuild -project YDSWords.xcodeproj -scheme YDSWords -archivePath YDSWords.xc
 npm install -g netlify-cli
 
 # Create .env file
-echo "OPENROUTER_API_KEY=your-key-here" > YDSWords/.env
+echo "OPENROUTER_API_KEY=your-key-here" > .env
 
 # Start dev server
 netlify dev
@@ -335,8 +331,8 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - [ ] "Next" button loads new question
 - [ ] Flashcard swipe gestures work (left = don't know, right = know)
 - [ ] Flashcard buttons work (X and ✓)
-- [ ] Flashcard session results display correctly
-- [ ] "Study Again" button in results works
+- [ ] Flashcard unlimited mode works (reshuffles after all words)
+- [ ] Word highlighting in flashcard examples works
 - [ ] Keyboard shortcuts work (Quiz: A-E, 1-5, Enter, Escape; Flashcards: ←, →, K, N, Escape)
 - [ ] Back button returns to welcome screen
 - [ ] Score resets when returning to welcome
@@ -351,7 +347,7 @@ configuration.userContentController.add(self, name: "nativeHandler")
 3. Update `API_CONFIG.endpoint` in `assets/js/api.js` with your Netlify URL
 4. Monitor Xcode console for API errors
 5. Check Netlify Function logs for server-side errors
-6. Verify questions generate within ~5 seconds (timeout: 30s)
+6. Verify questions generate within ~5 seconds (timeout: 30s WiFi, 60s cellular)
 
 ### Testing Circuit Breaker
 1. Enable airplane mode

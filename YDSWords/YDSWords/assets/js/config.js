@@ -5,7 +5,7 @@
 const CONFIG = {
     model: 'mistralai/ministral-8b',
     temperature: 0.8,
-    maxTokens: 1024,
+    maxTokens: 768,
     
     // Timeouts and rate limiting
     apiTimeout: 30000,           // 30 second API timeout

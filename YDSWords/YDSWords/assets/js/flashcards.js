@@ -388,13 +388,18 @@ async function loadFlashcard() {
 
 /**
  * Highlight word in example sentence
+ * Handles word variations (plural, past tense, etc.)
  */
 function highlightWordInExample(example, word) {
     // Escape HTML
     let safeExample = sanitizeHtml(example);
     
-    // Create case-insensitive regex to find the word
-    const wordRegex = new RegExp(`\\b(${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\b`, 'gi');
+    // Escape special regex characters in the word
+    const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
+    // Create regex that matches the word with optional suffixes (s, es, ed, ing, etc.)
+    // This handles: inject -> injects, injected, injecting
+    const wordRegex = new RegExp(`\\b(${escapedWord}(?:s|es|ed|ing|er|est|ion|tion|ment|ness|ly|y|ies|ied)?)\\b`, 'gi');
     
     // Wrap in highlight span
     return safeExample.replace(wordRegex, '<span class="word-highlight">$1</span>');

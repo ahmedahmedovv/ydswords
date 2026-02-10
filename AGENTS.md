@@ -102,6 +102,9 @@ YDSWords/
 - Loads `index.html` from app bundle via `loadFileURL(_:allowingReadAccessTo:)`
 - Handles navigation delegate methods for loading states
 - Implements WKUIDelegate for JavaScript alerts/confirms/prompts
+- **Native Storage Bridge**: Implements `WKScriptMessageHandler` for persistent streak data storage via UserDefaults
+  - JavaScript calls: `window.webkit.messageHandlers.nativeStorage.postMessage({action: 'save'|'load'|'loadAll'|'clear', key, value, callback})`
+  - Storage keys defined in both Swift and JavaScript (must match)
 - Activity indicator for loading feedback
 - Safe area layout support for iPhone notch
 - Uses `.systemBackground` for automatic dark mode support
@@ -158,11 +161,13 @@ YDSWords/
 - Offline detection with indicator
 - Fisher-Yates shuffle for answer options
 
-#### streak.js (446 lines)
+#### streak.js (446+ lines)
 - `StreakState` singleton for tracking daily study streaks
 - Separate streak tracking for Quiz and Flashcard modes
 - 20 words per day to complete a streak for each mode
-- Persistence via localStorage
+- **Persistent Storage via Native iOS Bridge**: Uses `UserDefaults` through WKWebView message handlers
+  - `NativeStorage` wrapper handles iOS native storage with localStorage fallback for browser testing
+  - Data survives app termination, iOS updates, and WebView cache clears
 - Streak breaking logic for missed days
 - UI badges showing progress on mode selection cards
 - Celebration effects on streak completion

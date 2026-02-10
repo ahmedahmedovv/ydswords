@@ -96,8 +96,9 @@ function initOfflineDetection() {
         
         if (navigator.onLine) {
             indicator.classList.remove('active');
-            // Try to prefetch if we were offline
-            if (!AppState.prefetched && !AppState.isLoading) {
+            // Try to prefetch if we were offline and not already prefetching
+            if (!AppState.prefetched && !AppState.isLoading && !AppState.prefetchPromise) {
+                console.log('[UI] Coming back online, prefetching...');
                 prefetchQuestion();
             }
         } else {
@@ -165,14 +166,13 @@ function showWelcome() {
         updateStreakBadges();
     }
     
-    // Prefetch BOTH modes when returning to welcome
-    console.log('[Prefetch] Returning to welcome - prefetching both modes...');
-    Promise.all([
-        prefetchQuestion().catch(err => console.log('[Prefetch] Quiz failed:', err.message)),
-        prefetchFirstFlashcard().catch(err => console.log('[Prefetch] Flashcard failed:', err.message))
-    ]).then(() => {
-        console.log('[Prefetch] Both modes ready on welcome');
-    });
+    // Prefetch BOTH modes when returning to welcome (only if not already prefetched)
+    if (!AppState.prefetched && !AppState.prefetchPromise) {
+        console.log('[Prefetch] Returning to welcome - prefetching quiz...');
+        prefetchQuestion().catch(err => console.log('[Prefetch] Quiz failed:', err.message));
+    }
+    // Always prefetch flashcard as it has its own state
+    prefetchFirstFlashcard().catch(err => console.log('[Prefetch] Flashcard failed:', err.message));
 }
 
 function showLoading(show) {

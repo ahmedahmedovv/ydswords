@@ -671,8 +671,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup mode selection buttons
     if (FlashcardDOM.btnModeQuiz) {
         FlashcardDOM.btnModeQuiz.addEventListener('click', () => {
+            console.log('[Flashcard] Quiz mode clicked, prefetched:', !!AppState.prefetched, 'isFirstQuestion:', AppState.isFirstQuestion);
+            
             // Use prefetched question if available for instant display
-            if (AppState.prefetched) {
+            if (AppState.prefetched && AppState.isFirstQuestion) {
+                console.log('[Flashcard] Using prefetched question for instant display');
                 AppState.isFirstQuestion = false;
                 if (DOM.welcomePage) DOM.welcomePage.classList.remove('active');
                 if (DOM.appPage) DOM.appPage.classList.add('active');
@@ -682,7 +685,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayQuestion();
                 // Prefetch next one in background
                 prefetchQuestion();
+            } else if (AppState.prefetchPromise && AppState.isFirstQuestion) {
+                // Prefetch is in progress, wait for it instead of making new request
+                console.log('[Flashcard] Prefetch in progress, waiting for it...');
+                if (DOM.welcomePage) DOM.welcomePage.classList.remove('active');
+                if (DOM.appPage) DOM.appPage.classList.add('active');
+                showLoading(true);
+                AppState.prefetchPromise.then(() => {
+                    if (AppState.prefetched && AppState.isFirstQuestion) {
+                        AppState.isFirstQuestion = false;
+                        showLoading(false);
+                        AppState.currentQuestion = AppState.prefetched;
+                        AppState.prefetched = null;
+                        displayQuestion();
+                        prefetchQuestion();
+                    }
+                }).catch(() => {
+                    // If prefetch fails, fall back to normal load
+                    loadQuestion();
+                });
             } else {
+                console.log('[Flashcard] No prefetch available, calling showApp()');
                 showApp();
             }
         });

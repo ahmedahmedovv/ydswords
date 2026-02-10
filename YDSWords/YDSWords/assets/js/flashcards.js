@@ -151,6 +151,9 @@ Keep the definition under 20 words. The example should be academic/formal in ton
             throw new Error('Missing definition or example');
         }
         
+        // Clean up markdown formatting from example (remove ** and * around words)
+        content.example = content.example.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1');
+        
         recordSuccess();
         return content;
         

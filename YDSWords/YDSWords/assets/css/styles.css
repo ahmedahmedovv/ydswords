@@ -2044,3 +2044,167 @@ button, .option {
         opacity: 0;
     }
 }
+
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   STREAK SYSTEM STYLES
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══ Mode Card Streak Badge ═══ */
+.mode-card-streak {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: var(--ios-tertiary-fill);
+    font-size: var(--text-caption);
+    font-weight: 600;
+    color: var(--ios-label-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+
+.mode-card-streak.in-progress {
+    background: var(--ios-system-orange);
+    color: white;
+}
+
+.mode-card-streak.completed {
+    background: var(--ios-system-green);
+    color: white;
+}
+
+/* Make mode-card position relative for badge positioning */
+.mode-card {
+    position: relative;
+}
+
+/* ═══ Streak Display (Progress Bar) ═══ */
+.streak-display {
+    background: var(--ios-secondary-grouped-background);
+    padding: var(--space-sm) var(--space-lg);
+    border-bottom: 1px solid var(--ios-separator);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+}
+
+.streak-display-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex: 1;
+}
+
+.streak-icon {
+    font-size: var(--text-headline);
+    flex-shrink: 0;
+}
+
+.streak-progress-wrapper {
+    flex: 1;
+    height: 6px;
+    background: var(--ios-tertiary-fill);
+    border-radius: 3px;
+    overflow: hidden;
+    min-width: 80px;
+}
+
+.streak-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ios-system-orange), var(--ios-system-red));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.streak-display.completed .streak-progress-bar {
+    background: linear-gradient(90deg, var(--ios-system-green), var(--ios-system-teal));
+}
+
+.streak-progress-text {
+    font-size: var(--text-caption);
+    color: var(--ios-label-secondary);
+    font-weight: 500;
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: right;
+}
+
+.streak-count {
+    font-size: var(--text-caption);
+    color: var(--ios-label-tertiary);
+    font-weight: 600;
+}
+
+/* ═══ Streak Celebration Animation ═══ */
+@keyframes streak-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 20px 10px rgba(255, 149, 0, 0.2);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 149, 0, 0);
+    }
+}
+
+@keyframes streak-shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+.streak-celebration {
+    animation: streak-pulse 1s ease-out;
+}
+
+.streak-celebration .streak-display {
+    animation: streak-shake 0.5s ease-in-out;
+}
+
+.streak-celebration .streak-progress-bar {
+    animation: streak-pulse 0.6s ease-out;
+}
+
+/* ═══ Dark Mode for Streak ═══ */
+@media (prefers-color-scheme: dark) {
+    .streak-display {
+        background: var(--ios-secondary-grouped-background);
+        border-color: var(--ios-separator);
+    }
+    
+    .mode-card-streak {
+        background: var(--ios-tertiary-fill);
+        color: var(--ios-label-secondary);
+    }
+    
+    .mode-card-streak.in-progress {
+        background: var(--ios-system-orange);
+        color: white;
+    }
+    
+    .mode-card-streak.completed {
+        background: var(--ios-system-green);
+        color: white;
+    }
+}
+
+/* ═══ Reduced Motion for Streak ═══ */
+@media (prefers-reduced-motion: reduce) {
+    .streak-progress-bar {
+        transition: none;
+    }
+    
+    .streak-celebration,
+    .streak-celebration .streak-display,
+    .streak-celebration .streak-progress-bar {
+        animation: none;
+    }
+}

@@ -50,6 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize offline detection
     initOfflineDetection();
     
+    // Initialize streak system
+    if (typeof initStreak === 'function') {
+        initStreak();
+    }
+    
     // Prefetch BOTH quiz question AND flashcard content in parallel
     // This way whichever mode user chooses, content is ready
     console.log('[Prefetch] Starting parallel prefetch for both modes...');

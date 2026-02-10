@@ -205,6 +205,11 @@ async function startFlashcardMode() {
     if (DOM.welcomePage) DOM.welcomePage.classList.remove('active');
     if (FlashcardDOM.flashcardPage) FlashcardDOM.flashcardPage.classList.add('active');
     
+    // Update streak display for flashcard mode
+    if (typeof updateActiveStreakDisplay === 'function') {
+        updateActiveStreakDisplay('flashcard');
+    }
+    
     // Ensure container is visible
     if (FlashcardDOM.flashcardContainer) {
         FlashcardDOM.flashcardContainer.classList.remove('hidden');
@@ -437,6 +442,12 @@ function handleKnowWord() {
     FlashcardState.knownCount++;
     FlashcardState.totalCount++;
     
+    // Track streak for flashcard mode - record this word
+    if (typeof StreakState !== 'undefined') {
+        const streakStatus = StreakState.recordFlashcardWord();
+        updateActiveStreakDisplay('flashcard');
+    }
+    
     // Animate card off to right
     const card = FlashcardDOM.flashcardCard;
     if (card) {
@@ -466,6 +477,12 @@ function handleDontKnowWord() {
     // Increment total count (but not known count)
     FlashcardState.totalCount++;
     
+    // Track streak for flashcard mode - record this word (studying counts even if not known)
+    if (typeof StreakState !== 'undefined') {
+        const streakStatus = StreakState.recordFlashcardWord();
+        updateActiveStreakDisplay('flashcard');
+    }
+    
     // Animate card off to left
     const card = FlashcardDOM.flashcardCard;
     if (card) {
@@ -494,6 +511,11 @@ function exitFlashcardMode() {
     FlashcardState.reset();
     if (FlashcardDOM.flashcardPage) FlashcardDOM.flashcardPage.classList.remove('active');
     if (DOM.welcomePage) DOM.welcomePage.classList.add('active');
+    
+    // Update streak badges on welcome screen
+    if (typeof updateStreakBadges === 'function') {
+        updateStreakBadges();
+    }
 }
 
 // ═════════════════════════════════════════════════════════════════════════════

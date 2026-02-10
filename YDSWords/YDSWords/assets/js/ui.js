@@ -128,6 +128,11 @@ function showApp() {
     if (DOM.welcomePage) DOM.welcomePage.classList.remove('active');
     if (DOM.appPage) DOM.appPage.classList.add('active');
     
+    // Update streak display for quiz mode
+    if (typeof updateActiveStreakDisplay === 'function') {
+        updateActiveStreakDisplay('quiz');
+    }
+    
     // Use prefetched question if available (instant display)
     if (AppState.prefetched && AppState.isFirstQuestion) {
         AppState.isFirstQuestion = false;
@@ -154,6 +159,11 @@ function showWelcome() {
     
     // Reset score display
     if (DOM.scoreEl) DOM.scoreEl.textContent = '0 / 0';
+    
+    // Update streak badges on welcome screen
+    if (typeof updateStreakBadges === 'function') {
+        updateStreakBadges();
+    }
     
     // Prefetch BOTH modes when returning to welcome
     console.log('[Prefetch] Returning to welcome - prefetching both modes...');
@@ -207,9 +217,6 @@ async function loadQuestion() {
     showLoading(true);
     if (DOM.loadingText) DOM.loadingText.textContent = 'Generating question...';
     
-    // Scroll to top when loading new question
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
     try {
         // Use prefetched question or generate new one
         if (AppState.prefetched) {
@@ -221,6 +228,21 @@ async function loadQuestion() {
         
         displayQuestion();
         showLoading(false);
+        
+        // Scroll to show question area after it's visible
+        setTimeout(() => {
+            const questionArea = document.getElementById('questionArea');
+            if (questionArea) {
+                const headerOffset = 120;
+                const elementPosition = questionArea.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
+                window.scrollTo({
+                    top: Math.max(0, offsetPosition),
+                    behavior: 'smooth'
+                });
+            }
+        }, 10);
         
         // Prefetch next one in background
         prefetchQuestion();
@@ -273,7 +295,10 @@ function displayQuestion() {
     
     try {
         // DEFENSE: Sanitize and display sentence (XSS protection)
+        // Also clean up markdown bold formatting that AI sometimes adds
         const sentenceHtml = sanitizeHtml(question.sentence)
+            .replace(/\*\*([^*]+)\*\*/g, '$1')  // Remove **bold** markdown
+            .replace(/\*([^*]+)\*/g, '$1')      // Remove *italic* markdown
             .replace(/_{3,}/g, '<span class="blank">_____</span>');
         
         if (DOM.sentence) DOM.sentence.innerHTML = sentenceHtml;
@@ -370,6 +395,12 @@ function selectAnswer(index) {
     
     // Update score display
     updateQuizScore();
+    
+    // Track streak for quiz mode - record this word
+    if (typeof StreakState !== 'undefined') {
+        const streakStatus = StreakState.recordQuizWord();
+        updateActiveStreakDisplay('quiz');
+    }
     
     // Update UI with visual feedback and show explanations in options
     const optionButtons = DOM.options ? DOM.options.querySelectorAll('.option') : [];

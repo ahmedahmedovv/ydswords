@@ -54,6 +54,9 @@
                 
                 <div class="mode-cards">
                     <button class="mode-card" id="btnModeQuiz">
+                        <div class="mode-card-streak" id="quizStreakBadge">
+                            <span id="quizStreakText">0 🔥</span>
+                        </div>
                         <div class="mode-card-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="10"/>
@@ -69,6 +72,9 @@
                     </button>
                     
                     <button class="mode-card" id="btnModeFlashcard">
+                        <div class="mode-card-streak" id="flashcardStreakBadge">
+                            <span id="flashcardStreakText">0 🔥</span>
+                        </div>
                         <div class="mode-card-icon mode-card-icon--flashcard">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -110,6 +116,18 @@
             <div class="quiz-header-title">Quiz</div>
             <div class="quiz-header-progress" id="quizScore">0 / 0</div>
         </header>
+        
+        <!-- Streak Progress Bar -->
+        <div class="streak-display" id="quizStreakDisplay">
+            <div class="streak-display-content">
+                <span class="streak-icon">🔥</span>
+                <div class="streak-progress-wrapper">
+                    <div class="streak-progress-bar"></div>
+                </div>
+                <span class="streak-progress-text">0/20 words</span>
+            </div>
+            <div class="streak-count">0 days</div>
+        </div>
 
         <div class="loading hidden" id="loading">
             <div class="spinner"></div>
@@ -154,6 +172,18 @@
             <div class="flashcard-title">Flashcards</div>
             <div class="flashcard-progress-text" id="flashcardScore">0 / 0</div>
         </header>
+        
+        <!-- Streak Progress Bar -->
+        <div class="streak-display" id="flashcardStreakDisplay">
+            <div class="streak-display-content">
+                <span class="streak-icon">🔥</span>
+                <div class="streak-progress-wrapper">
+                    <div class="streak-progress-bar"></div>
+                </div>
+                <span class="streak-progress-text">0/20 words</span>
+            </div>
+            <div class="streak-count">0 days</div>
+        </div>
 
         <!-- Flashcard Container -->
         <div class="flashcard-container" id="flashcardContainer">
@@ -199,6 +229,7 @@
     <script src="assets/js/state.js"></script>
     <script src="assets/js/utils.js"></script>
     <script src="assets/js/api.js"></script>
+    <script src="assets/js/streak.js"></script>
     <script src="assets/js/ui.js"></script>
     <script src="assets/js/flashcards.js"></script>
     <script src="assets/js/app.js"></script>

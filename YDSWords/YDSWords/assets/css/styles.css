@@ -688,7 +688,7 @@ body {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
     animation: slideUp 0.3s var(--ios-spring);
     /* Ensure feedback is fully visible with proper sizing */
-    max-height: min(55vh, 500px);
+    max-height: min(75vh, 600px);
     min-height: min(120px, 20vh);
     display: flex;
     flex-direction: column;
@@ -1155,7 +1155,7 @@ body {
     
     /* Compact feedback for smaller screens */
     .feedback {
-        max-height: min(60vh, 400px);
+        max-height: min(80vh, 500px);
         min-height: 100px;
         padding: 10px 12px;
     }
@@ -1235,7 +1235,7 @@ body {
     }
     
     .feedback {
-        max-height: min(65vh, 350px);
+        max-height: min(85vh, 450px);
         min-height: 90px;
         padding: 8px 10px;
     }
@@ -1255,7 +1255,7 @@ body {
 /* ═══ Large screens - more spacious feedback ═══ */
 @media (min-height: 800px) {
     .feedback {
-        max-height: min(40vh, 450px);
+        max-height: min(70vh, 650px);
         min-height: 140px;
     }
     

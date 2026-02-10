@@ -174,7 +174,7 @@ extension ViewController: WKScriptMessageHandler {
                 let callback = body["callback"] as? String ?? ""
                 if !callback.isEmpty {
                     let js = "\(callback)(true)"
-                    webView.evaluateJavaScript(js, completionHandler: nil)
+                    evaluateJavaScriptSafely(js)
                 }
             }
             
@@ -185,11 +185,9 @@ extension ViewController: WKScriptMessageHandler {
                 // Send value back to JavaScript via callback
                 let callback = body["callback"] as? String ?? ""
                 if !callback.isEmpty {
-                    let escapedValue = value.replacingOccurrences(of: "'", with: "\\'")
-                                           .replacingOccurrences(of: "\"", with: "\\\"")
-                                           .replacingOccurrences(of: "\n", with: "\\n")
-                    let js = "\(callback)(\"\(escapedValue)\")"
-                    webView.evaluateJavaScript(js, completionHandler: nil)
+                    // Use JSON stringification for proper escaping
+                    let js = "\(callback)(JSON.parse('\(encodeJSONString(value))'))"
+                    evaluateJavaScriptSafely(js)
                 }
             }
             
@@ -208,7 +206,7 @@ extension ViewController: WKScriptMessageHandler {
                     let jsonData = try JSONSerialization.data(withJSONObject: allData)
                     if let jsonString = String(data: jsonData, encoding: .utf8) {
                         let js = "\(callback)(\(jsonString))"
-                        webView.evaluateJavaScript(js, completionHandler: nil)
+                        evaluateJavaScriptSafely(js)
                     }
                 } catch {
                     print("[NativeStorage] Error serializing data: \(error)")
@@ -225,6 +223,33 @@ extension ViewController: WKScriptMessageHandler {
         default:
             print("[NativeStorage] Unknown action: \(action)")
         }
+    }
+    
+    /// Helper to safely evaluate JavaScript with error handling
+    private func evaluateJavaScriptSafely(_ script: String) {
+        // Ensure we're on the main thread
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, self.webView != nil else {
+                print("[NativeStorage] Cannot evaluate JavaScript - webView is nil")
+                return
+            }
+            
+            self.webView.evaluateJavaScript(script) { result, error in
+                if let error = error {
+                    print("[NativeStorage] JavaScript evaluation error: \(error)")
+                }
+            }
+        }
+    }
+    
+    /// Helper to encode string for safe JSON parsing in JavaScript
+    private func encodeJSONString(_ string: String) -> String {
+        // Create a JSON-safe string by serializing it
+        if let data = try? JSONSerialization.data(withJSONObject: string),
+           let jsonString = String(data: data, encoding: .utf8) {
+            return jsonString
+        }
+        return "\"\""
     }
 }
 

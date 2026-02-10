@@ -12,7 +12,8 @@
 const NativeStorage = {
     // Check if running in native iOS app with storage bridge
     isAvailable() {
-        return window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeStorage;
+        const available = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeStorage;
+        return !!available;
     },
     
     // Save data to native storage
@@ -31,26 +32,37 @@ const NativeStorage = {
             }
             
             // Use native storage
-            const callbackId = 'native_save_' + Date.now();
+            const callbackId = 'native_save_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             window[callbackId] = (success) => {
-                delete window[callbackId];
-                resolve(success);
+                cleanup();
+                resolve(success === true);
             };
             
-            window.webkit.messageHandlers.nativeStorage.postMessage({
-                action: 'save',
-                key: key,
-                value: value,
-                callback: callbackId
-            });
+            const cleanup = () => {
+                delete window[callbackId];
+            };
+            
+            try {
+                window.webkit.messageHandlers.nativeStorage.postMessage({
+                    action: 'save',
+                    key: key,
+                    value: String(value),
+                    callback: callbackId
+                });
+            } catch (e) {
+                console.error('[NativeStorage] postMessage failed:', e);
+                cleanup();
+                resolve(false);
+                return;
+            }
             
             // Timeout fallback
             setTimeout(() => {
                 if (window[callbackId]) {
-                    delete window[callbackId];
+                    cleanup();
                     resolve(false);
                 }
-            }, 1000);
+            }, 2000);
         });
     },
     
@@ -70,25 +82,37 @@ const NativeStorage = {
             }
             
             // Use native storage
-            const callbackId = 'native_load_' + Date.now();
+            const callbackId = 'native_load_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             window[callbackId] = (value) => {
-                delete window[callbackId];
+                cleanup();
+                // Value comes through JSON.parse, so it's already a string
                 resolve(value || '');
             };
             
-            window.webkit.messageHandlers.nativeStorage.postMessage({
-                action: 'load',
-                key: key,
-                callback: callbackId
-            });
+            const cleanup = () => {
+                delete window[callbackId];
+            };
+            
+            try {
+                window.webkit.messageHandlers.nativeStorage.postMessage({
+                    action: 'load',
+                    key: key,
+                    callback: callbackId
+                });
+            } catch (e) {
+                console.error('[NativeStorage] postMessage failed:', e);
+                cleanup();
+                resolve('');
+                return;
+            }
             
             // Timeout fallback
             setTimeout(() => {
                 if (window[callbackId]) {
-                    delete window[callbackId];
+                    cleanup();
                     resolve('');
                 }
-            }, 1000);
+            }, 2000);
         });
     },
     
@@ -113,33 +137,48 @@ const NativeStorage = {
             }
             
             // Use native storage
-            const callbackId = 'native_loadall_' + Date.now();
+            const callbackId = 'native_loadall_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             window[callbackId] = (data) => {
-                delete window[callbackId];
+                cleanup();
                 resolve(data || {});
             };
             
-            window.webkit.messageHandlers.nativeStorage.postMessage({
-                action: 'loadAll',
-                callback: callbackId
-            });
+            const cleanup = () => {
+                delete window[callbackId];
+            };
+            
+            try {
+                window.webkit.messageHandlers.nativeStorage.postMessage({
+                    action: 'loadAll',
+                    callback: callbackId
+                });
+            } catch (e) {
+                console.error('[NativeStorage] postMessage failed:', e);
+                cleanup();
+                resolve({});
+                return;
+            }
             
             // Timeout fallback
             setTimeout(() => {
                 if (window[callbackId]) {
-                    delete window[callbackId];
+                    cleanup();
                     resolve({});
                 }
-            }, 1000);
+            }, 2000);
         });
     },
     
     // Clear all streak data (for testing)
     async clear() {
         if (this.isAvailable()) {
-            window.webkit.messageHandlers.nativeStorage.postMessage({
-                action: 'clear'
-            });
+            try {
+                window.webkit.messageHandlers.nativeStorage.postMessage({
+                    action: 'clear'
+                });
+            } catch (e) {
+                console.error('[NativeStorage] Clear postMessage failed:', e);
+            }
         }
         // Also clear localStorage fallback
         try {

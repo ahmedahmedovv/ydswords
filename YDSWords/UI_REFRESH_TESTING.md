@@ -1,4 +1,4 @@
-# YDS Words UI Refresh - Testing & Review
+# Thunder YDS UI Refresh - Testing & Review
 
 ## Overview
 This document contains the testing checklist for the iOS UI Refresh implementation.
@@ -37,7 +37,7 @@ This document contains the testing checklist for the iOS UI Refresh implementati
 
 #### Welcome Screen
 - [ ] App icon displays with blue-purple gradient
-- [ ] "YDS Words" title uses SF Pro (34px, bold)
+- [ ] "Thunder YDS" title uses SF Pro (34px, bold)
 - [ ] "Master Academic Vocabulary" subtitle visible
 - [ ] Description text readable
 - [ ] "Start Learning" button is blue, rounded

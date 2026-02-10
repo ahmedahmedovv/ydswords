@@ -1,5 +1,5 @@
 /* ═════════════════════════════════════════════════════════════════════════════
-   YDS Words - Streak System
+   Thunder YDS - Streak System
    Tracks daily study streaks separately for Quiz and Flashcard modes
    Uses native iOS storage (UserDefaults) via WKWebView bridge for persistence
    ═════════════════════════════════════════════════════════════════════════════ */

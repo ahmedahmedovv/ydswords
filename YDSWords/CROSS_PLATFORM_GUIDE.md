@@ -2,7 +2,7 @@
 
 ## Overview
 
-The YDS Words UI Refresh implementation works on **all modern browsers** because it's built with standard web technologies (HTML, CSS, JavaScript).
+The Thunder YDS UI Refresh implementation works on **all modern browsers** because it's built with standard web technologies (HTML, CSS, JavaScript).
 
 ## Architecture
 
@@ -183,7 +183,7 @@ Add a service worker and manifest for installable web app:
 
 ```json
 {
-  "name": "YDS Words",
+  "name": "Thunder YDS",
   "short_name": "YDS",
   "start_url": "/",
   "display": "standalone",

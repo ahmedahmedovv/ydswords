@@ -1,5 +1,5 @@
 /* ═════════════════════════════════════════════════════════════════════════════
-   YDS Words - Netlify Function (OpenRouter Proxy)
+   Thunder YDS - Netlify Function (OpenRouter Proxy)
    Securely proxies requests to OpenRouter API without exposing API key
    
    PERFORMANCE NOTES:
@@ -73,7 +73,7 @@ exports.handler = async (event, context) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${apiKey}`,
                 'HTTP-Referer': 'https://thunder.yds.today',
-                'X-Title': 'YDS Words'
+                'X-Title': 'Thunder YDS'
             },
             body: JSON.stringify({
                 model: 'mistralai/ministral-8b',

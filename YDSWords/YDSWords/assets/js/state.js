@@ -1,5 +1,5 @@
 /* ═════════════════════════════════════════════════════════════════════════════
-   YDS Words - Application State Management
+   Thunder YDS - Application State Management
    ═════════════════════════════════════════════════════════════════════════════ */
 
 const AppState = {

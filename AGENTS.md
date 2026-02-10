@@ -1,8 +1,8 @@
-# YDS Words - AI Coding Agent Guide
+# Thunder YDS - AI Coding Agent Guide
 
 ## Project Overview
 
-YDS Words is an iOS application designed for Turkish students preparing for the YDS (Yabancı Dil Sınavı - Foreign Language Exam). It's a vocabulary learning app that generates dynamic multiple-choice quiz questions and provides flashcard study modes using AI through the OpenRouter API.
+Thunder YDS is an iOS application designed for Turkish students preparing for the YDS (Yabancı Dil Sınavı - Foreign Language Exam). It's a vocabulary learning app that generates dynamic multiple-choice quiz questions and provides flashcard study modes using AI through the OpenRouter API.
 
 The app follows a **hybrid architecture**:
 - **Native iOS Layer**: Thin Swift wrapper using UIKit + WebKit (WKWebView)

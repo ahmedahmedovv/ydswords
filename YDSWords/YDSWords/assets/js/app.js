@@ -1,5 +1,5 @@
 /* ═════════════════════════════════════════════════════════════════════════════
-   YDS Words - Main Application
+   Thunder YDS - Main Application
    ═════════════════════════════════════════════════════════════════════════════ */
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -204,7 +204,7 @@ window.addEventListener('beforeunload', (e) => {
 // ═════════════════════════════════════════════════════════════════════════════
 
 const APP_VERSION = '1.0.0';
-console.log(`YDS Words v${APP_VERSION} initialized`);
+console.log(`Thunder YDS v${APP_VERSION} initialized`);
 
 // Export for module systems (if needed in future)
 if (typeof module !== 'undefined' && module.exports) {

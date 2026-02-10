@@ -1,7 +1,7 @@
-# YDS Words - Netlify Deployment Guide
+# Thunder YDS - Netlify Deployment Guide
 
 ## Overview
-This guide explains how to deploy the secure API proxy for YDS Words using Netlify Functions.
+This guide explains how to deploy the secure API proxy for Thunder YDS using Netlify Functions.
 
 ## Architecture
 ```

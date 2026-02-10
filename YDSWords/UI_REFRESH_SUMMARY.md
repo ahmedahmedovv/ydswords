@@ -1,4 +1,4 @@
-# YDS Words UI Refresh - Implementation Summary
+# Thunder YDS UI Refresh - Implementation Summary
 
 ## ✅ Completed Phases
 
@@ -47,7 +47,7 @@ font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', ...;
 
 **New Welcome Screen Features:**
 - Gradient app icon (blue to purple)
-- Large title: "YDS Words" (34px, SF Pro Bold)
+- Large title: "Thunder YDS" (34px, SF Pro Bold)
 - Subtitle: "Master Academic Vocabulary"
 - Description text
 - Stats preview: 1000+ Words, AI, ∞ Questions

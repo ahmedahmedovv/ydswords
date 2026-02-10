@@ -11,7 +11,7 @@ const API_CONFIG = {
     // endpoint: 'http://localhost:8888/.netlify/functions/generate-question',
     
     // Production - custom domain endpoint
-    endpoint: 'https://test.yds.today/.netlify/functions/generate-question',
+    endpoint: 'https://thunder.yds.today/.netlify/functions/generate-question',
     
     // Fallback configuration for cellular networks
     timeout: {

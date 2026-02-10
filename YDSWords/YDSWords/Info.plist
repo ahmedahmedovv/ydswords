@@ -64,7 +64,7 @@
         <true/>
         <key>NSExceptionDomains</key>
         <dict>
-            <key>test.yds.today</key>
+            <key>thunder.yds.today</key>
             <dict>
                 <key>NSExceptionMinimumTLSVersion</key>
                 <string>TLSv1.2</string>

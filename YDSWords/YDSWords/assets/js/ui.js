@@ -402,14 +402,17 @@ function selectAnswer(index) {
     if (DOM.btnNext) DOM.btnNext.classList.remove('hidden');
     if (DOM.questionArea) DOM.questionArea.classList.add('answered');
     
-    // Scroll to show the Next button at the bottom
+    // Scroll to show all feedback content at the bottom
     setTimeout(() => {
-        if (DOM.btnNext) {
-            DOM.btnNext.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        } else if (DOM.feedback) {
-            DOM.feedback.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        // Scroll within the question-area container to show the feedback and Next button
+        const questionArea = DOM.questionArea;
+        if (questionArea) {
+            questionArea.scrollTo({ 
+                top: questionArea.scrollHeight, 
+                behavior: 'smooth' 
+            });
         }
-    }, 100);
+    }, 200);
 }
 
 // Export for module systems (if needed in future)

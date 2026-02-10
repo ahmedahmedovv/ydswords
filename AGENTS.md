@@ -55,15 +55,16 @@ YDSWords/
 │   ├── Info.plist                   # App metadata, ATS settings, orientation
 │   ├── index.html                   # Main HTML file (SPA entry point)
 │   ├── assets/
-│   │   ├── css/styles.css           # iOS Design System styles (~2046 lines)
+│   │   ├── css/styles.css           # iOS Design System styles (~2210 lines)
 │   │   └── js/                      # JavaScript modules
 │   │       ├── words.js             # ~1000 English vocabulary words/phrases (1273 lines)
 │   │       ├── config.js            # App configuration & prompt templates
 │   │       ├── state.js             # Application state management
 │   │       ├── api.js               # API functions (Netlify proxy calls)
 │   │       ├── utils.js             # Utility functions (XSS, validation, circuit breaker)
+│   │       ├── streak.js            # Daily streak tracking system (441 lines)
 │   │       ├── ui.js                # UI manipulation functions
-│   │       ├── flashcards.js        # Tinder-style flashcard study mode (688 lines)
+│   │       ├── flashcards.js        # Tinder-style flashcard study mode (748 lines)
 │   │       └── app.js               # Main application logic & event handlers
 │   └── Assets.xcassets/             # App icons (all iOS sizes)
 │       └── AppIcon.appiconset/
@@ -74,7 +75,6 @@ YDSWords/
 │   └── functions/
 │       └── generate-question.js     # Secure Netlify Function (OpenRouter proxy)
 ├── netlify.toml                     # Netlify configuration (functions, redirects, headers)
-├── DEPLOYMENT.md                    # Deployment guide for Netlify
 └── AGENTS.md                        # This file
 ```
 
@@ -132,15 +132,14 @@ YDSWords/
 
 #### api.js
 - `API_CONFIG.endpoint`: Points to Netlify function URL
-- `fetchWithTimeout()`: AbortController-based timeout handling
+- `fetchWithTimeout()`: AbortController-based timeout handling with adaptive timeouts for WiFi/cellular
 - `generateQuestion()`: Main API call with retry logic and circuit breaker
 - `prefetchQuestion()`: Background question prefetching for instant display
-- `generateFlashcardContent()`: Fetches word definition and example for flashcards
-- Production endpoint: `https://test.yds.today/.netlify/functions/generate-question`
+- Production endpoint: `https://thunder.yds.today/.netlify/functions/generate-question`
 
 #### utils.js
 - `sanitizeHtml()`: XSS protection via textContent/innerHTML
-- `validateQuestion()`: Schema validation for API responses
+- `validateQuestion()`: Schema validation for API responses with length limits
 - `debounce()`: Input rate limiting
 - `checkRateLimit()`: Button click throttling
 - `isCircuitOpen()`, `recordSuccess()`, `recordFailure()`: Circuit breaker implementation
@@ -151,19 +150,28 @@ YDSWords/
 - `showNotification()`: Toast notification system
 - `showApp()`, `showWelcome()`: View transitions
 - `loadQuestion()`, `displayQuestion()`: Question flow management
-- `selectAnswer()`: Answer handling with visual feedback
-- `updateQuizProgress()`: Progress bar and score display
+- `selectAnswer()`: Answer handling with visual feedback and explanations
+- `updateQuizScore()`: Score display
 - Offline detection with indicator
 - Fisher-Yates shuffle for answer options
 
-#### flashcards.js (688 lines)
+#### streak.js (441 lines)
+- `StreakState` singleton for tracking daily study streaks
+- Separate streak tracking for Quiz and Flashcard modes
+- 20 words per day to complete a streak for each mode
+- Persistence via localStorage
+- Streak breaking logic for missed days
+- UI badges showing progress on mode selection cards
+- Celebration effects on streak completion
+
+#### flashcards.js (748 lines)
 - Tinder-style swipeable flashcard interface
 - Touch and mouse gesture support for swiping
 - Keyboard navigation (Arrow keys, K/Y for know, N for don't know)
-- Word highlighting in example sentences
-- Session results with stats (known, study again, mastery %)
-- Prefetching for smooth card transitions
+- Word highlighting in example sentences (handles variations like plurals, tenses)
 - Unlimited study mode: reshuffles words when reaching the end
+- Prefetching for smooth card transitions
+- Session tracking (known / total count)
 
 #### app.js
 - Global error handlers (`error`, `unhandledrejection` events)
@@ -171,6 +179,7 @@ YDSWords/
 - Event listeners for all buttons (debounced)
 - Keyboard shortcuts (A-E, 1-5, Enter, Escape for quiz mode)
 - Page visibility change handling
+- Parallel prefetching for both quiz and flashcard modes on startup
 - `APP_VERSION = '1.0.0'`
 
 ### 5. Netlify Function (generate-question.js)
@@ -180,9 +189,11 @@ Serverless function that acts as a secure proxy:
 - Forwards to OpenRouter API with JSON response format
 - Returns structured response to app
 - CORS headers configured for cross-origin requests
-- Model: `mistralai/ministral-8b` with temperature 0.8 and max_tokens 1024
+- Model: `mistralai/ministral-8b` with temperature 0.8 and max_tokens 768
+- Response format forced to JSON
+- Performance notes documented for alternative models
 
-### 6. CSS (styles.css, ~2046 lines)
+### 6. CSS (styles.css, ~2210 lines)
 iOS Design System implementation:
 - CSS custom properties for iOS system colors
 - Dark mode support via `prefers-color-scheme: dark`
@@ -193,6 +204,7 @@ iOS Design System implementation:
 - iOS-style components: buttons, cards, lists, toggles, inputs, segmented controls
 - Spring animations and transitions matching iOS feel
 - Flashcard swipe animations and visual states
+- Streak progress bar and badge styling
 
 ---
 
@@ -215,6 +227,7 @@ CODE_SIGN_STYLE = Automatic
 - UISupportedInterfaceOrientations: Portrait only on iPhone
 - UISupportedInterfaceOrientations~ipad: All orientations on iPad
 - NSAppTransportSecurity: NSAllowsArbitraryLoads = YES (required for AI API)
+  - Exception domain: thunder.yds.today with TLS 1.2
 - UIApplicationSceneManifest: Supports multiple scenes = NO
 - UILaunchStoryboardName: Empty string (programmatic UI)
 - UIApplicationSupportsIndirectInputEvents: YES
@@ -304,6 +317,7 @@ netlify dev
 - **assets/js/words.js**: Update `MYWORDS` array to modify vocabulary
 - **assets/js/config.js**: Modify prompt templates, timeout values
 - **assets/js/api.js**: Update `API_CONFIG.endpoint` when deploying new Netlify URL
+- **assets/js/streak.js**: Modify streak requirements, storage keys, or celebration effects
 - **assets/js/flashcards.js**: Modify flashcard behavior, gestures, animations
 
 ### Adding Native-JavaScript Bridge
@@ -323,6 +337,7 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - [ ] App launches without crash
 - [ ] Welcome screen displays correctly in both light and dark mode
 - [ ] Mode selection cards display (Quiz Mode and Flashcards)
+- [ ] Streak badges show correct progress/completion status
 - [ ] "Quiz Mode" transitions to quiz interface
 - [ ] "Flashcards" transitions to flashcard interface
 - [ ] Questions load from AI service (requires internet)
@@ -336,6 +351,8 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - [ ] Keyboard shortcuts work (Quiz: A-E, 1-5, Enter, Escape; Flashcards: ←, →, K, N, Escape)
 - [ ] Back button returns to welcome screen
 - [ ] Score resets when returning to welcome
+- [ ] Streak progress persists across sessions
+- [ ] Streak completion celebration displays
 - [ ] Error states display correctly (offline, API failure)
 - [ ] App handles iPhone notch/safe area correctly
 - [ ] Orientation stays locked to portrait on iPhone
@@ -343,7 +360,7 @@ configuration.userContentController.add(self, name: "nativeHandler")
 
 ### Testing AI Integration
 1. Ensure device/simulator has internet connection
-2. Deploy Netlify function first (see `DEPLOYMENT.md`)
+2. Deploy Netlify function first
 3. Update `API_CONFIG.endpoint` in `assets/js/api.js` with your Netlify URL
 4. Monitor Xcode console for API errors
 5. Check Netlify Function logs for server-side errors
@@ -354,6 +371,12 @@ configuration.userContentController.add(self, name: "nativeHandler")
 2. Try loading 5+ questions (all will fail)
 3. Circuit should open, showing "Too many failures" message
 4. Wait 60 seconds, circuit should reset
+
+### Testing Streak System
+1. Study 20 words in quiz mode - verify streak completion
+2. Check that streak badge updates on welcome screen
+3. Close app, reopen - verify streak progress persists
+4. Test streak breaking by changing device date (simulator)
 
 ### Testing Flashcard Prefetch
 1. Open app with network connection
@@ -367,6 +390,7 @@ configuration.userContentController.add(self, name: "nativeHandler")
 
 ### App Transport Security
 - `NSAllowsArbitraryLoads = YES` in Info.plist (required for AI API)
+- Exception domain `thunder.yds.today` configured with TLS 1.2
 - **Note**: In production, consider pinning to specific HTTPS endpoints
 
 ### Input Sanitization (Web Layer)
@@ -429,6 +453,11 @@ configuration.userContentController.add(self, name: "nativeHandler")
 - Check console for prefetch errors
 - Verify API endpoint is correct
 
+### Streak Not Persisting
+- Check localStorage is enabled in WebKit configuration
+- Verify no private browsing mode (localStorage disabled)
+- Check console for storage errors
+
 ### Layout Issues on Notch Devices
 - Verify `env(safe-area-inset-*)` CSS properties applied
 - Check WebView uses `safeAreaLayoutGuide` constraints
@@ -489,7 +518,7 @@ The web layer uses:
 
 ## Version History
 
-- **v1.0.0**: Initial release with AI-powered quiz generation, circuit breaker, offline detection, iOS Design System, dark mode support, and flashcard study mode
+- **v1.0.0**: Initial release with AI-powered quiz generation, circuit breaker, offline detection, iOS Design System, dark mode support, flashcard study mode, and daily streak tracking
 
 ---
 
